@@ -3,12 +3,6 @@ Data-Fountain is project funded by an educational grant and it's aim is to repre
 
 The site will collect and store, at regular intervals, MET and Ocean data.  This data will be represented by various graphs and icons and put on display via Television screens located around the school through a Google Chrome HDMI streaming video adapter.
 
-Below is a mock up of the proposed layout.  All designs are subject to change.
-
-
-![<Display Name>](app/private/documentation/multiple_station_single_parameter__v2.pdf)
-
-
 --
 
 ## Developer Section
