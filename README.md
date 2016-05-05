@@ -1,3 +1,18 @@
+## Data-Fountain
+Data-Fountain is project funded by an educational grant and it's aim is to represent meteorological (MET) and oceanographic (Ocean) data from buoys and weather stations in a way that is easy to interpret by middle and high school students.
+
+The site will collect and store, at regular intervals, MET and Ocean data.  This data will be represented by various graphs and icons and put on display via Television screens located around the school through a Google Chrome HDMI streaming video adapter.
+
+Below is a mock up of the proposed layout.  All designs are subject to change.
+
+
+![<Display Name>](app/private/documentation/multiple_station_single_parameter__v2.pdf)
+
+
+--
+
+## Developer Section
+### Getting started
 ### Install Node
 https://nodejs.org/en/download/
 
@@ -9,7 +24,7 @@ https://www.meteor.com/tutorials/blaze/creating-an-app
 
 ---
 
-## Install Maka-cli 
+### Install Maka-cli 
 [Maka-cli Documentation](https://www.npmjs.com/package/maka-cli)
 ```
 	$ npm install -g maka-cli
