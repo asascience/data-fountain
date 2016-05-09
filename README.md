@@ -47,7 +47,16 @@ The home page can be broken down into 4 main sections, Page Header (top), footer
 
 A list of available stations in the region of interest (Chesapeake Bay).
 
-<b>TBD</b>
+* Susquehanna
+* Patapsco
+* Annapolis
+* Upper Potomac
+* Gooses Reef
+* Potomac
+* Stingray Point
+* Jamestown
+* Norfolk
+* First Landing
 
 ### Data Fountain Data Sources
 
