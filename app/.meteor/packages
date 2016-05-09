@@ -18,7 +18,6 @@ es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
 iron:router
-accounts-ui
 audit-argument-checks
 markdown
 modules
@@ -26,3 +25,4 @@ less
 sanjo:jasmine
 velocity:html-reporter
 velocity:console-reporter
+rps:comt-packages
