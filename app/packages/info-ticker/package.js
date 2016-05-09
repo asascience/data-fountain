@@ -1,6 +1,6 @@
 Package.describe({
   name: "info-ticker",
-  summary: "Will display configurable text that will scroll across.",
+  summary: "What this does",
   version: "0.0.1",
   git: "https://github.com/<username>/info-ticker.git",
 });
@@ -29,6 +29,8 @@ Package.onUse(function(api) {
 Package.onTest(function(api) {
   api.use('info-ticker');
   api.use('ecmascript');
-  api.use('tinytest@1.0.0');
-  api.addFiles('test/info-ticker.js', 'server');
+  api.use('sanjo:jasmine@1.0.0');
+  api.use('velocity:html-reporter@0.10.0');
+  api.addFiles('tests/server/info-ticker.js', 'server');
+  api.addFiles('tests/client/info-ticker.js', 'client');
 });

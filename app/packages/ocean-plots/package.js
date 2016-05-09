@@ -1,6 +1,6 @@
 Package.describe({
   name: "ocean-plots",
-  summary: "Provided data, this package will display a list of configurable plots.",
+  summary: "What this does",
   version: "0.0.1",
   git: "https://github.com/<username>/ocean-plots.git",
 });
@@ -29,6 +29,8 @@ Package.onUse(function(api) {
 Package.onTest(function(api) {
   api.use('ocean-plots');
   api.use('ecmascript');
-  api.use('tinytest@1.0.0');
-  api.addFiles('test/ocean-plots.js', 'server');
+  api.use('sanjo:jasmine@1.0.0');
+  api.use('velocity:html-reporter@0.10.0');
+  api.addFiles('tests/server/ocean-plots.js', 'server');
+  api.addFiles('tests/client/ocean-plots.js', 'client');
 });

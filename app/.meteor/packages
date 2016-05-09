@@ -27,3 +27,6 @@ audit-argument-checks
 markdown
 modules
 less
+sanjo:jasmine
+velocity:html-reporter
+velocity:console-reporter

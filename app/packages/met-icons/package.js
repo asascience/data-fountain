@@ -1,6 +1,6 @@
 Package.describe({
   name: "met-icons",
-  summary: "Supplied with meteorological data, this package will create several icons.",
+  summary: "What this does",
   version: "0.0.1",
   git: "https://github.com/<username>/met-icons.git",
 });
@@ -29,6 +29,8 @@ Package.onUse(function(api) {
 Package.onTest(function(api) {
   api.use('met-icons');
   api.use('ecmascript');
-  api.use('tinytest@1.0.0');
-  api.addFiles('test/met-icons.js', 'server');
+  api.use('sanjo:jasmine@1.0.0');
+  api.use('velocity:html-reporter@0.10.0');
+  api.addFiles('tests/server/met-icons.js', 'server');
+  api.addFiles('tests/client/met-icons.js', 'client');
 });

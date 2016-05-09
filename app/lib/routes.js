@@ -6,7 +6,7 @@ Router.configure({
 
 
 Router.route('/', {
-  name: 'home',
+  name: 'Home',
   controller: 'HomeController',
   where: 'client'
 });

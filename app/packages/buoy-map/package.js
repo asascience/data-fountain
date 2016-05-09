@@ -1,6 +1,6 @@
 Package.describe({
   name: "buoy-map",
-  summary: "This package creates a map, legend, and displays an image of the buoy.",
+  summary: "What this does",
   version: "0.0.1",
   git: "https://github.com/<username>/buoy-map.git",
 });
@@ -29,6 +29,8 @@ Package.onUse(function(api) {
 Package.onTest(function(api) {
   api.use('buoy-map');
   api.use('ecmascript');
-  api.use('tinytest@1.0.0');
-  api.addFiles('test/buoy-map.js', 'server');
+  api.use('sanjo:jasmine@1.0.0');
+  api.use('velocity:html-reporter@0.10.0');
+  api.addFiles('tests/server/buoy-map.js', 'server');
+  api.addFiles('tests/client/buoy-map.js', 'client');
 });
