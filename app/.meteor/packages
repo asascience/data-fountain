@@ -26,3 +26,4 @@ sanjo:jasmine
 velocity:html-reporter
 velocity:console-reporter
 rps:comt-packages
+meteortoys:allthings
