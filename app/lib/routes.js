@@ -10,3 +10,10 @@ Router.route('/', {
   controller: 'HomeController',
   where: 'client'
 });
+
+
+Router.route('admin', {
+  name: 'admin',
+  controller: 'AdminController',
+  where: 'client'
+});
