@@ -58,6 +58,26 @@ A list of available stations in the region of interest (Chesapeake Bay).
 * Norfolk
 * First Landing
 
+#### Station output
+* endpoint : `/api/station_list`
+* Station output example ( i dont have the met yet, TBD)
+``` json
+{
+	"stations": [
+	{
+		"data_url": "/api/data/df-01",
+		"id": "df-01",
+		"image_url": "/api/image/df-01",
+		"lat": 39.544,
+		"lon": -76.075,
+		"met": "KTGI",
+		"ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44057",
+		"title": "Susquehanna",
+		"usgs": "data.oceansmap.com:01580620"
+	},
+	...
+```
+
 ### Data Fountain Data Sources
 
 <b>OCEAN Data Source</b>
