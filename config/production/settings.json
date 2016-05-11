@@ -1,6 +1,5 @@
 {
   "public": {
   },
-
-  "sample": "value"
+  "dataFountainUrl": "http://dev.oceansmap.com/data-fountain/api/station_list"
 }

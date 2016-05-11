@@ -1,46 +1,46 @@
 import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import { EJSON } from 'meteor/ejson';
+import humps from 'humps';
 
-// if the database is empty on server start, create some sample data.
+/* M@Campbell - 05/11/2016
+ *
+ * We'll want to populate the Stations collection with a new list every
+ * time the server restarts.
+ */
+
 Meteor.startup(() => {
-    /*
-     *  MeteorPrinciples is an EXAMPLE collection that would have been
-     *  created in the /app/lib via:
-     *
-     *    $ maka g:collection MeteorPrinciples
-     *
-     *  Uncomment below to give this a test, after creating a
-     *  MeteorPrinciples collection
-     *
-     *
-     */
+    try {
+        const HUMPS = require('humps');
 
-    /*
-     * if (MeteorPrinciples.find().count() === 0) {
-     *  const data = [
-     *      {
-     *          items: [
-     *              'Data on the Wire',
-     *              'One Language',
-     *              'Database Everywhere',
-     *              'Latency Compensation',
-     *              'Full Stack Reactivity',
-     *              'Embrace the Ecosystem',
-     *              'Simplicity Equals Productivity'
-     *          ]
-     *      }
-     *  ];
-     *
-     *  let timestamp = (new Date()).getTime();
-     *
-     *  data.forEach((principle) => {
-     *      principle.items.forEach((text) => {
-     *          MeteorPrinciples.insert({
-     *              text,
-     *              createdAt: new Date(timestamp)
-     *          });
-     *          timestamp += 1;
-     *      });
-     *  });
-     * }
-     */
+        // time stuff
+        let currentUnix = Math.round(new Date().getTime()/1000);
+
+        // clear out what we had:
+        Stations.remove({});
+
+        // go and get the stations, and convert the heathen snake case to
+        // glorious camel case.
+        let response = HTTP.get(Meteor.settings.dataFountainUrl),
+            snakeData = EJSON.fromJSONValue(response.data.stations),
+            data = HUMPS.camelizeKeys(snakeData);
+
+        data.forEach((station) => {
+            Object.assign(station, {createdAt: currentUnix});
+            Stations.insert(station);
+        });
+    } catch (exception) {
+        if (exception.response) {
+            let error = {
+                code: exception.response.statusCode,
+                url: process.env.DATA_FOUNTAIN_URL,
+                data: exception.response.data
+            };
+
+            throw new Meteor.Error('500', `\r\n\tThe server has thrown a 500 error, this is because there was a problem connecting to OceansMap.\r\n\tOceansMap connection responded with:\n\r\t\t ${EJSON.stringify(error)}\n\r\tMake sure the URL is correct, and that data is flowing.\r\n\tIf the problem persists, you'll need to call for help.`);
+        } else {
+
+            throw new Meteor.Error('500', `Unhandled exception: ${exception}`);
+        }
+    }
 });
