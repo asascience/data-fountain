@@ -122,6 +122,10 @@ https://www.meteor.com/tutorials/blaze/creating-an-app
 
 Navigate to cloned repo.
 
+Initialize any npm dependencies:
+```sh
+	$ maka npm install
+```
 
 Start the app by issuing the following command at the root:
 
