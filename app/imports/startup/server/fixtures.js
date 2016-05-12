@@ -46,7 +46,7 @@ Meteor.startup(() => {
 
         } else {
             // We have no idea what the problem is, and can't even.
-            throw new Meteor.Error('500', `Can't Even: ${exception}`);
+            console.log(`${exception}, please make sure settings are configured.`);
         }
     }
 });
