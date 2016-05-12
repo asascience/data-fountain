@@ -1,5 +1,11 @@
 <template name="OceanPlots">
   <div class="ocean-plots">
-    <h2>Find me in app/client/templates/home/ocean-plots/ocean-plots</h2>
+   
+	{{> highchartsHelper chartId="test" chartWidth="100%" charHeight="100%" chartObject=topGenresChart}}
+  </div>
+  
+  <div class="ocean-plots">
+   
+	{{> highchartsHelper chartId="testcolumn" chartWidth="100%" charHeight="100%" chartObject=bottomGenresChart}}
   </div>
 </template>
