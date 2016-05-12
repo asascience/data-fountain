@@ -27,3 +27,4 @@ velocity:html-reporter
 velocity:console-reporter
 http
 rps:comt-packages
+maazalik:highcharts
