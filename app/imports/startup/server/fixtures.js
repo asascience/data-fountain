@@ -30,7 +30,6 @@ Meteor.startup(() => {
             Stations.insert(station);
         });
     } catch (exception) {
-        console.log(exception);
         if (exception.response) {
             // We've caught an exception in the HTTP response, and can handle it.
             let error = {
@@ -41,13 +40,13 @@ Meteor.startup(() => {
 
             console.log(`\r\n\tThere was a problem connecting to OceansMap.\r\n\tOceansMap connection responded with:\n\r\t\t ${EJSON.stringify(error)}\n\r\tMake sure the URL is correct, and that data is flowing.\r\n\tIf the problem persists, you'll need to call for help. The previous stations will be used if possible.`);
 
-        } else if (exception.errno.indexOf('ECONNREFUSED') > -1) {
+        } else if (exception.errno) {
             // We've caught a connection refused error, and can handle it.
             console.log(`\r\n\tWell this is embarrasing . . . it appears that our servers cannot be reached for some reason.  Please try again later: ${exception}`);
 
         } else {
             // We have no idea what the problem is, and can't even.
-            throw new Meteor.Error('500', `Can't Even: ${exception}`);
+            console.log(`${exception}, please make sure settings are configured.`);
         }
     }
 });
