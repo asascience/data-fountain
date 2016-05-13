@@ -17,6 +17,7 @@ Template.MetIcons.onCreated(() => {
 });
 
 Template.MetIcons.onRendered(() => {
+    $('[data-skycon]').each(initSkycon);
 });
 
 Template.MetIcons.onDestroyed(() => {
