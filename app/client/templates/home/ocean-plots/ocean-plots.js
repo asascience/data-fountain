@@ -24,7 +24,7 @@ Template.OceanPlots.onDestroyed(() => {
 
  Template.OceanPlots.topGenresChart = function() {
     return {
-		
+
 		    chart: {
                 type: 'spline',
                 animation: Highcharts.svg, // don't animate in old IE
@@ -89,11 +89,11 @@ Template.OceanPlots.onDestroyed(() => {
                     return data;
                 }())
             }]
-  
-		
-		
+
+
+
     };
-};  
+};
 //
 Template.OceanPlots.bottomGenresChart = function() {
     return {
@@ -109,7 +109,7 @@ Template.OceanPlots.bottomGenresChart = function() {
         xAxis: {
             type: 'category',
             labels: {
-              
+
                 style: {
                     fontSize: '20px',
                     fontFamily: 'Verdana, sans-serif'
@@ -136,7 +136,7 @@ Template.OceanPlots.bottomGenresChart = function() {
                 ['Istanbul', 14.2],
                 ['Karachi', 14.0],
                 ['Mumbai', 12.5],
-               
+
             ],
             dataLabels: {
                 enabled: true,
@@ -154,5 +154,5 @@ Template.OceanPlots.bottomGenresChart = function() {
     };
 
 
-};  
+};
 
