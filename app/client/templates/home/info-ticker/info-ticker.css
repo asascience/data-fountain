@@ -4,6 +4,9 @@
 .info-ticker {
 }
 
-.info-ticker marquee {
+.info-ticker .marquee {
     font-size: 30px;
+    overflow: hidden;
+    white-space: nowrap;
 }
+
