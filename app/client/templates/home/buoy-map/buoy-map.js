@@ -51,7 +51,7 @@ Meteor.call( 'getStationsList', function( error, response ) {
 					    var cell1 = row.insertCell(0);
 					    var cell2 = row.insertCell(1);
 					    cell1.innerHTML = "<div id='orangecircle'></div>";					 
-					    cell2.innerHTML = station_name;
+					    cell2.innerHTML = station_name+'    ('+lat+', '+long+')';
          				L.circle([lat, long], 4500, {
 						color: 'orange',
 						fillColor: 'orange',
@@ -64,7 +64,7 @@ Meteor.call( 'getStationsList', function( error, response ) {
 					    var cell1 = row.insertCell(0);
 					    var cell2 = row.insertCell(1);
 					    cell1.innerHTML = "<div id='blackcircle'></div>";
-					    cell2.innerHTML = station_name;
+					    cell2.innerHTML = station_name+'    ('+lat+', '+long+')';
 						L.circle([lat, long], 4500, {
 						color: 'black',
 						fillColor: 'black',

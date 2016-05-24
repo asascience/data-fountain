@@ -10,8 +10,8 @@
  }
 
 .maintable {width:100%;padding: 4px;border-spacing: 5px; border-collapse: separate; }
-.maintable td.left{width:55%;vertical-align:top;}
-.maintable td.right{width:45%;vertical-align:top;}
+.maintable td.left{vertical-align:top;}
+.maintable td.right{vertical-align:top;width:100%;}
 
 
 .legendTable { width:100%;color:black;border-spacing: 5px; border-collapse: collapse; } 
