@@ -16,11 +16,78 @@ Template.OceanPlots.helpers({
 /*****************************************************************************/
 Template.OceanPlots.onCreated(() => {
 	
-		  var reactivetopchart=new ReactiveVar();
-		  this.reactivetopchart=reactivetopchart;
+		
 });
 
 Template.OceanPlots.onRendered(() => {
+	
+	Meteor.call( 'getCommentsWithFuture', function( error, response ) {
+			var data=[]; 				
+  if ( error ) {
+
+    console.log( error );
+  } else {
+
+	for(i=0;i<response.data.data.gage_height.times.length;i++)
+	{
+		
+		var  time = (new Date(response.data.data.gage_height.times[i].toLocaleString())).getTime();
+		 data.push({
+                            x: time+i*1000,
+                            y: response.data.data.gage_height.values[0][i]
+                        });
+	}
+              console.log(data);
+	             Session.set( "SeriesObject", data );
+	
+  }
+ 
+});
+
+
+Meteor.call( 'getCommentsWithFuture', function( error, response ) {
+			var data=[]; 
+			
+			var datafull=[];
+
+			
+  if ( error ) {
+
+    console.log( error );
+  } else {
+
+	for(i=0;i<1;i++)
+	{
+		
+		var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
+		 data.push({
+                            x: time+i*1000,
+                            y: response.data.data.sea_water_salinity.values[0][i]
+                        });
+	}
+	
+	Session.set( "SeriesObjectColumnN", data );
+	
+	for(i=0;i<response.data.data.sea_water_salinity.times.length;i++)
+	{
+		
+		var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
+		 datafull.push({
+                            x: time+i*1000,
+                            y: response.data.data.sea_water_salinity.values[0][i]
+                        });
+	}
+             console.log(datafull);
+	             Session.set( "SeriesObjectColumn", datafull );
+	
+  }
+ 
+});
+	
+	
+	   builtSeries();
+	   
+	   builtcolumn();
 });
 
 Template.OceanPlots.onDestroyed(() => {
@@ -28,22 +95,22 @@ Template.OceanPlots.onDestroyed(() => {
 
 
 
- Template.OceanPlots.topGenresChart = function() {
-	 var myPlotLineId = "myPlotLine";
 
-    return {
-	
 
-		    chart: {
+
+
+function builtSeries() {
+     
+    $('#container-series').highcharts({
+       		    chart: {
                 type: 'spline',
 				
                 animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10,
                 events: {
                       load: function () {
-						  
-					var reactivetopchartnew=reactivetopchart.get();
-						  
+						   var  j=0;
+						   var myPlotLineId = "myPlotLine";
 						  var data=Session.get( "SeriesObject" );
 console.log(Session.get( "SeriesObject" ));
 var currentIndex = data[0].x;
@@ -111,12 +178,44 @@ var lastindex=data[length-1].x;
 		 var columntime=currentIndex;
 					 
 var excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
-					 
-					 
-					 chart.setTitle({text: "Water ELEVATION(feet) " + excelDateString});
-reactivetopchartnew=currentIndex;
+					chart.setTitle({text: "Water ELEVATION(feet) " + excelDateString});
+
+					var chartseries = $('#container-column').highcharts();
+				 chartseries.setTitle({text: "Sea Water Salinity " + excelDateString});
+				 console.log(chartseries.xAxis[0]);
+				 //
+				 
+				 
+				 
+				 //
+				var dataColumn=Session.get( "SeriesObjectColumn" );
+				var length=dataColumn.length;
+                console.log(length);
+                var xAxisColumn = chartseries.series[0].chart.xAxis[0];
+				
+				   if(j<length)
+					{
 					
-                }, 1000*60);
+					var newdata=[];
+					
+					 newdata.push({
+                            x: dataColumn[j].x,
+                            y: dataColumn[j].y
+                        });
+					chartseries.series[0].setData(newdata);
+		             columntime=dataColumn[j].x;
+					 
+var excelDateString=moment.utc(columntime).format('MM/DD/YYYY HH:mm A');;
+j++;
+						
+					}
+					else
+					{
+						j=0;
+					}
+				 
+					
+                }, 1000);
             }
                 }
             },
@@ -160,45 +259,18 @@ reactivetopchartnew=currentIndex;
             series: [{
                 name: 'Random data',
                 data: (function () {
-    	
-Meteor.call( 'getCommentsWithFuture', function( error, response ) {
-			var data=[]; 				
-  if ( error ) {
-
-    console.log( error );
-  } else {
-
-	for(i=0;i<response.data.data.gage_height.times.length;i++)
-	{
-		
-		var  time = (new Date(response.data.data.gage_height.times[i].toLocaleString())).getTime();
-		 data.push({
-                            x: time+i*1000,
-                            y: response.data.data.gage_height.values[0][i]
-                        });
-	}
-              //console.log(data);
-	             Session.set( "SeriesObject", data );
-	
-  }
- 
-});
-
-
- return Session.get( "SeriesObject" );
+    	 return Session.get( "SeriesObject" );
                 }())
             }]
+    });
+}
 
+//built column
 
-
-    };
-};
-//
-Template.OceanPlots.bottomGenresChart = function() {
-	var columnchart;
-var columntime;
-    return {
-          	  chart: {
+function builtcolumn() {
+	
+	$('#container-column').highcharts({
+	  chart: {
                 type: 'column',
 				
                 animation: Highcharts.svg, // don't animate in old IE
@@ -206,7 +278,7 @@ var columntime;
                 events: {
                       load: function () {
 						  var data=Session.get( "SeriesObjectColumn" );
-						  
+						console.log(length);
 var length=data.length;
 
                 var chart = this;
@@ -215,40 +287,7 @@ var length=data.length;
                 var xAxis = this.series[0].chart.xAxis[0];
 			
 			var  j=0;
-                setInterval(function () {
-		
-		            if(j<length)
-					{
-					
-					//console.log(data);
-					var newdata=[];
-					
-					
-					 newdata.push({
-                            x: data[j].x,
-                            y: data[j].y
-                        });
-						
-					//console.log(newdata);
-					chart.series[0].setData(newdata);
-		             columntime=data[j].x;
-					 
-var excelDateString=moment.utc(columntime).format('MM/DD/YYYY HH:mm A');;
-					 
-					 
-					 chart.setTitle({text: "Water ELEVATION(feet) " + excelDateString});
-					 
-					 
-					 chart.setTitle({text: "Sea Water Salinity " + excelDateString});
-j++;
-						
-					}
-					else
-					{
-						j=0;
-					}
-		 
-                }, 1000*60);
+       
             }
                 }
             },
@@ -292,55 +331,11 @@ j++;
             series: [{
                 name: 'Random data',
                 data: (function () {
-    	
-Meteor.call( 'getCommentsWithFuture', function( error, response ) {
-			var data=[]; 
-			
-			var datafull=[];
-
-			
-  if ( error ) {
-
-    console.log( error );
-  } else {
-
-	for(i=0;i<1;i++)
-	{
-		
-		var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
-		 data.push({
-                            x: time+i*1000,
-                            y: response.data.data.sea_water_salinity.values[0][i]
-                        });
-	}
-	
-	Session.set( "SeriesObjectColumnN", data );
-	
-	for(i=0;i<response.data.data.sea_water_salinity.times.length;i++)
-	{
-		
-		var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
-		 datafull.push({
-                            x: time+i*1000,
-                            y: response.data.data.sea_water_salinity.values[0][i]
-                        });
-	}
-             
-	             Session.set( "SeriesObjectColumn", datafull );
-	
-  }
- //console.log(datafull);
-});
-
-
-//console.log(Session.get( "SeriesObjectColumn" ));
- return Session.get( "SeriesObjectColumnN" );
+    	 return Session.get( "SeriesObjectColumnN" );
                 }())
             }]
- };
-
-         };
-  
+    });
+}
 
 
 
