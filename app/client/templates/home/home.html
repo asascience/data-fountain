@@ -1,20 +1,17 @@
 <template name="Home">
   <div class="home">
       <div class="container-fluid">
-          <div class="row">
+          <div class="row df-top">
               <div class="col-md-12">
                   <div class="panel panel-default">
-                      <div class="panel-heading">
-                          MET ICONS
-                      </div>
                       <div class="panel-body">
                           {{> MetIcons }}
                       </div>
                   </div>
               </div>
           </div>
-          <div class="row">
-              <div class="col-md-6">
+          <div class="row df-center">
+              <div class="col-md-6 df-left">
                   <div class="panel panel-default">
                       <div class="panel-heading">
                           MAP, LEGEND, PICTURE
@@ -24,7 +21,7 @@
                       </div>
                   </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-6 df-right">
                   <div class="panel panel-default">
                       <div class="panel-heading">
                           PLOTS
@@ -35,12 +32,9 @@
                   </div>
               </div>
           </div>
-          <div class="row">
+          <div class="row df-bottom">
               <div class="col-md-12">
                   <div class="panel panel-default">
-                      <div class="panel-heading">
-                          INFO TICKER
-                      </div>
                       <div class="panel-body">
                           {{> InfoTicker }}
                       </div>

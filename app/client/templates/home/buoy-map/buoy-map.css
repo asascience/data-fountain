@@ -4,9 +4,8 @@
 .buoy-map {
 }
 
-#map
- {
-    min-height: 570px;
+#map {
+    min-height: 630px;
     min-width: 100%;
  }
 

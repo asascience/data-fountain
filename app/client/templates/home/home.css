@@ -1,5 +1,40 @@
 /*****************************************************************************/
 /* Home: Style */
 /*****************************************************************************/
+.home .container-fluid{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.home .df-top {
+    padding: relative;
+    height: 5%;
+}
+
+.home .df-top div:first-child {
+    position: relative;
+    padding: 0;
+    margin: 0 0 10px 0;
+}
+
+.home .df-center {
+    position: relative;
+    height: 90%;
+}
+.home .df-bottom > div {
+    padding: 0;
+    margin: 0;
+    bottom: 0;
+    position: absolute;
+}
+.home .df-bottom .panel {
+    border: none;
+    margin: 0;
+    padding: 0;
+    background-color: #4994D0;
+    color: white;
+    border-radius: 0;
+}
 .home {
 }
