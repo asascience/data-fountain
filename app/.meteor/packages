@@ -31,6 +31,7 @@ twbs:bootstrap
 maka:light-theme
 bevanhunt:leaflet
 fortawesome:fontawesome
+mrt:leaflet-label
 json
 session
 mrt:moment
