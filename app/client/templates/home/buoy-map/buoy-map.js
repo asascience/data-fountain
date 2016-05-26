@@ -37,7 +37,7 @@ Meteor.call( 'getStationsList', function( error, response ) {
 
 		var legend=document.getElementById('legendTable');
 			  
-
+Session.set("stations",response);
   	    // for(i=0;i<response.data.stations.length;i++)
   	     for(i=4;i>=0;i--)
            {       		  

@@ -5,52 +5,48 @@ Template.OceanPlots.events({
 
 });
 
-/*****************************************************************************/
-/* OceanPlots: Helpers */
-/*****************************************************************************/
-Template.OceanPlots.helpers({
-    topGenresChart() {
-        try {
-            var myPlotLineId = "myPlotLine";
-            return {
-                chart: {
-                    type: 'spline',
 
-<<<<<<< HEAD
+
 /*****************************************************************************/
 /* OceanPlots: Lifecycle Hooks */
 /*****************************************************************************/
 Template.OceanPlots.onCreated(() => {
 	
-		
+
 });
 
 Template.OceanPlots.onRendered(() => {
 	
-	Meteor.call( 'getCommentsWithFuture', function( error, response ) {
-			var data=[]; 				
+	
+	Meteor.call( 'getStationsList', function( error, response ) {
+     var data=[]; 
   if ( error ) {
+    console.log( error );
+  } 
+  else {
+  	
+ 
+  	     for(i=4;i>=0;i--)
+           {  
+	   
+	   
+
+console.log(response.data.stations[i].data_url);
+
+var url=response.data.stations[i].data_url;
+
+console.log(url);
+
+Meteor.call('getiteration',url, function( error, response ) {
+	 if ( error ) {
 
     console.log( error );
   } else {
-
-	for(i=0;i<response.data.data.gage_height.times.length;i++)
-	{
-		
-		var  time = (new Date(response.data.data.gage_height.times[i].toLocaleString())).getTime();
-		 data.push({
-                            x: time+i*1000,
-                            y: response.data.data.gage_height.values[0][i]
-                        });
-	}
-              console.log(data);
-	             Session.set( "SeriesObject", data );
-	
+	console.log(response);
   }
- 
-});
+	});	 
 
-
+//console.log(url);
 Meteor.call( 'getCommentsWithFuture', function( error, response ) {
 			var data=[]; 
 			
@@ -88,47 +84,117 @@ Meteor.call( 'getCommentsWithFuture', function( error, response ) {
 	
   }
  
+});	   
+		   }
+  }
+		   
 });
 	
+
+ var url="test1" ;
+
+Meteor.call( 'getCommentsWithFuture', function( error, response ) {
+			var data=[]; 				
+  if ( error ) {
+
+    console.log( error );
+  } else {
+
+	for(i=0;i<response.data.data.gage_height.times.length;i++)
+	{
+		
+		var  time = (new Date(response.data.data.gage_height.times[i].toLocaleString())).getTime();
+		 data.push({
+                            x: time+i*1000,
+                            y: response.data.data.gage_height.values[0][i]
+                        });
+	}
+           
+	             Session.set( "SeriesObject", data );
 	
-	   builtSeries();
+  }
+ 
+});
+	   
+         		
+		 
+
+  
+  
+/*   }); */
+	
+var url="test2";
+
+Meteor.call( 'getCommentsWithFuture',function( error, response ) {
+			var data=[]; 
+			
+			var datafull=[];
+
+			
+  if ( error ) {
+
+    console.log( error );
+  } else {
+
+	for(i=0;i<1;i++)
+	{
+		
+		var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
+		 data.push({
+                            x: time+i*1000,
+                            y: response.data.data.sea_water_salinity.values[0][i]
+                        });
+	}
+	
+	Session.set( "SeriesObjectColumnN", data );
+	
+	for(i=0;i<response.data.data.sea_water_salinity.times.length;i++)
+	{
+		
+		var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
+		 datafull.push({
+                            x: time+i*1000,
+                            y: response.data.data.sea_water_salinity.values[0][i]
+                        });
+	}
+             console.log(datafull);
+	             Session.set( "SeriesObjectColumn", datafull );
+	
+  }
+ 
+});
+
+
+ var timer= setInterval(function () {
+		  
+		  //console.log(Session.get( "SeriesObject" ));
+		  if(Session.get( "SeriesObject" )==undefined)
+		  {
+			   console.log(" session not found object");
+			 
+		  }
+			else
+			  {
+				   console.log("checking session object");
+				  clearTimeout(timer);
+				  
+				    builtSeries();
 	   
 	   builtcolumn();
+			  }
+		  
+		  
+	  }, 1000);
+	
+	 
 });
-=======
-                    animation: Highcharts.svg, // don't animate in old IE
-                    marginRight: 10,
-                    events: {
-                        load: function () {
 
-                            var data=Session.get( "SeriesObject" );
-                            var currentIndex = data[0].x;
->>>>>>> e5cca2f47e7ffd357299018c335806b03bbfe19b
-
-                            var length=data.length;
-                            var lastindex=data[length-1].x;
-                            var chart = this;
-                            // var l = chart.series[0].points.length;
-                            var l = 30;
-                            var xAxis = this.series[0].chart.xAxis[0];
-
-                            xAxis.addPlotLine({
-                                value: currentIndex,
-                                width: 2,
-                                color: 'Dark orange',
-                                dashStyle: 'dash',
-                                id: myPlotLineId
-                            });
-                            let plot = function () {
-
-
-<<<<<<< HEAD
-
-
+                
 
 
 function builtSeries() {
-     
+     	
+	 
     $('#container-series').highcharts({
        		    chart: {
                 type: 'spline',
@@ -140,14 +206,14 @@ function builtSeries() {
 						   var  j=0;
 						   var myPlotLineId = "myPlotLine";
 						  var data=Session.get( "SeriesObject" );
-console.log(Session.get( "SeriesObject" ));
+//console.log(Session.get( "SeriesObject" ));
 var currentIndex = data[0].x;
 
 
-console.log(data.length);
+//console.log(data.length);
 var length=data.length;
 var lastindex=data[length-1].x;
-                var chart = this;
+                var chart = $('#container-series').highcharts();;
                 // var l = chart.series[0].points.length;
                 var l = 30;
                 var xAxis = this.series[0].chart.xAxis[0];
@@ -163,18 +229,26 @@ var lastindex=data[length-1].x;
                 });    
                 setInterval(function () {
 					
-					//console.log(currentIndex);
+					console.log(currentIndex);
+					  $.each(xAxis.plotLinesAndBands, function () {
+                                                    if (this.id === myPlotLineId) {
+                                                        this.destroy();
+                                                    }
+												});
+					
                     if (currentIndex > l)
                     {
 						if(currentIndex>=lastindex)
 						{
+							
+							console.log(lastindex)
 							currentIndex = data[0].x;
 							
-							 $.each(xAxis.plotLinesAndBands, function () {
+							 
                             if (this.id === myPlotLineId) {
                                 this.destroy();
                             }
-                        });
+                        
                         xAxis.addPlotLine({
                             value:currentIndex,
                             width: 2,
@@ -185,10 +259,11 @@ var lastindex=data[length-1].x;
 						}
 						else
 						{
-							 $.each(xAxis.plotLinesAndBands, function () {
-                            if (this.id === myPlotLineId) {
-                                this.destroy();
-=======
+						  $.each(xAxis.plotLinesAndBands, function () {
+                                                    if (this.id === myPlotLineId) {
+                                                        this.destroy();
+                                                    }
+												});
                                 //console.log(currentIndex);
                                 if (currentIndex > l)
                                     {
@@ -200,7 +275,7 @@ var lastindex=data[length-1].x;
                                                     if (this.id === myPlotLineId) {
                                                         this.destroy();
                                                     }
-                                                });
+												});
                                                 xAxis.addPlotLine({
                                                     value:currentIndex,
                                                     width: 2,
@@ -211,11 +286,13 @@ var lastindex=data[length-1].x;
                                             }
                                             else
                                                 {
-                                                    $.each(xAxis.plotLinesAndBands, function () {
-                                                        if (this.id === myPlotLineId) {
-                                                            this.destroy();
-                                                        }
-                                                    });
+                                                  
+                                                        $.each(xAxis.plotLinesAndBands, function () {
+                                                    if (this.id === myPlotLineId) {
+                                                        this.destroy();
+                                                    }
+												});
+                                                  
                                                     xAxis.addPlotLine({
                                                         value: currentIndex=currentIndex+3600000,
                                                             width: 2,
@@ -236,14 +313,11 @@ var lastindex=data[length-1].x;
 
                                     chart.setTitle({text: "Water ELEVATION(feet) " + excelDateString});
 
->>>>>>> e5cca2f47e7ffd357299018c335806b03bbfe19b
-                            }
-                            setInterval(() => {
-                                plot()
-                            }, 1000*10);
-                        }
+
+                            
+                   
                     }
-<<<<<<< HEAD
+
 
 //
 		 var columntime=currentIndex;
@@ -284,9 +358,10 @@ j++;
 					{
 						j=0;
 					}
-				 
-					
+			
+					}
                 }, 1000);
+           
             }
                 }
             },
@@ -305,13 +380,12 @@ j++;
             }
             },
             yAxis: {
-=======
-                },
->>>>>>> e5cca2f47e7ffd357299018c335806b03bbfe19b
+
+                
                 title: {
                     text: 'Live random data'
                 },
-<<<<<<< HEAD
+
                 plotLines: [{
                     value: 0,
                     width: 1,
@@ -337,8 +411,11 @@ j++;
     	 return Session.get( "SeriesObject" );
                 }())
             }]
-    });
+  
+  });
+
 }
+   
 
 //built column
 
@@ -380,19 +457,7 @@ var length=data.length;
                 }
             }
             },
-            yAxis: {
-=======
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 10,
-                    labels: {
-                        rotation:90,
-                        style: {
-                            fontSize: '13px',
-                            fontFamily: 'Verdana, sans-serif'
-                        }
-                    }
-                },
+            
                 yAxis: {
                     title: {
                         text: 'Value'
@@ -419,234 +484,13 @@ var length=data.length;
                 series: [{
                     name: 'Random data',
                     data: (function () {
-
-                        Meteor.call( 'getCommentsWithFuture', function( error, response ) {
-                            var data=[];
-                            if ( error ) {
-
-                                console.log( error );
-                            } else {
-
-                                for(i=0;i<response.data.data.gage_height.times.length;i++)
-                                {
-
-                                    var  time = (new Date(response.data.data.gage_height.times[i].toLocaleString())).getTime();
-                                    data.push({
-                                        x: time+i*1000,
-                                        y: response.data.data.gage_height.values[0][i]
-                                    });
-                                }
-                                //console.log(data);
-                                Session.set( "SeriesObject", data );
-
-                            }
-
-                        });
-
-
-                        return Session.get( "SeriesObject" );
-                    }())
-                }]
-            };
-        } catch (exception) {
-            console.log(exception);
-        }
-    },
-    bottomGenresChart() {
-        try {
-            var columnchart;
-            var columntime;
-            return {
-                chart: {
-                    type: 'column',
-
-                    animation: Highcharts.svg, // don't animate in old IE
-                    marginRight: 10,
-                    events: {
-                        load: function () {
-                            var data=Session.get( "SeriesObjectColumn" );
-
-                            var length=data.length;
-
-                            var chart = this;
-
-                            var l = 30;
-                            var xAxis = this.series[0].chart.xAxis[0];
-
-                            var  j=0;
-                            let plot = function () {
-
-                                if(j<length)
-                                    {
-
-                                        var newdata=[];
-
-
-                                        newdata.push({
-                                            x: data[j].x,
-                                            y: data[j].y
-                                        });
-
-                                        chart.series[0].setData(newdata);
-                                        columntime=data[j].x;
-
-                                        var excelDateString=moment.utc(columntime).format('MM/DD/YYYY HH:mm A');;
-
-
-                                        chart.setTitle({text: "Water ELEVATION(feet) " + excelDateString});
-
-
-                                        chart.setTitle({text: "Sea Water Salinity " + excelDateString});
-                                        j++;
-
-                                    }
-                                    else
-                                        {
-                                            j=0;
-                                        }
-
-                            }
-                            plot();
-                            setInterval(() => {
-                                plot()
-                            }, 1000*10);
-                        }
-                    }
-                },
->>>>>>> e5cca2f47e7ffd357299018c335806b03bbfe19b
-                title: {
-                    text: 'sea_water_salinity '
-                },
-<<<<<<< HEAD
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },
-            tooltip: {
-                formatter: function () {
-                    return '<b>' + this.series.name + '</b><br/>' +
-                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                        Highcharts.numberFormat(this.y, 2);
-                }
-            },
-            legend: {
-                enabled: false
-            },
-            exporting: {
-                enabled: false
-            },
-            series: [{
-                name: 'Random data',
-                data: (function () {
-    	 return Session.get( "SeriesObjectColumnN" );
-                }())
+  return Session.get( "SeriesObject" );
+                     }())
             }]
     });
+
+
 }
-=======
-                xAxis: {
-                    type: 'datetime',
-
-                    labels: {
-                        rotation:90,
-                        style: {
-                            fontSize: '13px',
-                            fontFamily: 'Verdana, sans-serif'
-                        }
-                    }
-                },
-                yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.series.name + '</b><br/>' +
-                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                            Highcharts.numberFormat(this.y, 2);
-                    }
-                },
-                legend: {
-                    enabled: false
-                },
-                exporting: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'Random data',
-                    data: (function () {
-
-                        Meteor.call( 'getCommentsWithFuture', function( error, response ) {
-                            var data=[];
-
-                            var datafull=[];
+   
 
 
-                            if ( error ) {
-
-                                console.log( error );
-                            } else {
-
-                                for(i=0;i<1;i++)
-                                {
->>>>>>> e5cca2f47e7ffd357299018c335806b03bbfe19b
-
-                                    var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
-                                    data.push({
-                                        x: time+i*1000,
-                                        y: response.data.data.sea_water_salinity.values[0][i]
-                                    });
-                                }
-
-                                Session.set( "SeriesObjectColumnN", data );
-
-                                for(i=0;i<response.data.data.sea_water_salinity.times.length;i++)
-                                {
-
-                                    var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
-                                    datafull.push({
-                                        x: time+i*1000,
-                                        y: response.data.data.sea_water_salinity.values[0][i]
-                                    });
-                                }
-
-                                Session.set( "SeriesObjectColumn", datafull );
-
-                            }
-                            //console.log(datafull);
-                        });
-
-
-                        //console.log(Session.get( "SeriesObjectColumn" ));
-                        return Session.get( "SeriesObjectColumnN" );
-                    }())
-                }]
-            };
-
-        } catch(exception) {
-            console.log(exception);
-        }
-    }
-});
-
-/*****************************************************************************/
-/* OceanPlots: Lifecycle Hooks */
-/*****************************************************************************/
-Template.OceanPlots.onCreated(() => {
-});
-
-Template.OceanPlots.onRendered(() => {
-    let tmplContext = Blaze.TemplateInstance.prototype;
-    tmplContext.plotDep = new Tracker.Dependency;
-});
-
-Template.OceanPlots.onDestroyed(() => {
-});
