@@ -1,5 +1,7 @@
 {
   "public": {
   },
-  "dataFountainUrl": "http://dev.oceansmap.com/data-fountain/api/station_list"
+  "dataFountainUrl": "http://dev.oceansmap.com/data-fountain",
+  "defaultDuration": 48,
+  "refreshTheData": "every 1 hour"
 }
