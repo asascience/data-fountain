@@ -6,8 +6,12 @@ if (Meteor.isServer) {
         prettyJson: true
     });
 
-    Api.addCollection(Stations);
-    Api.addCollection(Data);
+    Api.addCollection(Stations, {
+        excludedEndpoints: ['getAll', 'put', 'post', 'delete']
+    });
+    Api.addCollection(Data, {
+        excludedEndpoints: ['getAll', 'put', 'post', 'delete']
+    });
 
 
     Api.addRoute('data/', {authRequired: false}, {
