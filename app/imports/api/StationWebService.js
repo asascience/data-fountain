@@ -8,17 +8,6 @@ export default class StationWebService {
 
     }
 
-    _checkConnection() {
-        console.log('[+] Checking connection...');
-        HTTP.call('HEAD', `${Meteor.settings.dataFountainUrl}/api/station_list`, (error, response) => {
-            if (error || response.error) {
-                throw new Meteor.Error(`[!] Cannot connect to OceansMap.  If there is data, persist it for now`);
-            } else {
-                // clear out what we had:
-            }
-        });
-    }
-
     _getTimeStamp() {
         return currentUnix = Math.round(new Date().getTime()/1000);
     }
@@ -111,17 +100,10 @@ export default class StationWebService {
                         // keep the headers
                         Object.assign(data, response.headers);
 
-                        dataSet.push(data);
-                        console.log(dataSet);
+                        Data.upsert({dataUrl: data.dataUrl}, data);
                     }
                 });
             }
-
-            dataSet.forEach((datum) => {
-                console.log(datum);
-                Object.assign(datum, {createdAt: this._getTimeStamp()});
-                Data.upsert({dataUrl: stationUrl}, datum);
-            });
 
             console.log(`[+] Station Data compilations complete. Data Collection now available`);
             return;
@@ -131,7 +113,5 @@ export default class StationWebService {
             console.log(exception);
             return exception;
         }
-
-
     }
 }
