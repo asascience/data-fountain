@@ -5,7 +5,7 @@
 }
 
 #map {
-    min-height: 630px;
+    min-height: 530px;
     min-width: 100%;
  }
 
@@ -14,7 +14,7 @@
 .maintable td.right{vertical-align:top;width:100%;}
 
 
-.legendTable { width:100%;color:black;border-spacing: 5px; border-collapse: collapse; } 
+.legendTable { width:100%;color:black;border-spacing: 5px; border-collapse: collapse; }
 .legendTable td {padding:3px;}
 
   /* provide some minimal visual accomodation for IE8 and below */
@@ -22,7 +22,7 @@
     background: #b8d1f3;
   }
   /*  Define the background color for all the ODD background rows  */
-  .legendTable tr:nth-child(odd){ 
+  .legendTable tr:nth-child(odd){
     background: #b8d1f3;
     padding:5px;
   }
@@ -39,12 +39,12 @@
   .text-labels
    {
      position: absolute;
-     font-size: 15px;           
+     font-size: 15px;
      font-weight:bold;
      color:black;
       font-family: :verdana;
-     width:100px;  
-     margin:5px;        
+     width:100px;
+     margin:5px;
    }
 
    .tbl
@@ -52,7 +52,7 @@
     background-color:white;
     margin:5px;
     border:1px solid gray;
-     
+
    }
 
    .td
