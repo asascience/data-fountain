@@ -67,7 +67,7 @@ var Stats=Stations.find({}).fetch() ;
 						color: 'black',
 						fillColor: 'black',
 						fillOpacity: 1
-						}).addTo(map);//.bindPopup(response.data.stations[i].title).openPopup();
+						}).addTo(map);
 					}	
 
 					//ADding a Label
@@ -82,7 +82,6 @@ var Stats=Stations.find({}).fetch() ;
 			}
 
 		}
-
 });
 		
 		
