@@ -71,7 +71,7 @@ export default class StationWebService {
             startDate.setHours(startDate.getHours() - DURATION);
             startDate = startDate.toISOString();
 
-            let stationUrls = Stations.find({}, {fields: {dataUrl: 1, id: 1}}).fetch();
+            let stationUrls = Stations.find({}, {fields: {dataUrl: 1, id: 1, title: 1}}).fetch();
 
             // create a place to store the results
             let dataSet = [];
@@ -83,6 +83,7 @@ export default class StationWebService {
                 // create the URL
                 let compiledUrl = `${Meteor.settings.dataFountainUrl}${stationUrl.dataUrl}?time=${startDate}/${endDate}`;
                 data['id'] = stationUrl.id;
+                data['title'] = stationUrl.title;
 
                 // make the call to get the scientific data, and block with future.
                 HTTP.call('GET', compiledUrl, (error, response) => {
