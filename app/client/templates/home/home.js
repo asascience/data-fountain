@@ -17,6 +17,7 @@ Template.Home.onCreated(() => {
 });
 
 Template.Home.onRendered(() => {
+
 });
 
 Template.Home.onDestroyed(() => {
