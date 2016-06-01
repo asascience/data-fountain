@@ -8,7 +8,7 @@ Template.MetIcons.events({
 /* MetIcons: Helpers */
 /*****************************************************************************/
 Template.MetIcons.helpers({
-    met(byteValue, datetime) {
+    met() {
         try {
             let weather = Weather.find({}).fetch();
             weather = weather[0].currently;
