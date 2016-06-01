@@ -1,7 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { EJSON } from 'meteor/ejson';
+
 import humps from 'humps';
+import Forecast from 'forecast';
+
+const Future = Npm.require('fibers/future');
 
 export default class StationWebService {
     constructor() {
@@ -112,6 +116,38 @@ export default class StationWebService {
             //debugger;
             console.log(exception);
             return exception;
+        }
+    }
+
+    fetchWeatherForecast() {
+        const future = new Future();
+        const forecast = new Forecast({
+            service: `forecast.io`,
+            key: Meteor.settings.forecastIoApi,
+            units: 'f',
+            cache: true,
+            ttl: {
+                minutes: 30
+            }
+        });
+
+        // TODO: The location will eventually be pulled from the user's settings.
+        // TODO: For now, just using Goose's Reef.
+        // TODO: It's not being implemented now because the feature for user settings
+        // TODO: aren't created yet.
+        // TODO: Possibly set in the constructor?
+        forecast.get([38.553, -76.415], (error, weather) => {
+            if (error) {
+                future.return(false);
+            } else {
+                future.return(weather);
+            }
+        });
+
+        let futureFinished = future.wait();
+        if (futureFinished) {
+            Weather.remove({});
+            Weather.insert(futureFinished);
         }
     }
 }
