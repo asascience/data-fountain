@@ -7,10 +7,10 @@ if (Meteor.isServer) {
     });
 
     Api.addCollection(Stations, {
-        excludedEndpoints: ['getAll', 'put', 'post', 'delete']
+        excludedEndpoints: ['put', 'post', 'delete']
     });
     Api.addCollection(Data, {
-        excludedEndpoints: ['getAll', 'put', 'post', 'delete']
+        excludedEndpoints: ['put', 'post', 'delete']
     });
 
 
