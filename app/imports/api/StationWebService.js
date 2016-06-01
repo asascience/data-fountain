@@ -12,20 +12,20 @@ export default class StationWebService {
         console.log('[+] Checking connection...');
         HTTP.call('HEAD', `${Meteor.settings.dataFountainUrl}/api/station_list`, (error, response) => {
             if (error || response.error) {
-                console.log(`[!] Cannot connect to OceansMap.  If there is data, persist it for now`);
+                throw new Meteor.Error(`[!] Cannot connect to OceansMap.  If there is data, persist it for now`);
             } else {
                 // clear out what we had:
-                Stations.remove({});
-                Data.remove({});
             }
         });
     }
 
-    getStations() {
+    _getTimeStamp() {
+        return currentUnix = Math.round(new Date().getTime()/1000);
+    }
+
+    fetchStations() {
         console.log('[+] Compiling a collection of stations');
         try {
-            this._checkConnection();
-
             const HUMPS = require('humps');
 
             // go and get the stations, and convert the heathen snake case to
@@ -35,11 +35,11 @@ export default class StationWebService {
                 data = HUMPS.camelizeKeys(snakeData);
 
             // time stuff
-            let currentUnix = Math.round(new Date().getTime()/1000);
+            let currentUnix = this._getTimeStamp();
 
             data.forEach((station) => {
                 Object.assign(station, {createdAt: currentUnix});
-                Stations.insert(station);
+                Stations.upsert({id: station.id}, station);
             });
             console.log('[+] Station compilations complete.  Station Collection now available.');
             return;
@@ -66,11 +66,9 @@ export default class StationWebService {
 
     }
 
-    getStationsData() {
+    fetchStationsData() {
         console.log(`[+] Compiling a collection of data from stations`);
         try {
-            this._checkConnection();
-
             // define our method constants
             const Humps = Npm.require('humps');
             const DATE = new Date();
@@ -86,15 +84,20 @@ export default class StationWebService {
 
             let stationUrls = Stations.find({}, {fields: {dataUrl: 1}}).fetch();
 
+            // create a place to store the results
+            let dataSet = [];
+
             for (var stationUrl of stationUrls) {
+                let data = {};
+                let headers;
 
                 // create the URL
                 let compiledUrl = `${Meteor.settings.dataFountainUrl}${stationUrl.dataUrl}?time=${startDate}/${endDate}`;
+                data['url'] = compiledUrl;
+                data['dataUrl'] = stationUrl.dataUrl;
 
                 // make the call to get the scientific data, and block with future.
                 HTTP.call('GET', compiledUrl, (error, response) => {
-                    let data;
-                    let headers;
 
                     if (error || response.error) {
                         // TODO: Add this into logs.  Not doing it now because logs have not
@@ -103,16 +106,23 @@ export default class StationWebService {
                         Stations.remove({dataUrl: stationUrl.dataUrl});
                     } else {
                         // make the data usable for JavaScript
-                        data = Humps.camelizeKeys(response.data);
+                        Object.assign(data, Humps.camelizeKeys(response.data));
 
                         // keep the headers
-                        headers = response.headers;
+                        Object.assign(data, response.headers);
 
-                        Object.assign(data, headers);
-                        Data.insert(data);
+                        dataSet.push(data);
+                        console.log(dataSet);
                     }
                 });
             }
+
+            dataSet.forEach((datum) => {
+                console.log(datum);
+                Object.assign(datum, {createdAt: this._getTimeStamp()});
+                Data.upsert({dataUrl: stationUrl}, datum);
+            });
+
             console.log(`[+] Station Data compilations complete. Data Collection now available`);
             return;
             // when the future is ready, return the data.

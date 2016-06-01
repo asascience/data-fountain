@@ -9,6 +9,6 @@ import StationWebService from '../../api/StationWebService';
 const stationWebService = new StationWebService();
 
 Meteor.startup(() => {
-    stationWebService.getStations();
-    stationWebService.getStationsData();
+    stationWebService.fetchStations();
+    stationWebService.fetchStationsData();
 });

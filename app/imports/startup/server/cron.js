@@ -8,8 +8,8 @@ SyncedCron.add({
         return parser.text(Meteor.settings.refreshTheData);
     },
     job() {
-        stationWebService.getStations();
-        stationWebService.getStationsData();
+        stationWebService.fetchStations();
+        stationWebService.fetchStationsData();
     }
 });
 SyncedCron.start();
