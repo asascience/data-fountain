@@ -17,10 +17,10 @@ Template.BuoyMap.onCreated(() => {
 });
 
 Template.BuoyMap.onRendered(() => {	
+	
+var Stats=Stations.find({}).fetch() ;
 
-Meteor.call( 'getStationsList', function( error, response ) {
-     var data=[]; 
-  if ( error ) {
+  if(Stats.length==0){
     console.log( error );
   } 
   else {
@@ -36,14 +36,12 @@ Meteor.call( 'getStationsList', function( error, response ) {
   	//Ading Stations and legend
 
 		var legend=document.getElementById('legendTable');
-			  
-Session.set("stations",response);
-  	    // for(i=0;i<response.data.stations.length;i++)
+  	    // for(i=0;i<Stats.length;i++)
   	     for(i=4;i>=0;i--)
            {       		  
-         			var lat=Number(response.data.stations[i].lat);//latitude
-         			var long=Number(response.data.stations[i].lon);//longitude
-         			var station_name=response.data.stations[i].title;
+         			var lat=Number(Stats[i].lat);//latitude
+         			var long=Number(Stats[i].lon);//longitude
+         			var station_name=Stats[i].title;
          			//Adding a point
          			if(i==4)
          			{         				
@@ -69,7 +67,7 @@ Session.set("stations",response);
 						color: 'black',
 						fillColor: 'black',
 						fillOpacity: 1
-						}).addTo(map);//.bindPopup(response.data.stations[i].title).openPopup();
+						}).addTo(map);
 					}	
 
 					//ADding a Label
@@ -84,11 +82,10 @@ Session.set("stations",response);
 			}
 
 		}
+});
+		
+		
 
-});
-		
-		
-});
 
 Template.BuoyMap.onDestroyed(() => {
 });
