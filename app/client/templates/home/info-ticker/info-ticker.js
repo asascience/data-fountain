@@ -9,6 +9,17 @@ Template.InfoTicker.events({
 /* InfoTicker: Helpers */
 /*****************************************************************************/
 Template.InfoTicker.helpers({
+    getInfoText() {
+        try {
+            let weather = Weather.find({}).fetch();
+            weather = `${weather[0].currently.summary}. ${weather[0].hourly.summary} ${weather[0].daily.summary}`;
+
+            return weather;
+
+        } catch (exception) {
+            // shhhhh
+        }
+    }
 });
 
 /*****************************************************************************/

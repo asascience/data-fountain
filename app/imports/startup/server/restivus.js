@@ -12,6 +12,9 @@ if (Meteor.isServer) {
     Api.addCollection(Data, {
         excludedEndpoints: ['put', 'post', 'delete']
     });
+    Api.addCollection(Weather, {
+        excludedEndpoints: ['put', 'post', 'delete']
+    });
 
 
     Api.addRoute('data/', {authRequired: false}, {

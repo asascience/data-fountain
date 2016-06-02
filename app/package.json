@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "forecast": "^0.2.1",
     "humps": "^1.1.0"
   },
   "devDependencies": {},

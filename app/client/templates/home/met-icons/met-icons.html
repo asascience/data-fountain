@@ -1,29 +1,29 @@
 <template name="MetIcons">
     <div class="met-icons text-center">
         <div class="icons">
-            <i class="wi wi-moon-alt-waning-gibbous-2"></i>
+            <i class="wi {{getLunarPhaseIcon}}"></i>
             <div class="text-md">Lunar</div>
         </div>
         <div class="icons">
-            <i class="wi wi-day-cloudy"></i>
+            <div data-skycon="{{met.icon}}" data-color="#4994D0" data-width="60" data-height="60" class="center-block"></div>
             <div class="text-md">Weather</div>
         </div>
         <div class="icons">
             <i class="wi wi-thermometer"  style="font-size: 45px;"></i>
-            <span style="font-size: 40px; color: #4994D0; font-weight:bold;"> 70 </span><i class="wi wi-fahrenheit" style="font-size: 40px; font-weight: bold;"></i>
+            <span style="font-size: 40px; color: #4994D0; font-weight:bold;"> {{met.temp}} </span><i class="wi wi-fahrenheit" style="font-size: 40px; font-weight: bold;"></i>
             <div class="text-md">Temperature</div>
         </div>
         <div class="logo-brand">
             <img src="logo.png">
         </div>
         <div class="icons">
-            <span style="float: left; position: absolute; font-size: 25px; font-weight: bold; text-align: center; padding-left: 18px; top: 20px; font-family: 'pirate'; color: #4994d0;">N</span>
-            <i class="wi wi-wind towards-23-deg"></i>
+            <span style="float: left; position: absolute; font-size: 25px; font-weight: bold; text-align: center; padding-left: 16px; top: 20px; font-family: 'pirate'; color: #4994d0;">N</span>
+            <i class="wi wi-wind towards-{{met.wdbr}}-deg"></i>
             <div class="text-md">Wind Direction</div>
         </div>
         <div class="icons">
             <i class="wi wi-strong-wind"></i>
-            <span style="font-size: 40px; color: #4994D0; font-weight: bold;"> 10</span>
+            <span style="font-size: 40px; color: #4994D0; font-weight: bold;"> {{met.wdsp}}</span>
             <div class="text-md">Wind Speed (mph)</div>
         </div>
         <div class="icons">

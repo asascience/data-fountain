@@ -6,4 +6,4 @@
 # export MONGO_URL="mongodb://localhost:27017/myapp-development"
 # export ROOT_URL="http://localhost:3000"
 
-export DATA_FOUNTAIN_URL="http://dev.oceansmap.com/data-fountain/api/station_list"
+export DATA_FOUNTAIN_URL="http://dev.oceansmap.com/data-fountain"
