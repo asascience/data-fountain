@@ -8,6 +8,7 @@ HomeController = RouteController.extend({
   subscriptions: function() {
       this.subscribe('Stations').wait();
       this.subscribe('Data').wait();
+      this.subscribe('Weather').wait();
   },
 
   // Subscriptions or other things we want to "wait" on. This also
@@ -25,7 +26,10 @@ HomeController = RouteController.extend({
   // return Posts.findOne({_id: this.params._id});
 
   data: function () {
+<<<<<<< HEAD
      
+=======
+>>>>>>> 047c4fa2cbac8837b4c37e3e8330b7d18971eaf0
   },
 
   // You can provide any of the hook options
