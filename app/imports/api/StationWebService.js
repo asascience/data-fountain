@@ -136,7 +136,7 @@ export default class StationWebService {
         // TODO: It's not being implemented now because the feature for user settings
         // TODO: aren't created yet.
         // TODO: Possibly set in the constructor?
-        forecast.get([38.553, -76.415], (error, weather) => {
+        forecast.get([37.82, -75.98], (error, weather) => {
             if (error) {
                 future.return(false);
             } else {

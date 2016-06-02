@@ -15,8 +15,8 @@ Template.MetIcons.helpers({
 
             let payload = {
                 icon: weather.icon,
-                temp: weather.temperature,
-                wdsp: weather.windSpeed,
+                temp: Math.round(weather.temperature),
+                wdsp: Math.round(weather.windSpeed),
                 wdbr: weather.windBearing,
             };
             return payload;
