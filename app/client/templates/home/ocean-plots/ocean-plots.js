@@ -17,184 +17,176 @@ Template.OceanPlots.onCreated(() => {
 
 Template.OceanPlots.onRendered(() => {
 	
+	var data=[];
 	
-	Meteor.call( 'getStationsList', function( error, response ) {
-     var data=[]; 
-  if ( error ) {
-    console.log( error );
-  } 
-  else {
-  	
- 
-  	     for(i=4;i>=0;i--)
-           {  
-	   
-	   
-
-console.log(response.data.stations[i].data_url);
-
-var url=response.data.stations[i].data_url;
-
-console.log(url);
-
-Meteor.call('getiteration',url, function( error, response ) {
-	 if ( error ) {
-
-    console.log( error );
-  } else {
-	console.log(response);
-  }
-	});	 
-
-//console.log(url);
-Meteor.call( 'getCommentsWithFuture', function( error, response ) {
-			var data=[]; 
-			
-			var datafull=[];
-
-			
-  if ( error ) {
-
-    console.log( error );
-  } else {
-
-	for(i=0;i<1;i++)
-	{
-		
-		var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
-		 data.push({
-                            x: time+i*1000,
-                            y: response.data.data.sea_water_salinity.values[0][i]
-                        });
-	}
+	var datacolumn1=[];
+	var datacolumnfull=[];
 	
-	Session.set( "SeriesObjectColumnN", data );
 	
-	for(i=0;i<response.data.data.sea_water_salinity.times.length;i++)
-	{
-		
-		var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
-		 datafull.push({
-                            x: time+i*1000,
-                            y: response.data.data.sea_water_salinity.values[0][i]
-                        });
-	}
-             console.log(datafull);
-	             Session.set( "SeriesObjectColumn", datafull );
+	var dataSusquehanna=[];
 	
-  }
- 
-});	   
-		   }
-  }
-		   
-});
+	var dataAnnapolis=[];
 	
-
- var url="test1" ;
-
-Meteor.call( 'getCommentsWithFuture', function( error, response ) {
-			var data=[]; 				
-  if ( error ) {
-
-    console.log( error );
-  } else {
-
-	for(i=0;i<response.data.data.gage_height.times.length;i++)
-	{
-		
-		var  time = (new Date(response.data.data.gage_height.times[i].toLocaleString())).getTime();
-		 data.push({
-                            x: time+i*1000,
-                            y: response.data.data.gage_height.values[0][i]
-                        });
-	}
-           
-	             Session.set( "SeriesObject", data );
+	var dataUpperPotomac=[];
 	
-  }
- 
-});
-	   
-         		
-		 
-
-  
-  
-/*   }); */
 	
-var url="test2";
-
-Meteor.call( 'getCommentsWithFuture',function( error, response ) {
-			var data=[]; 
-			
-			var datafull=[];
-
-			
-  if ( error ) {
-
-    console.log( error );
-  } else {
-
-	for(i=0;i<1;i++)
-	{
-		
-		var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
-		 data.push({
-                            x: time+i*1000,
-                            y: response.data.data.sea_water_salinity.values[0][i]
-                        });
-	}
+	var dataPatapsco=[];
 	
-	Session.set( "SeriesObjectColumnN", data );
+	var dataGoosesReef=[];
 	
-	for(i=0;i<response.data.data.sea_water_salinity.times.length;i++)
-	{
-		
-		var  time = (new Date(response.data.data.sea_water_salinity.times[i].toLocaleString())).getTime();
-		 datafull.push({
-                            x: time+i*1000,
-                            y: response.data.data.sea_water_salinity.values[0][i]
-                        });
-	}
-             console.log(datafull);
-	             Session.set( "SeriesObjectColumn", datafull );
+	var categories=[];
 	
-  }
- 
-});
+ let projectNames = [];
+          let listOfProjects = Data.find().fetch();
 
-
- var timer= setInterval(function () {
-		  
-		  //console.log(Session.get( "SeriesObject" ));
-		  if(Session.get( "SeriesObject" )==undefined)
-		  {
-			   console.log(" session not found object");
+          _.each(listOfProjects, (obj) => {
+			  
 			 
-		  }
-			else
+			  if(obj.id=="df-01")
 			  {
-				   console.log("checking session object");
-				  clearTimeout(timer);
-				  
-				    builtSeries();
-	   
-	   builtcolumn();
+                projectNames.push(obj.data.gageHeight);
 			  }
+          });
+          
+		
+		  
+		  for(i=0;i<projectNames[0].times.length;i++)
+		  {
+			       var  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
+			  
+			  data.push({
+                            x: time,
+                            y: projectNames[0].values[0][i]
+                        });
+
+		  }
+
+		  
+		  //column
 		  
 		  
-	  }, 1000);
+          let projectNamesColumn = [];
+          let listOfProjectscolumn = Data.find().fetch();
+
+		  //console.log(listOfProjectscolumn);
+          _.each(listOfProjectscolumn, (obj) => {
+			  
+			   if(obj.id=="df-01" || obj.id=="df-02" || obj.id=="df-03" || obj.id=="df-04" || obj.id=="df-05")
+			  {
+                projectNamesColumn.push({label: obj.title, value: obj.id,data:obj.data.seaWaterSalinity});
+			  }
+          });
+       
+		  
+		  //
+		  
+	/* //console.log(projectNamesColumn);
 	
+	//console.log(projectNamesColumn.length);
+	 */
 	 
-});
+	 ////console.log(projectNamesColumn);
+	
+	 for(i=0;i<5;i++)
+		  {
+			       //var  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
+			  ////console.log(projectNamesColumn[i].data.times.length);
+			  
+			  for(j=0;j<1;j++)
+			  {
+				/*  datacolumn1.push({
+                            x: projectNamesColumn[i].label,
+                            y: projectNamesColumn[i].data.values[0][j]
+                        }); */ 
+						
+						categories.push(projectNamesColumn[i].label);
+						
+						datacolumn1.push(projectNamesColumn[i].data.values[j][0]);
+			  }
+			  
 
-                
+		  }
+		  
+		   for(i=0;i<5;i++)
+		  {
+			       var  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
+			  ////console.log(projectNamesColumn[i].data.times.length);
+			  
+			  if(projectNamesColumn[i].label=="Susquehanna")
+			  {
+			  for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+			  {
+				    dataSusquehanna.push({
+                            x: time,
+                            y: projectNamesColumn[i].data.values[0][j],
+							title:projectNamesColumn[i].label
+                        }); 
+						
+						
+			  }
+			  }else if(projectNamesColumn[i].label=="Annapolis")
+			  {
+				   for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+			  {
+				    dataAnnapolis.push({
+                            x: time,
+                            y: projectNamesColumn[i].data.values[0][j],
+							title:projectNamesColumn[i].label
+                        }); 
+						
+						
+			  }
+				  
+			  }else if(projectNamesColumn[i].label=="Upper Potomac")
+			  {
+				   for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+			  {
+				    dataUpperPotomac.push({
+                            x: time,
+                            y: projectNamesColumn[i].data.values[0][j],
+							title:projectNamesColumn[i].label
+                        }); 
+						
+						
+			  }
+			  }else if(projectNamesColumn[i].label=="Patapsco")
+			  {
+				  for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+			  {
+				    dataPatapsco.push({
+                            x: time,
+                            y: projectNamesColumn[i].data.values[0][j],
+							title:projectNamesColumn[i].label
+                        }); 
+						
+						
+			  } 
+			  }else if(projectNamesColumn[i].label=="Gooses Reef")
+			  {
+				   for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+			  {
+				    dataGoosesReef.push({
+                            x: time,
+                            y: projectNamesColumn[i].data.values[0][j],
+							title:projectNamesColumn[i].label
+                        }); 
+						
+						
+			  }
+			  }
+			  
 
-
-function builtSeries() {
-     	
-	 
+		  }
+		  
+		  console.log(categories);
+		 /*  console.log(categories);
+	      console.log(datacolumn1); */
+		 
+		  
+		  
+		  
+		  //series 
+		  	 
     $('#container-series').highcharts({
        		    chart: {
                 type: 'spline',
@@ -205,12 +197,12 @@ function builtSeries() {
                       load: function () {
 						   var  j=0;
 						   var myPlotLineId = "myPlotLine";
-						  var data=Session.get( "SeriesObject" );
-//console.log(Session.get( "SeriesObject" ));
+						
+////console.log(Session.get( "SeriesObject" ));
 var currentIndex = data[0].x;
 
 
-//console.log(data.length);
+////console.log(data.length);
 var length=data.length;
 var lastindex=data[length-1].x;
                 var chart = $('#container-series').highcharts();;
@@ -218,18 +210,24 @@ var lastindex=data[length-1].x;
                 var l = 30;
                 var xAxis = this.series[0].chart.xAxis[0];
 				
-				//console.log(currentIndex);
-				//console.log(lastindex);
+				////console.log(currentIndex);
+				////console.log(lastindex);
+				
+				var currentindextime=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');
+		
+		   console.log(currentindextime);
                 xAxis.addPlotLine({
                     value: currentIndex,
                     width: 2,
                     color: 'Dark orange',
                     dashStyle: 'dash',                   
                     id: myPlotLineId
-                });    
+                });   
+
+var k=0;				
                 setInterval(function () {
 					
-					console.log(currentIndex);
+					////console.log(currentIndex);
 					  $.each(xAxis.plotLinesAndBands, function () {
                                                     if (this.id === myPlotLineId) {
                                                         this.destroy();
@@ -241,7 +239,7 @@ var lastindex=data[length-1].x;
 						if(currentIndex>=lastindex)
 						{
 							
-							console.log(lastindex)
+							//console.log(lastindex)
 							currentIndex = data[0].x;
 							
 							 
@@ -264,7 +262,313 @@ var lastindex=data[length-1].x;
                                                         this.destroy();
                                                     }
 												});
-                                //console.log(currentIndex);
+                                ////console.log(currentIndex);
+                                if (currentIndex > l)
+                                    {
+                                        if(currentIndex>=lastindex)
+                                            {
+                                                currentIndex = data[0].x;
+
+                                                $.each(xAxis.plotLinesAndBands, function () {
+                                                    if (this.id === myPlotLineId) {
+                                                        this.destroy();
+                                                    }
+												});
+                                                xAxis.addPlotLine({
+                                                    value:currentIndex,
+                                                    width: 2,
+                                                    color: 'Dark orange',
+                                                    dashStyle: 'dash',
+                                                    id: myPlotLineId
+                                                });
+                                            }
+                                            else
+                                                {
+                                                  
+                                                        $.each(xAxis.plotLinesAndBands, function () {
+                                                    if (this.id === myPlotLineId) {
+                                                        this.destroy();
+                                                    }
+												});
+                                                  
+                                                    xAxis.addPlotLine({
+                                                        value: currentIndex=currentIndex+3600000,
+                                                            width: 2,
+                                                        color: 'Orange',
+                                                        //dashStyle: 'dash',
+                                                        id: myPlotLineId
+                                                    });
+
+                                                }
+
+                                    }
+
+                                    //
+                                    var columntime=currentIndex;
+
+                                    var excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
+
+
+                                    chart.setTitle({text: "Water ELEVATION(feet) " + excelDateString});
+
+
+                            
+                   
+                    }
+
+
+//
+		 var columntime=currentIndex;
+					 
+var excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
+					chart.setTitle({text: "Water ELEVATION(feet) " + excelDateString});
+
+					var chartseries = $('#container-column').highcharts();
+				 chartseries.setTitle({text: "Sea Water Salinity " + excelDateString}); 
+				
+				var dataColumn=datacolumn1;
+				var length=dataColumn.length;
+               // //console.log(length);
+                var xAxisColumn = chartseries.series[0].chart.xAxis[0];
+				var dynamiccategories=[];
+				
+				var dynamicdata=[];
+				
+				
+
+				dynamiccategories=['Susquehanna', 'Annapolis', 'Upper Potomac', 'Patapsco', 'Gooses Reef'];
+
+				console.log(dataSusquehanna.length);
+				
+				console.log(dataAnnapolis.length);
+				
+				console.log(dataUpperPotomac.length);
+				
+				console.log(dataPatapsco.length);
+				
+				console.log(dataGoosesReef.length);
+				
+		if(k<46)		
+		{
+dynamicdata=[dataSusquehanna[k].y,dataAnnapolis[k].y,dataUpperPotomac[k].y,dataPatapsco[k].y,dataGoosesReef[k].y];
+console.log(dynamiccategories);
+
+console.log(dynamicdata);
+
+	 chartseries.series[0].chart.xAxis[0].setCategories(dynamiccategories);
+
+chartseries.series[0].setData(dynamicdata); 
+		}
+		else{
+			k=0;
+		}
+			k++;
+					}
+                }, 1000);
+           
+            }
+                }
+            },
+            title: {
+                text: 'Live random data'
+            },
+            xAxis: {
+                type: 'datetime',
+                  tickPixelInterval: 10,
+				  labels: {
+                rotation:90,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+            },
+            yAxis: {
+
+                
+                title: {
+                    text: 'Live random data'
+                },
+
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                        Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Random data',
+                data: data
+            }]
+  
+  });
+		  //
+		  //column chart start 
+		  
+		  console.log(datacolumn1);
+		  	$('#container-column').highcharts({
+	  chart: {
+                type: 'column',
+				
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                      load: function () {
+						  var data=datacolumn1;
+						
+var length=data.length;
+
+                var chart = this;
+              
+                var l = 30;
+                var xAxis = this.series[0].chart.xAxis[0];
+			
+			var  j=0;
+       
+            }
+                }
+            },
+            title: {
+                text: 'sea_water_salinity '
+            },
+			
+			 plotOptions: {
+                    
+                },
+            xAxis: {
+               categories: categories,
+				 labels: {
+                    rotation: -90,
+                    y: -20,
+                    style: {
+                        color: '#000',
+                        font: '14px Nunito',
+                        top: '100px'
+                    },
+            }
+			},
+            
+              yAxis: {
+                    title: {
+                        text: 'Value'
+                    },
+                  
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            (this.x) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                series: [{
+                    name: 'Random data',
+                    data:datacolumn1
+            }]
+    });
+
+		  
+		  //column chart end
+	  
+		  
+});
+
+
+                
+
+
+function builtSeries() {
+     	
+	 
+    $('#container-series').highcharts({
+       		    chart: {
+                type: 'spline',
+				
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                      load: function () {
+						   var  j=0;
+						   var myPlotLineId = "myPlotLine";
+						  var data=Session.get( "SeriesObject" );
+////console.log(Session.get( "SeriesObject" ));
+var currentIndex = data[0].x;
+
+
+////console.log(data.length);
+var length=data.length;
+var lastindex=data[length-1].x;
+                var chart = $('#container-series').highcharts();;
+                // var l = chart.series[0].points.length;
+                var l = 30;
+                var xAxis = this.series[0].chart.xAxis[0];
+				
+				////console.log(currentIndex);
+				////console.log(lastindex);
+                xAxis.addPlotLine({
+                    value: currentIndex,
+                    width: 2,
+                    color: 'Dark orange',
+                    dashStyle: 'dash',                   
+                    id: myPlotLineId
+                });    
+                setInterval(function () {
+					
+					//console.log(currentIndex);
+					  $.each(xAxis.plotLinesAndBands, function () {
+                                                    if (this.id === myPlotLineId) {
+                                                        this.destroy();
+                                                    }
+												});
+					
+                    if (currentIndex > l)
+                    {
+						if(currentIndex>=lastindex)
+						{
+							
+							//console.log(lastindex)
+							currentIndex = data[0].x;
+							
+							 
+                            if (this.id === myPlotLineId) {
+                                this.destroy();
+                            }
+                        
+                        xAxis.addPlotLine({
+                            value:currentIndex,
+                            width: 2,
+                            color: 'Dark orange',
+                            dashStyle: 'dash',                   
+                            id: myPlotLineId
+                        });
+						}
+						else
+						{
+						  $.each(xAxis.plotLinesAndBands, function () {
+                                                    if (this.id === myPlotLineId) {
+                                                        this.destroy();
+                                                    }
+												});
+                                ////console.log(currentIndex);
                                 if (currentIndex > l)
                                     {
                                         if(currentIndex>=lastindex)
@@ -327,7 +631,7 @@ var excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
 
 					var chartseries = $('#container-column').highcharts();
 				 chartseries.setTitle({text: "Sea Water Salinity " + excelDateString});
-				 console.log(chartseries.xAxis[0]);
+				 ////console.log(chartseries.xAxis[0]);
 				 //
 				 
 				 
@@ -335,7 +639,7 @@ var excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
 				 //
 				var dataColumn=Session.get( "SeriesObjectColumn" );
 				var length=dataColumn.length;
-                console.log(length);
+                //console.log(length);
                 var xAxisColumn = chartseries.series[0].chart.xAxis[0];
 				
 				   if(j<length)
@@ -430,7 +734,7 @@ function builtcolumn() {
                 events: {
                       load: function () {
 						  var data=Session.get( "SeriesObjectColumn" );
-						console.log(length);
+						//console.log(length);
 var length=data.length;
 
                 var chart = this;

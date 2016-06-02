@@ -25,7 +25,7 @@ HomeController = RouteController.extend({
   // return Posts.findOne({_id: this.params._id});
 
   data: function () {
-      return Stations.find({});
+     
   },
 
   // You can provide any of the hook options
