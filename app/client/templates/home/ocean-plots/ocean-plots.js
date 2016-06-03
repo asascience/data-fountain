@@ -22,12 +22,20 @@ Template.OceanPlots.onRendered(() => {
     var datacolumn1=[];
     var datacolumnfull=[];
 
+
     var dataSusquehanna=[];
+
     var dataAnnapolis=[];
+
     var dataUpperPotomac=[];
+
+
     var dataPatapsco=[];
+
     var dataGoosesReef=[];
+
     var categories=[];
+
     let projectNames = [];
     let listOfProjects = Data.find().fetch();
 
@@ -68,11 +76,11 @@ Template.OceanPlots.onRendered(() => {
     });
 
     for(i=0;i<5;i++){
+        for(j=0;j<1;j++){
           categories.push(projectNamesColumn[i].label);
-          datacolumn1.push(projectNamesColumn[i].data.values[0][0]);
+          datacolumn1.push(projectNamesColumn[i].data.values[j][0]);
+        }
     }
-
-    console.log(categories)
 
 for(i=0;i<5;i++)
 {
@@ -222,7 +230,11 @@ for(i=0;i<5;i++)
                         // //console.log(length);
                         var xAxisColumn = chartseries.series[0].chart.xAxis[0];
                         var dynamiccategories=[];
+
                         var dynamicdata=[];
+
+
+
                         dynamiccategories=['Susquehanna', 'Annapolis', 'Upper Potomac', 'Patapsco', 'Gooses Reef'];
 
                         console.log(dataSusquehanna.length);
@@ -231,7 +243,14 @@ for(i=0;i<5;i++)
                         console.log(dataPatapsco.length);
                         console.log(dataGoosesReef.length);
 
-                        dynamicdata=[dataSusquehanna[loopIndex].y,dataAnnapolis[loopIndex].y,dataUpperPotomac[loopIndex].y,dataPatapsco[loopIndex].y,dataGoosesReef[loopIndex].y];
+
+                        dynamicdata=[{y:dataSusquehanna[loopIndex].y, color:getColorForVal(dataSusquehanna[loopIndex].y,)},
+                                     {y:dataAnnapolis[loopIndex].y, color:getColorForVal(dataSusquehanna[loopIndex].y,)},
+                                     {y:dataUpperPotomac[loopIndex].y, color:getColorForVal(dataUpperPotomac[loopIndex].y,)},
+                                     {y:dataPatapsco[loopIndex].y, color:getColorForVal(dataPatapsco[loopIndex].y,)},
+                                     {y:dataGoosesReef[loopIndex].y, color:getColorForVal(dataGoosesReef[loopIndex].y,)}
+                                     ]
+
 
                         chartseries.series[0].chart.xAxis[0].setCategories(dynamiccategories);
                         chartseries.series[0].setData(dynamicdata);
@@ -349,7 +368,21 @@ for(i=0;i<5;i++)
             data: datacolumn1
         }]
     });
+
+
 });
+
+function getColorForVal(data){
+      var color = '#4994D0'
+      if (data > 20){
+        color = '#990000';
+      }else if (data > 13){
+        color = '#e5e500';
+      }else{
+
+      }
+      return color;
+    }
 
 
 
