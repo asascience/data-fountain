@@ -4,10 +4,16 @@
 .buoy-map {
 }
 
+.buoy-map .leaflet-control-container{
+  display: none;
+}
+
 #map {
     min-height: 530px;
     min-width: 100%;
  }
+
+
 
 .maintable {width:100%;padding: 4px;border-spacing: 5px; border-collapse: separate; }
 .maintable td.left{vertical-align:top;}
