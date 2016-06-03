@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { EJSON } from 'meteor/ejson';
+import { moment } from 'meteor/mrt:moment';
 
 import humps from 'humps';
 import Forecast from 'forecast';
@@ -95,7 +96,7 @@ export default class StationWebService {
                     if (error || response.error) {
                         // TODO: Add this into logs.  Not doing it now because logs have not
                         // TODO: been setup for this project.
-                        console.log(`${error} or ${response.error} . . . one of the two. Removing this station.`);
+                        //console.log(`${error} or ${response.error} . . . one of the two. Removing this station.`);
                         Stations.remove({dataUrl: stationUrl.dataUrl});
                     } else {
                         // make the data usable for JavaScript
@@ -120,34 +121,46 @@ export default class StationWebService {
     }
 
     fetchWeatherForecast() {
-        const future = new Future();
-        const forecast = new Forecast({
-            service: `forecast.io`,
-            key: Meteor.settings.forecastIoApi,
-            units: 'f',
-            cache: true,
-            ttl: {
-                minutes: 30
-            }
-        });
+        const DURATION = Meteor.settings.defaultDuration;
+        const COORD = [37.82, -75.98];
 
-        // TODO: The location will eventually be pulled from the user's settings.
-        // TODO: For now, just using Goose's Reef.
-        // TODO: It's not being implemented now because the feature for user settings
-        // TODO: aren't created yet.
-        // TODO: Possibly set in the constructor?
-        forecast.get([38.553, -76.415], (error, weather) => {
-            if (error) {
-                future.return(false);
-            } else {
-                future.return(weather);
-            }
-        });
+        const immuDate = new Date();
+        let date;
+        let timeSet = [];
 
-        let futureFinished = future.wait();
-        if (futureFinished) {
-            Weather.remove({});
-            Weather.insert(futureFinished);
+        for (let i=0; i < DURATION; i++) {
+            date = moment().subtract(i, 'hours').minutes(0).seconds(0);
+            timeSet.push(date.unix());
+        }
+
+        let weather = Weather.find({}).fetch();
+
+        if (weather.length === 0) {
+            for (let i=0; i < timeSet.length; i++) {
+                let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
+                HTTP.get(url, (error, response) => {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        Weather.insert(response.data);
+                    }
+                });
+            }
+        } else {
+            let mm = timeSet[DURATION-1];
+            let result = Weather.remove({'currently.time': {$lt: mm}});
+
+            if (result !== 0) {
+                let time = moment().minutes(0).seconds(0).utc(timeSet[DURATION-1]).toISOString();
+                let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[0]}`;
+                HTTP.get(url, (error, response) => {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        Weather.insert(response.data);
+                    }
+                });
+            }
         }
     }
 }
