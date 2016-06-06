@@ -57,6 +57,7 @@ logging@1.0.12
 maazalik:highcharts@0.4.0
 maka:light-theme@0.0.4
 markdown@1.0.9
+met-icons@0.0.1
 meteor@1.1.14
 meteor-base@1.0.4
 meteortoys:allthings@3.0.0
@@ -102,6 +103,7 @@ reactive-var@1.0.9
 reload@1.1.8
 retry@1.0.7
 routepolicy@1.0.10
+russ:weather-icons@1.0.0
 sanjo:jasmine@1.0.1
 service-configuration@1.0.9
 session@1.1.5

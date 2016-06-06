@@ -12,29 +12,29 @@ Template.OceanPlots.events({
 /*****************************************************************************/
 Template.OceanPlots.onCreated(() => {
 
-
 });
 
 Template.OceanPlots.onRendered(() => {
+    const TIMER_DELAY = 1000 * Meteor.settings.public.screenRefreshDelaySeconds;
 
-    var data=[];
+    let data=[];
 
-    var datacolumn1=[];
-    var datacolumnfull=[];
-
-
-    var dataSusquehanna=[];
-
-    var dataAnnapolis=[];
-
-    var dataUpperPotomac=[];
+    let datacolumn1=[];
+    let datacolumnfull=[];
 
 
-    var dataPatapsco=[];
+    let dataSusquehanna=[];
 
-    var dataGoosesReef=[];
+    let dataAnnapolis=[];
 
-    var categories=[];
+    let dataUpperPotomac=[];
+
+
+    let dataPatapsco=[];
+
+    let dataGoosesReef=[];
+
+    let categories=[];
 
     let projectNames = [];
     let listOfProjects = Data.find().fetch();
@@ -52,7 +52,7 @@ Template.OceanPlots.onRendered(() => {
 
     for(i=0;i<projectNames[0].times.length;i++)
     {
-        var  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
+        let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
 
         data.push({
             x: time,
@@ -84,8 +84,7 @@ Template.OceanPlots.onRendered(() => {
 
 for(i=0;i<5;i++)
 {
-    var  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
-    ////console.log(projectNamesColumn[i].data.times.length);
+    let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
 
     if(projectNamesColumn[i].label=="First Landing")
     {
@@ -175,15 +174,15 @@ for(i=0;i<5;i++)
             marginRight: 10,
             events: {
                 load: function () {
-                    var  j=0;
-                    var myPlotLineId = "myPlotLine";
-                    var currentIndex = data[0].x;
-                    var length=data.length;
-                    var lastindex=data[length-1].x;
-                    var chart = $('#container-series').highcharts();
-                    var l = 30;
-                    var xAxis = this.series[0].chart.xAxis[0];
-                    var currentindextime=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');
+                    let  j=0;
+                    let myPlotLineId = "myPlotLine";
+                    let currentIndex = data[0].x;
+                    let length=data.length;
+                    let lastindex=data[length-1].x;
+                    let chart = $('#container-series').highcharts();
+                    let l = 30;
+                    let xAxis = this.series[0].chart.xAxis[0];
+                    let currentindextime=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');
 
                     xAxis.addPlotLine({
                         value: currentIndex,
@@ -192,21 +191,21 @@ for(i=0;i<5;i++)
                         id: myPlotLineId
                     });
 
-                    var loopIndex = 0;
+                    let loopIndex = 0;
 
-                    setInterval(function () {
+                    Meteor.setInterval(function () {
                         if (loopIndex > 44){
                             loopIndex = 0;
                         }
 
-                        var plotB = null;
+                        let plotB = null;
                         _.each(xAxis.plotLinesAndBands, function (plotLineBand) {
                             if (plotLineBand.id === myPlotLineId) {
                                 plotB = plotLineBand;
                             }
                         });
 
-                        var newIdx = currentIndex + (loopIndex * 3600000);
+                        let newIdx = currentIndex + (loopIndex * 3600000);
                         plotB.svgElem.destroy();
                         plotB.svgElem = undefined;
 
@@ -217,31 +216,23 @@ for(i=0;i<5;i++)
                         plotB.render();
 
                         loopIndex+=1;
-                        console.log(loopIndex);
 
-                        var columntime=currentIndex;
+                        let columntime=currentIndex;
 
-                        var excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
+                        let excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
 
-                        var chartseries = $('#container-column').highcharts();
+                        let chartseries = $('#container-column').highcharts();
 
-                        var dataColumn=datacolumn1;
-                        var length=dataColumn.length;
-                        // //console.log(length);
-                        var xAxisColumn = chartseries.series[0].chart.xAxis[0];
-                        var dynamiccategories=[];
+                        let dataColumn=datacolumn1;
+                        let length=dataColumn.length;
+                        let xAxisColumn = chartseries.series[0].chart.xAxis[0];
+                        let dynamiccategories=[];
 
-                        var dynamicdata=[];
+                        let dynamicdata=[];
 
 
 
                         dynamiccategories=['Susquehanna', 'Annapolis', 'Upper Potomac', 'Patapsco', 'Gooses Reef'];
-
-                        console.log(dataSusquehanna.length);
-                        console.log(dataAnnapolis.length);
-                        console.log(dataUpperPotomac.length);
-                        console.log(dataPatapsco.length);
-                        console.log(dataGoosesReef.length);
 
 
                         dynamicdata=[{y:dataSusquehanna[loopIndex].y, color:getColorForVal(dataSusquehanna[loopIndex].y,)},
@@ -255,7 +246,7 @@ for(i=0;i<5;i++)
                         chartseries.series[0].chart.xAxis[0].setCategories(dynamiccategories);
                         chartseries.series[0].setData(dynamicdata);
 
-                    }, 1000);
+                    }, TIMER_DELAY);
 
                 }
             }
@@ -308,7 +299,6 @@ for(i=0;i<5;i++)
     //
     //column chart start
 
-    console.log(datacolumn1);
     $('#container-column').highcharts({
         credits:{
             enabled: false
@@ -373,7 +363,7 @@ for(i=0;i<5;i++)
 });
 
 function getColorForVal(data){
-      var color = '#4994D0'
+      let color = '#4994D0'
       if (data > 20){
         color = '#990000';
       }else if (data > 13){

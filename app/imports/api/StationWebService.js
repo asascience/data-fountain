@@ -14,7 +14,7 @@ export default class StationWebService {
     }
 
     _getTimeStamp() {
-        return currentUnix = Math.round(new Date().getTime()/1000);
+        return Math.round(new Date().getTime()/1000);
     }
 
     fetchStations() {
@@ -81,14 +81,14 @@ export default class StationWebService {
             // create a place to store the results
             let dataSet = [];
 
-            for (var stationUrl of stationUrls) {
+            for (let stationUrl of stationUrls) {
                 let data = {};
                 let headers;
 
                 // create the URL
                 let compiledUrl = `${Meteor.settings.dataFountainUrl}${stationUrl.dataUrl}?time=${startDate}/${endDate}`;
-                data['id'] = stationUrl.id;
-                data['title'] = stationUrl.title;
+                data.id = stationUrl.id;
+                data.title = stationUrl.title;
 
                 // make the call to get the scientific data, and block with future.
                 HTTP.call('GET', compiledUrl, (error, response) => {
