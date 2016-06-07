@@ -69,82 +69,82 @@ Template.OceanPlots.onRendered(() => {
     let listOfProjectscolumn = Data.find().fetch();
 
     _.each(listOfProjectscolumn, (obj) => {
-      if(obj.id=="df-10" || obj.id=="df-06" || obj.id=="df-07" || obj.id=="df-08" || obj.id=="df-05")
-        {
-            projectNamesColumn.push({label: obj.title, value: obj.id,data:obj.data.seaWaterSalinity});
-        }
+        if(obj.id=="df-10" || obj.id=="df-06" || obj.id=="df-07" || obj.id=="df-08" || obj.id=="df-05")
+            {
+                projectNamesColumn.push({label: obj.title, value: obj.id,data:obj.data.seaWaterSalinity});
+            }
     });
 
     for(i=0;i<5;i++){
         for(j=0;j<1;j++){
-          categories.push(projectNamesColumn[i].label);
-          datacolumn1.push(projectNamesColumn[i].data.values[j][0]);
+            categories.push(projectNamesColumn[i].label);
+            datacolumn1.push(projectNamesColumn[i].data.values[j][0]);
         }
     }
 
-for(i=0;i<5;i++)
-{
-    let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
-
-    if(projectNamesColumn[i].label=="First Landing")
+    for(i=0;i<5;i++)
     {
-        for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-        {
-            dataSusquehanna.push({
-            x: time,
-            y: projectNamesColumn[i].data.values[0][j],
-            title:projectNamesColumn[i].label
-            });
-        }
-    }else if(projectNamesColumn[i].label=="Stingray Point")
-        {
-            for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+        let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
+
+        if(projectNamesColumn[i].label=="First Landing")
             {
-                dataAnnapolis.push({
-                    x: time,
-                    y: projectNamesColumn[i].data.values[0][j],
-                    title:projectNamesColumn[i].label
-                });
+                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+                {
+                    dataSusquehanna.push({
+                        x: time,
+                        y: projectNamesColumn[i].data.values[0][j],
+                        title:projectNamesColumn[i].label
+                    });
+                }
+            }else if(projectNamesColumn[i].label=="Stingray Point")
+                {
+                    for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+                    {
+                        dataAnnapolis.push({
+                            x: time,
+                            y: projectNamesColumn[i].data.values[0][j],
+                            title:projectNamesColumn[i].label
+                        });
 
 
-            }
+                    }
 
-    }else if(projectNamesColumn[i].label=="Potomac")
-        {
-            for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-            {
+                }else if(projectNamesColumn[i].label=="Potomac")
+                    {
+                        for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+                        {
 
-                dataUpperPotomac.push({
-                    x: time,
-                    y: projectNamesColumn[i].data.values[0][j],
-                    title:projectNamesColumn[i].label
-                });
-
-
-        }
-    }else if(projectNamesColumn[i].label=="Jamestown")
-        {
-            for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-            {
-                dataPatapsco.push({
-                    x: time,
-                    y: projectNamesColumn[i].data.values[0][j],
-                    title:projectNamesColumn[i].label
-                });
+                            dataUpperPotomac.push({
+                                x: time,
+                                y: projectNamesColumn[i].data.values[0][j],
+                                title:projectNamesColumn[i].label
+                            });
 
 
-        }
-    }else if(projectNamesColumn[i].label=="Gooses Reef")
-        {
-            for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-            {
-                dataGoosesReef.push({
-                    x: time,
-                    y: projectNamesColumn[i].data.values[0][j],
-                    title:projectNamesColumn[i].label
-                });
-            }
-        }
+                        }
+                    }else if(projectNamesColumn[i].label=="Jamestown")
+                        {
+                            for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+                            {
+                                dataPatapsco.push({
+                                    x: time,
+                                    y: projectNamesColumn[i].data.values[0][j],
+                                    title:projectNamesColumn[i].label
+                                });
+
+
+                            }
+                        }else if(projectNamesColumn[i].label=="Gooses Reef")
+                            {
+                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+                                {
+                                    dataGoosesReef.push({
+                                        x: time,
+                                        y: projectNamesColumn[i].data.values[0][j],
+                                        title:projectNamesColumn[i].label
+                                    });
+                                }
+                            }
     }
 
     datacolumn1
@@ -153,20 +153,20 @@ for(i=0;i<5;i++)
     //series
     $('#container-series').highcharts({
         credits:{
-                enabled: false
+            enabled: false
         },
         plotOptions: {
-                spline: {
-                    lineWidth: 6,
-                    states: {
-                        hover: {
-                            lineWidth: 5
-                        }
-                    },
-                    marker: {
-                        enabled: false
+            spline: {
+                lineWidth: 6,
+                states: {
+                    hover: {
+                        lineWidth: 5
                     }
+                },
+                marker: {
+                    enabled: false
                 }
+            }
         },
         chart: {
             type: 'spline',
@@ -236,11 +236,11 @@ for(i=0;i<5;i++)
 
 
                         dynamicdata=[{y:dataSusquehanna[loopIndex].y, color:getColorForVal(dataSusquehanna[loopIndex].y,)},
-                                     {y:dataAnnapolis[loopIndex].y, color:getColorForVal(dataSusquehanna[loopIndex].y,)},
-                                     {y:dataUpperPotomac[loopIndex].y, color:getColorForVal(dataUpperPotomac[loopIndex].y,)},
-                                     {y:dataPatapsco[loopIndex].y, color:getColorForVal(dataPatapsco[loopIndex].y,)},
-                                     {y:dataGoosesReef[loopIndex].y, color:getColorForVal(dataGoosesReef[loopIndex].y,)}
-                                     ]
+                            {y:dataAnnapolis[loopIndex].y, color:getColorForVal(dataSusquehanna[loopIndex].y,)},
+                        {y:dataUpperPotomac[loopIndex].y, color:getColorForVal(dataUpperPotomac[loopIndex].y,)},
+                        {y:dataPatapsco[loopIndex].y, color:getColorForVal(dataPatapsco[loopIndex].y,)},
+                        {y:dataGoosesReef[loopIndex].y, color:getColorForVal(dataGoosesReef[loopIndex].y,)}
+                        ]
 
 
                         chartseries.series[0].chart.xAxis[0].setCategories(dynamiccategories);
@@ -363,20 +363,13 @@ for(i=0;i<5;i++)
 });
 
 function getColorForVal(data){
-      let color = '#4994D0'
-      if (data > 20){
+    let color = '#4994D0'
+    if (data > 20){
         color = '#990000';
-      }else if (data > 13){
+    }else if (data > 13){
         color = '#e5e500';
-      }else{
+    }else{
 
-      }
-      return color;
     }
-
-
-
-
-
-
-
+    return color;
+}

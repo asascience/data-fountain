@@ -1,25 +1,22 @@
 <template name="BuoyMap">
-    <div class="buoy-map">
-        <div class="row">
-            <div class="col-lg-6 visible-lg">
-                <div class="row">
-                    <div class="col-md-12">
-                        <table id='legendTable' class='legendTable'> </table>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                <img id='stationimg' src='https://upload.wikimedia.org/wikipedia/commons/9/91/NOAA-smartbuoy2.jpg' width="100%" alt='No Img as of now'/>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-12">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div id='map'></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	  <div class="buoy-map">
+	  	<table class='maintable'>
+	 	 <tr>
+	 	 <td class="left">
+	    	<img id='stationimg' src='http://buoybay.noaa.gov/sites/default/files/images/Dominion_Gooses_Reef.jpg' height='200px' alt='No Img as of now'/>
+	  	 </td>
+	  	 <td class="right">
+
+	    	 <table height="200px" id='legendTable'  class='legendTable'> </table>
+	  	 </td>
+	 	 </tr>
+	 	 <tr>
+	  	<td colspan="2">
+			<div id='map'></div>
+	 	 </td>
+	 	 </tr>
+	 	 </table>
+
+	   </div>
+
 </template>
