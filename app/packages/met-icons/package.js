@@ -1,8 +1,8 @@
 Package.describe({
   name: "met-icons",
-  summary: "What this does",
+  summary: "Provides a header for data-fountain containing meteorlogical icons.",
   version: "0.0.1",
-  git: "https://github.com/<username>/met-icons.git",
+  git: "https://github.com/maka-io/met-icons.git",
 });
 
 Npm.depends({
@@ -30,6 +30,24 @@ Package.onUse(function(api) {
   api.addFiles('client/component/met-icons.js', 'client');
   api.addFiles('client/component/met-icons.css', 'client');
   api.addFiles('lib/met-icons.js', ['client', 'server']);
+
+  api.addFiles([
+      'client/component/weather-icons/css/weather-icons-wind.css',
+      'client/component/weather-icons/css/weather-icons-wind.min.css',
+      'client/component/weather-icons/css/weather-icons.css',
+      'client/component/weather-icons/css/weather-icons.min.css',
+      'client/component/skycons/skycons.js'
+  ], ['client']);
+
+  api.addAssets([
+      'client/component/fonts/GemText.txt',
+      'client/component/fonts/Treamd.ttf',
+      'client/component/weather-icons/font/weathericons-regular-webfont.eot',
+      'client/component/weather-icons/font/weathericons-regular-webfont.svg',
+      'client/component/weather-icons/font/weathericons-regular-webfont.ttf',
+      'client/component/weather-icons/font/weathericons-regular-webfont.woff',
+      'client/component/weather-icons/font/weathericons-regular-webfont.woff2',
+  ], ['client']);
 
   api.export('MetIcons');
 });
