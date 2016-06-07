@@ -1,6 +1,6 @@
 Package.describe({
   name: "met-icons",
-  summary: "Provides a header for data-fountain containing meteorlogical icons.",
+  summary: "Provides a header for data-fountain containing meteorological icons.",
   version: "0.0.1",
   git: "https://github.com/maka-io/met-icons.git",
 });
