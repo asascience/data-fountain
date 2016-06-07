@@ -1,0 +1,91 @@
+/*****************************************************************************/
+/* BuoyMap: Style */
+/*****************************************************************************/
+.buoy-map div {
+    height: 100%;
+}
+
+.buoy-map .leaflet-control-container{
+    display: none;
+}
+
+#map {
+    height: 700px;
+    width: auto;
+}
+
+.buoy-map .css-height {
+    height: 100%;
+}
+
+
+
+.buoy-map .maintable {width:100%;padding: 4px;border-spacing: 5px; border-collapse: separate; }
+.buoy-map .maintable td.left{vertical-align:top;}
+.buoy-map .maintable td.right{vertical-align:top;width:100%;}
+
+
+.buoy-map .legendTable { width:100%;color:black;border-spacing: 5px; border-collapse: collapse; }
+.buoy-map .legendTable td {padding:3px;}
+
+/* provide some minimal visual accomodation for IE8 and below */
+.buoy-map .legendTable tr{
+    background: #b8d1f3;
+}
+/*  Define the background color for all the ODD background rows  */
+.buoy-map .legendTable tr:nth-child(odd){
+    background: #b8d1f3;
+    padding:5px;
+}
+/*  Define the background color for all the EVEN background rows  */
+.buoy-map .legendTable tr:nth-child(even){
+    background: #dae5f4;
+}
+.buoy-map .stationimg
+{
+    width:50px;
+    height:50px;
+}
+
+.buoy-map .text-labels
+{
+    position: absolute;
+    font-weight:bold;
+    color:black;
+    font-family: :verdana;
+    width:100px;
+    margin:5px;
+}
+
+.buoy-map .tbl
+{
+    background-color:white;
+    margin:5px;
+    border:1px solid gray;
+
+}
+
+.buoy-map .td
+{
+    padding-left:5px;
+    padding-right:5px;
+}
+
+.buoy-map #blackcircle {
+    width: 25px;
+    height: 25px;
+    -webkit-border-radius: 25px;
+    -moz-border-radius: 25px;
+    border-radius: 25px;
+    background: black;
+}
+
+.buoy-map #orangecircle {
+    width: 25px;
+    height: 25px;
+    -webkit-border-radius: 25px;
+    -moz-border-radius: 25px;
+    border-radius: 25px;
+    background: orange;
+}
+
