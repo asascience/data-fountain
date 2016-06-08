@@ -1,0 +1,11 @@
+api.addAssets([
+	'client/info-ticker.js',
+	'client/component/info-ticker.css',
+	'client/component/info-ticker.html',
+	'client/component/info-ticker.js',
+	], ['client']);
+api.addAssets([
+	], ['client']);
+api.addAssets([
+	], ['client']);
+
