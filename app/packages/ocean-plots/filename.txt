@@ -1,11 +1,0 @@
-api.addAssets([
-	'client/ocean-plots.js',
-	'client/component/ocean-plots.css',
-	'client/component/ocean-plots.html',
-	'client/component/ocean-plots.js',
-	], ['client']);
-api.addAssets([
-	], ['client']);
-api.addAssets([
-	], ['client']);
-
