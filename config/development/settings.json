@@ -1,5 +1,6 @@
 {
   "public": {
+      "screenRefreshDelaySeconds": 1
   },
   "dataFountainUrl": "http://dev.oceansmap.com/data-fountain",
   "defaultDuration": 48,

@@ -1,0 +1,35 @@
+<template name="MetIcons">
+    <div class="met-icons text-center">
+        <div class="icons">
+            <i class="wi {{getLunarPhaseIcon}}"></i>
+            <div class="wi-caption">Lunar</div>
+        </div>
+        <div class="icons">
+            <div data-skycon="{{met.icon}}" data-color="#4994D0" data-width="10vw" class="center-block"></div>
+            <div class="wi-caption">Weather</div>
+        </div>
+        <div class="icons">
+            <i class="wi wi-thermometer"></i>
+            <span class="wi-data"> {{met.temp}}</span>
+            <i class="wi wi-fahrenheit wi-units"></i>
+            <div class="wi-caption">Temperature</div>
+        </div>
+        <div class="logo-brand">
+            <img src="logo.png">
+        </div>
+        <div class="icons">
+            <span class="wi-cardinal">N</span>
+            <i class="wi wi-wind towards-{{met.wdbr}}-deg"></i>
+            <div class="wi-caption">Wind</div>
+        </div>
+        <div class="icons">
+            <i class="wi wi-strong-wind" style="font-size: 5vw;"></i>
+            <span class="wi-data"> {{met.wdsp}}<small class="wi-units">mph</small></span>
+            <div class="wi-caption">Speed</div>
+        </div>
+        <div class="icons">
+            <span class="wi-data">48 Hours</span>
+          <div class="wi-caption">Duration</div>
+        </div>
+    </div>
+</template>

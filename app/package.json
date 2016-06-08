@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "dist": "^0.1.2",
     "forecast": "^0.2.1",
     "humps": "^1.1.0"
   },
