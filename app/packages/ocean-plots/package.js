@@ -5,7 +5,9 @@ Package.describe({
   git: "https://github.com/<username>/ocean-plots.git",
 });
 
-//Npm.depends({});
+Npm.depends({
+    'highcharts': '4.2.5'
+});
 
 Package.onUse(function(api) {
   api.versionsFrom('1.3.2');
