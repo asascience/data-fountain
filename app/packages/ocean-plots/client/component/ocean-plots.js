@@ -302,7 +302,6 @@ Template.OceanPlots.onRendered(() => {
         series: [{
             name : 'Random data',
             data : data,
-            color: 'blue'
         }]
 
     });
