@@ -121,34 +121,43 @@ export default class StationWebService {
     }
 
     fetchWeatherForecast() {
-        const future = new Future();
-        const forecast = new Forecast({
-            service: `forecast.io`,
-            key: Meteor.settings.forecastIoApi,
-            units: 'f',
-            cache: true,
-            ttl: {
-                minutes: 30
-            }
-        });
+        const DURATION = Meteor.settings.defaultDuration;
+        // TODO: The coord here needs to reflect user settings of the reference station
+        const COORD = [37.82, -75.98];
 
-        // TODO: The location will eventually be pulled from the user's settings.
-        // TODO: For now, just using Goose's Reef.
-        // TODO: It's not being implemented now because the feature for user settings
-        // TODO: aren't created yet.
-        // TODO: Possibly set in the constructor?
-        forecast.get([37.82, -75.98], (error, weather) => {
-            if (error) {
-                future.return(false);
-            } else {
-                future.return(weather);
-            }
-        });
+        // TODO: The id here needs to reflect user settings of the reference station.
+        let referenceStation = Data.findOne({id: 'df-05'}, {fields: {'data.times': 1}}),
+            timeSet = referenceStation.data.times;
 
-        let futureFinished = future.wait();
-        if (futureFinished) {
-            Weather.remove({});
-            Weather.insert(futureFinished);
+        let weather = Weather.find({}).fetch();
+
+        if (weather.length === 0) {
+            console.log(DURATION);
+            for (let i=0; i < DURATION; i++) {
+                let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
+                HTTP.get(url, (error, response) => {
+                    if (error) {
+                        console.log(`fetchWeatherForecast ${error}`);
+                    } else {
+                        Weather.insert(response.data);
+                    }
+                });
+            }
+        } else {
+            let mm = timeSet[0];
+            let result = Weather.remove({'currently.time': {$lte: moment(mm).unix()}});
+            if (result !== 0) {
+                let time = moment().minutes(0).seconds(0).utc(timeSet[DURATION-1]).toISOString();
+                let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[0]}`;
+                HTTP.get(url, (error, response) => {
+                    if (error) {
+                        console.log(`fetchWeatherForecast ${error}`);
+                    } else {
+                        console.log(Weather.insert(response.data));
+                    }
+                });
+            }
         }
+
     }
 }
