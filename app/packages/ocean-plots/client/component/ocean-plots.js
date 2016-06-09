@@ -54,10 +54,14 @@ Template.OceanPlots.onRendered(() => {
     {
         let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
 
-        data.push({
-            x: time,
-            y: projectNames[0].values[0][i]
-        });
+        if (projectNames[0].values[0][i] === 'NaN') {
+            console.log(`No data available for date (with british accent) ${projectNames}`);
+        } else {
+            data.push({
+                x: time,
+                y: projectNames[0].values[0][i]
+            });
+        }
 
     }
 
