@@ -4,7 +4,6 @@ import { EJSON } from 'meteor/ejson';
 import { moment } from 'meteor/mrt:moment';
 
 import humps from 'humps';
-import Forecast from 'forecast';
 
 const Future = Npm.require('fibers/future');
 
@@ -132,7 +131,6 @@ export default class StationWebService {
         let weather = Weather.find({}).fetch();
 
         if (weather.length === 0) {
-            console.log(DURATION);
             for (let i=0; i < DURATION; i++) {
                 let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
                 HTTP.get(url, (error, response) => {
@@ -146,9 +144,10 @@ export default class StationWebService {
         } else {
             let mm = timeSet[0];
             let result = Weather.remove({'currently.time': {$lte: moment(mm).unix()}});
+            console.log(result);
             if (result !== 0) {
                 let time = moment().minutes(0).seconds(0).utc(timeSet[DURATION-1]).toISOString();
-                let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[0]}`;
+                let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[DURATION]}`;
                 HTTP.get(url, (error, response) => {
                     if (error) {
                         console.log(`fetchWeatherForecast ${error}`);
