@@ -23,7 +23,6 @@ sanjo:jasmine
 velocity:html-reporter
 velocity:console-reporter
 http
-maazalik:highcharts
 twbs:bootstrap
 maka:light-theme
 bevanhunt:leaflet
