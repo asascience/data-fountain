@@ -62,6 +62,8 @@ markdown@1.0.9
 met-icons@0.0.1
 meteor@1.1.14
 meteor-base@1.0.4
+meteorhacks:kadira@2.28.7
+meteorhacks:meteorx@1.4.1
 meteortoys:allthings@3.0.0
 meteortoys:authenticate@3.0.0
 meteortoys:autopub@3.0.0
@@ -87,6 +89,7 @@ modules@0.6.1
 modules-runtime@0.6.3
 mongo@1.1.7
 mongo-id@1.0.4
+mongo-livedata@1.0.12
 mrt:leaflet-label@0.2.1
 mrt:moment@2.8.1
 msavin:jetsetter@2.0.0
