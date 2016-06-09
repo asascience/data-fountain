@@ -59,8 +59,7 @@ Template.OceanPlots.onRendered(() => {
 
     for(i=0;i<projectNames[0].times.length;i++)
     {
-        var  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
-
+        let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
         if (projectNames[0].values[0][i] === 'NaN') {
             console.log(`No data available for date (with british accent) ${projectNames}`);
         } else {
