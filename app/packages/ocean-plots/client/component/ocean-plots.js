@@ -24,27 +24,27 @@ Template.OceanPlots.onCreated(() => {
 Template.OceanPlots.onRendered(() => {
     const TIMER_DELAY = 1000 * Meteor.settings.public.screenRefreshDelaySeconds;
 
-    let data=[];
+    var data=[];
 
-    let datacolumn1=[];
-    let datacolumnfull=[];
-
-
-    let dataSusquehanna=[];
-
-    let dataAnnapolis=[];
-
-    let dataUpperPotomac=[];
+    var datacolumn1=[];
+    var datacolumnfull=[];
 
 
-    let dataPatapsco=[];
+    var dataSusquehanna=[];
 
-    let dataGoosesReef=[];
+    var dataAnnapolis=[];
 
-    let categories=[];
+    var dataUpperPotomac=[];
 
-    let projectNames = [];
-    let listOfProjects = Data.find().fetch();
+
+    var dataPatapsco=[];
+
+    var dataGoosesReef=[];
+
+    var categories=[];
+
+    var projectNames = [];
+    var listOfProjects = Data.find().fetch();
 
     _.each(listOfProjects, (obj) => {
 
@@ -59,21 +59,24 @@ Template.OceanPlots.onRendered(() => {
 
     for(i=0;i<projectNames[0].times.length;i++)
     {
-        let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
+        var  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
 
-        data.push({
-            x: time,
-            y: projectNames[0].values[0][i]
-        });
+        if (projectNames[0].values[0][i] === 'NaN') {
+            console.log(`No data available for date (with british accent) ${projectNames}`);
+        } else {
+            data.push({
+                x: time,
+                y: projectNames[0].values[0][i]
+            });
+        }
 
     }
 
 
     //column
 
-
-    let projectNamesColumn = [];
-    let listOfProjectscolumn = Data.find().fetch();
+    var projectNamesColumn = [];
+    var listOfProjectscolumn = Data.find().fetch();
 
     _.each(listOfProjectscolumn, (obj) => {
         if(obj.id=="df-10" || obj.id=="df-06" || obj.id=="df-07" || obj.id=="df-08" || obj.id=="df-05")
@@ -91,7 +94,7 @@ Template.OceanPlots.onRendered(() => {
 
     for(i=0;i<5;i++)
     {
-        let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
+        var  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
 
         if(projectNamesColumn[i].label=="First Landing")
             {
@@ -181,15 +184,15 @@ Template.OceanPlots.onRendered(() => {
             marginRight: 10,
             events: {
                 load: function () {
-                    let  j=0;
-                    let myPlotLineId = "myPlotLine";
-                    let currentIndex = data[0].x;
-                    let length=data.length;
-                    let lastindex=data[length-1].x;
-                    let chart = $('#container-series').highcharts();
-                    let l = 30;
-                    let xAxis = this.series[0].chart.xAxis[0];
-                    let currentindextime=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');
+                    var  j=0;
+                    var myPlotLineId = "myPlotLine";
+                    var currentIndex = data[0].x;
+                    var length=data.length;
+                    var lastindex=data[length-1].x;
+                    var chart = $('#container-series').highcharts();
+                    var l = 30;
+                    var xAxis = this.series[0].chart.xAxis[0];
+                    var currentindextime=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');
 
                     xAxis.addPlotLine({
                         value: currentIndex,
@@ -198,21 +201,21 @@ Template.OceanPlots.onRendered(() => {
                         id: myPlotLineId
                     });
 
-                    let loopIndex = 0;
+                    var loopIndex = 0;
 
                     Meteor.setInterval(function () {
                         if (loopIndex > 44){
                             loopIndex = 0;
                         }
 
-                        let plotB = null;
+                        var plotB = null;
                         _.each(xAxis.plotLinesAndBands, function (plotLineBand) {
                             if (plotLineBand.id === myPlotLineId) {
                                 plotB = plotLineBand;
                             }
                         });
 
-                        let newIdx = currentIndex + (loopIndex * 3600000);
+                        var newIdx = currentIndex + (loopIndex * 3600000);
                         plotB.svgElem.destroy();
                         plotB.svgElem = undefined;
 
@@ -224,18 +227,18 @@ Template.OceanPlots.onRendered(() => {
 
                         loopIndex+=1;
 
-                        let columntime=currentIndex;
+                        var columntime=currentIndex;
 
-                        let excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
+                        var excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
 
-                        let chartseries = $('#container-column').highcharts();
+                        var chartseries = $('#container-column').highcharts();
 
-                        let dataColumn=datacolumn1;
-                        let length=dataColumn.length;
-                        let xAxisColumn = chartseries.series[0].chart.xAxis[0];
-                        let dynamiccategories=[];
+                        var dataColumn=datacolumn1;
+                        var length=dataColumn.length;
+                        var xAxisColumn = chartseries.series[0].chart.xAxis[0];
+                        var dynamiccategories=[];
 
-                        let dynamicdata=[];
+                        var dynamicdata=[];
 
 
 
@@ -299,7 +302,8 @@ Template.OceanPlots.onRendered(() => {
         },
         series: [{
             name : 'Random data',
-            data : data
+            data : data,
+            color: 'blue'
         }]
 
     });
@@ -370,7 +374,7 @@ Template.OceanPlots.onRendered(() => {
 });
 
 function getColorForVal(data){
-    let color = '#4994D0'
+    var color = '#4994D0'
     if (data > 20){
         color = '#990000';
     }else if (data > 13){

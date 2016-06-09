@@ -120,42 +120,49 @@ export default class StationWebService {
     }
 
     fetchWeatherForecast() {
-        const DURATION = Meteor.settings.defaultDuration;
-        // TODO: The coord here needs to reflect user settings of the reference station
-        const COORD = [37.82, -75.98];
+        try {
+            const DURATION = Meteor.settings.defaultDuration;
+            // TODO: The coord here needs to reflect user settings of the reference station
+            const COORD = [37.82, -75.98];
+            // TODO: The id here needs to reflect user settings of the reference station.
+            let referenceStation = Data.findOne({id: 'df-05'}, {fields: {'data.times': 1}});
 
-        // TODO: The id here needs to reflect user settings of the reference station.
-        let referenceStation = Data.findOne({id: 'df-05'}, {fields: {'data.times': 1}}),
-            timeSet = referenceStation.data.times;
+            let timeSet = referenceStation.data.times;
 
-        let weather = Weather.find({}).fetch();
+            let weather = Weather.find({}).fetch();
 
-        if (weather.length === 0) {
-            for (let i=0; i < DURATION; i++) {
-                let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
-                HTTP.get(url, (error, response) => {
-                    if (error) {
-                        console.log(`fetchWeatherForecast ${error}`);
-                    } else {
-                        Weather.insert(response.data);
-                    }
-                });
+            if (weather.length === 0) {
+                for (let i=0; i < DURATION; i++) {
+                    let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
+                    HTTP.get(url, (error, response) => {
+                        if (error) {
+                            console.log(`fetchWeatherForecast ${error}`);
+                        } else {
+                            Weather.insert(response.data);
+                        }
+                    });
+                }
+            } else {
+                let mm = timeSet[0];
+                let result = Weather.remove({'currently.time': {$lte: moment(mm).unix()}});
+                console.log(result);
+                if (result !== 0) {
+                    let time = moment().minutes(0).seconds(0).utc(timeSet[DURATION-1]).toISOString();
+                    let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[DURATION]}`;
+                    HTTP.get(url, (error, response) => {
+                        if (error) {
+                            console.log(`fetchWeatherForecast ${error}`);
+                        } else {
+                            console.log(Weather.insert(response.data));
+                        }
+                    });
+                }
             }
-        } else {
-            let mm = timeSet[0];
-            let result = Weather.remove({'currently.time': {$lte: moment(mm).unix()}});
-            console.log(result);
-            if (result !== 0) {
-                let time = moment().minutes(0).seconds(0).utc(timeSet[DURATION-1]).toISOString();
-                let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[DURATION]}`;
-                HTTP.get(url, (error, response) => {
-                    if (error) {
-                        console.log(`fetchWeatherForecast ${error}`);
-                    } else {
-                        console.log(Weather.insert(response.data));
-                    }
-                });
-            }
+        } catch (exception) {
+            console.log('There was an error, trying again in 10 seconds');
+            Meteor.setTimeout(() => {
+                fetchWeatherForecast();
+            }, 10000);
         }
 
     }
