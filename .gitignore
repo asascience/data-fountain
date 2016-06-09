@@ -1,5 +1,6 @@
 .electrify/
 node_modules/
+.npm/
 *.DS_Store
 *.swp
 *.swo
