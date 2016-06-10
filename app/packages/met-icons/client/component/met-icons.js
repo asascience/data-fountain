@@ -14,10 +14,10 @@ Template.MetIcons.helpers({
             const TIMER_DELAY = 1000 * Meteor.settings.public.screenRefreshDelaySeconds;
             const weatherCollection = Template.instance().weather;
 
-            function* indexGen() {
+            function* indexGen(limit) {
                 let index = 0;
                 while(true) {
-                    if (index === DURATION) {
+                    if (index === 48) {
                         index = 0;
                     }
                     yield index++;
@@ -25,20 +25,21 @@ Template.MetIcons.helpers({
             }
 
             let index = indexGen(),
-                weather = new ReactiveDict();
+                weather = {};
             Meteor.setInterval(() => {
-                weather.set(weatherCollection[index.next().value].currently);
-                console.log(weather.get());
+                weather = weatherCollection[index.next().value].currently;
             }, TIMER_DELAY);
 
-            let time = moment(weather.get().time * 1000).format();
+            console.log(weather);
+            let time = moment(weather.time * 1000).format();
             let payload = {
-                icon: weather.get().icon,
-                temp: Math.round(weather.get().temperature),
-                wdsp: Math.round(weather.get().windSpeed),
-                wdbr: weather.get().windBearing,
+                icon: weather.icon,
+                temp: Math.round(weather.temperature),
+                wdsp: Math.round(weather.windSpeed),
+                wdbr: weather.windBearing,
                 lunr: getLunarPhaseIcon(time)
             };
+            console.log(payload);
             return payload;
         } catch (exception) {
             console.log(exception);
