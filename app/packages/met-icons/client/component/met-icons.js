@@ -10,18 +10,38 @@ Template.MetIcons.events({
 Template.MetIcons.helpers({
     met() {
         try {
-            let weather = Weather.find({}).fetch();
-            weather = weather[0].currently;
+            const DURATION = Meteor.settings.defaultDuration;
+            const TIMER_DELAY = 1000 * Meteor.settings.public.screenRefreshDelaySeconds;
+            const weatherCollection = Template.instance().weather;
 
+            function* indexGen() {
+                let index = 0;
+                while(true) {
+                    if (index === DURATION) {
+                        index = 0;
+                    }
+                    yield index++;
+                }
+            }
+
+            let index = indexGen(),
+                weather = new ReactiveDict();
+            Meteor.setInterval(() => {
+                weather.set(weatherCollection[index.next().value].currently);
+                console.log(weather.get());
+            }, TIMER_DELAY);
+
+            let time = moment(weather.get().time * 1000).format();
             let payload = {
-                icon: weather.icon,
-                temp: Math.round(weather.temperature),
-                wdsp: Math.round(weather.windSpeed),
-                wdbr: weather.windBearing,
+                icon: weather.get().icon,
+                temp: Math.round(weather.get().temperature),
+                wdsp: Math.round(weather.get().windSpeed),
+                wdbr: weather.get().windBearing,
+                lunr: getLunarPhaseIcon(time)
             };
             return payload;
         } catch (exception) {
-            // fail silently.
+            console.log(exception);
         }
     },
 
@@ -49,32 +69,13 @@ Template.MetIcons.helpers({
         return icon;
 
     },
-    getLunarPhaseIcon(){
-        let datetime = new Date();
-        /*
-           gets the lunar phase icon from the moon illumination
-datetime: moment date time of selected time, eg var datetime = moment()
-fraction: 0.0 (new moon) to 1.0 (full moon)
-phase: 0.0 to 1.0
-*/
-        var moonStatus = SunCalc.getMoonIllumination(datetime);
-        //Phase Name: 0 New Moon, Waxing Crescent, 0.25  First Quarter, Waxing Gibbous, 0.5 Full Moon, Waning Gibbous, 0.75  Last Quarter, Waning Crescent
-        var iconList = ['wi-moon-alt-new', 'wi-moon-alt-waxing-crescent-1', 'wi-moon-alt-waxing-crescent-2', 'wi-moon-alt-waxing-crescent-3', 'wi-moon-alt-waxing-crescent-4', 'wi-moon-alt-waxing-crescent-5', 'wi-moon-alt-waxing-crescent-6', 'wi-moon-alt-first-quarter', 'wi-moon-alt-waxing-gibbous-1', 'wi-moon-alt-waxing-gibbous-2', 'wi-moon-alt-waxing-gibbous-3', 'wi-moon-alt-waxing-gibbous-4', 'wi-moon-alt-waxing-gibbous-5', 'wi-moon-alt-waxing-gibbous-6', 'wi-moon-alt-full', 'wi-moon-alt-waning-gibbous-1', 'wi-moon-alt-waning-gibbous-2', 'wi-moon-alt-waning-gibbous-3', 'wi-moon-alt-waning-gibbous-4', 'wi-moon-alt-waning-gibbous-5', 'wi-moon-alt-waning-gibbous-6', 'wi-moon-alt-third-quarter', 'wi-moon-alt-waning-crescent-1', 'wi-moon-alt-waning-crescent-2', 'wi-moon-alt-waning-crescent-3', 'wi-moon-alt-waning-crescent-4', 'wi-moon-alt-waning-crescent-5', 'wi-moon-alt-waning-crescent-6']
-            var step = 1/iconList.length
-
-        var o = d3.scale.linear()
-        .domain(d3.range(0,1+step,step))
-        .range(d3.range(0,iconList.length+1));
-
-        var idx = Math.floor(o(moonStatus.fraction.toFixed(2)));
-        return iconList[idx];
-    }
 });
 
 /*****************************************************************************/
 /* MetIcons: Lifecycle Hooks */
 /*****************************************************************************/
 Template.MetIcons.onCreated(() => {
+    Template.instance().weather = Weather.find({}).fetch();
 });
 
 Template.MetIcons.onRendered(() => {
@@ -100,3 +101,25 @@ Template.MetIcons.onDestroyed(() => {
     }
 
 })(window, document, window.jQuery);
+
+
+const getLunarPhaseIcon = ((datetime) => {
+    datetime = new Date(datetime);
+    /*
+       gets the lunar phase icon from the moon illumination
+datetime: moment date time of selected time, eg var datetime = moment()
+fraction: 0.0 (new moon) to 1.0 (full moon)
+phase: 0.0 to 1.0
+*/
+    var moonStatus = SunCalc.getMoonIllumination(datetime);
+    //Phase Name: 0 New Moon, Waxing Crescent, 0.25  First Quarter, Waxing Gibbous, 0.5 Full Moon, Waning Gibbous, 0.75  Last Quarter, Waning Crescent
+    var iconList = ['wi-moon-alt-new', 'wi-moon-alt-waxing-crescent-1', 'wi-moon-alt-waxing-crescent-2', 'wi-moon-alt-waxing-crescent-3', 'wi-moon-alt-waxing-crescent-4', 'wi-moon-alt-waxing-crescent-5', 'wi-moon-alt-waxing-crescent-6', 'wi-moon-alt-first-quarter', 'wi-moon-alt-waxing-gibbous-1', 'wi-moon-alt-waxing-gibbous-2', 'wi-moon-alt-waxing-gibbous-3', 'wi-moon-alt-waxing-gibbous-4', 'wi-moon-alt-waxing-gibbous-5', 'wi-moon-alt-waxing-gibbous-6', 'wi-moon-alt-full', 'wi-moon-alt-waning-gibbous-1', 'wi-moon-alt-waning-gibbous-2', 'wi-moon-alt-waning-gibbous-3', 'wi-moon-alt-waning-gibbous-4', 'wi-moon-alt-waning-gibbous-5', 'wi-moon-alt-waning-gibbous-6', 'wi-moon-alt-third-quarter', 'wi-moon-alt-waning-crescent-1', 'wi-moon-alt-waning-crescent-2', 'wi-moon-alt-waning-crescent-3', 'wi-moon-alt-waning-crescent-4', 'wi-moon-alt-waning-crescent-5', 'wi-moon-alt-waning-crescent-6']
+    var step = 1/iconList.length
+
+    var o = d3.scale.linear()
+    .domain(d3.range(0,1+step,step))
+    .range(d3.range(0,iconList.length+1));
+
+    var idx = Math.floor(o(moonStatus.fraction.toFixed(2)));
+    return iconList[idx];
+});
