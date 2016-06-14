@@ -25,7 +25,7 @@ var Stats=Stations.find({}).fetch() ;
   }
   else {
   	//Map Initialization
-  		var map = L.map('map').setView([38.7, -76.2574], 8);
+  		var map = L.map('map').setView([37.9,-76.2574], 7);
   		// map.createPane('labels');
   		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
 			maxZoom: 13,
@@ -36,14 +36,14 @@ var Stats=Stations.find({}).fetch() ;
   	//Ading Stations and legend
 
 		var legend=document.getElementById('legendTable');
-  	    // for(i=0;i<Stats.length;i++)
-  	     for(i=4;i>=0;i--)
+  	     for(i=0;i<Stats.length;i++)
+  	    // for(i=4;i>=0;i--)
            {
          			var lat=Number(Stats[i].lat);//latitude
          			var long=Number(Stats[i].lon);//longitude
          			var station_name=Stats[i].title;
          			//Adding a point
-         			if(i==4)
+         			if(i==0)
          			{
 						var row = legend.insertRow();
 					    var cell1 = row.insertCell(0);
@@ -71,7 +71,7 @@ var Stats=Stations.find({}).fetch() ;
 					}
 
 					//ADding a Label
-					 var textLatLng = [lat, long+0.1];
+					 var textLatLng = [lat, long+0.2];
        				 var myTextLabel = L.marker(textLatLng, {
          			 icon: L.divIcon({
              		 className: 'text-labels',
