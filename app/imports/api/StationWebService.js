@@ -162,7 +162,7 @@ export default class StationWebService {
         } catch (exception) {
             console.log('There was an error, trying again in 10 seconds');
             Meteor.setTimeout(() => {
-                fetchWeatherForecast();
+                this.fetchWeatherForecast();
             }, 10000);
         }
 

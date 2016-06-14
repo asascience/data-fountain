@@ -197,6 +197,11 @@
           }
         }
       }
+    },
+    "suncalc": {
+      "version": "1.7.0",
+      "resolved": "https://registry.npmjs.org/suncalc/-/suncalc-1.7.0.tgz",
+      "from": "suncalc@1.7.0"
     }
   }
 }
