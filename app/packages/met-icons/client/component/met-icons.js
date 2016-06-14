@@ -12,28 +12,37 @@ Template.MetIcons.events({
 Template.MetIcons.helpers({
     weatherIcon() {
             let weather = Template.instance().weather(),
+                time = moment(weather.currently.time * 1000).format(),
                 icon = getWeatherIcon(weather.currently.icon, time, weather.lat, weather.lng);
-            console.log(weather);
+
+            console.log(new Date(time));
             return icon;
     },
-    met() {
-        try {
-            let weather = Template.instance().weather();
+    lunarIcon() {
+            let weather = Template.instance().weather(),
+                time = moment(weather.currently.time * 1000).format(),
+                lunr = getLunarPhaseIcon(time);
 
-            console.log(weather);
-            let time = moment(weather.currently.time * 1000).format();
-            let payload = {
-                temp: Math.round(weather.currently.temperature),
-                wdsp: Math.round(weather.currently.windSpeed),
-                wdbr: weather.currently.windBearing,
-                lunr: getLunarPhaseIcon(time)
-            };
-
-            return payload;
-        } catch (exception) {
-            console.log(exception);
-        }
+            return lunr;
     },
+    tempIcon() {
+        let weather = Template.instance().weather(),
+            temp = Math.round(weather.currently.temperature);
+
+        return temp;
+    },
+    windBearing() {
+        let weather = Template.instance().weather(),
+            windBearing = weather.currently.windBearing;
+
+        return windBearing;
+    },
+    windSpeed() {
+        let weather = Template.instance().weather(),
+            windSpeed = Math.round(weather.currently.windSpeed);
+
+        return windSpeed;
+    }
 });
 
 /*****************************************************************************/
