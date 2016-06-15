@@ -26,6 +26,11 @@ HomeController = RouteController.extend({
   // return Posts.findOne({_id: this.params._id});
 
   data: function () {
+      return {
+          duration: Meteor.settings.public.defaultDuration,
+          timerDelay: 1000 * Meteor.settings.public.screenRefreshDelaySeconds,
+          referenceStation: 'df-05'
+      };
   },
 
   // You can provide any of the hook options

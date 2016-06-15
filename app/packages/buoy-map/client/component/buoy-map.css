@@ -9,7 +9,7 @@
 }
 
 #map {
-    min-height: 450px;
+    min-height: 415px;
     min-width: 100%;
 }
 
@@ -36,27 +36,29 @@
 .legendTable tr:nth-child(even){
     background: #dae5f4;
 }
-.stationimg
+#stationimg
 {
-    width:50px;
-    height:50px;
+    width:200px;
+    height:235px;
+    background-image: url("http://buoybay.noaa.gov/sites/default/files/images/Dominion_Gooses_Reef.jpg");
 }
 
 .text-labels
 {
     position: absolute;
-    font-size: 15px;
+    font-size: 9px;
     font-weight:bold;
     color:black;
     font-family: :verdana;
-    width:100px;
+    width:200px;
     margin:5px;
+    white-space:nowrap;
 }
 
 .tbl
 {
     background-color:white;
-    margin:5px;
+    margin:1px;
     border:1px solid gray;
 
 }
@@ -65,12 +67,12 @@
 {
     padding-left:5px;
     padding-right:5px;
-    font-size: 20px;
+    font-size: 12px;
 }
 
 #blackcircle {
-    width: 25px;
-    height: 25px;
+    width: 15px;
+    height: 15px;
     -webkit-border-radius: 25px;
     -moz-border-radius: 25px;
     border-radius: 25px;
@@ -78,8 +80,8 @@
 }
 
 #orangecircle {
-    width: 25px;
-    height: 25px;
+    width: 15px;
+    height: 15px;
     -webkit-border-radius: 25px;
     -moz-border-radius: 25px;
     border-radius: 25px;
