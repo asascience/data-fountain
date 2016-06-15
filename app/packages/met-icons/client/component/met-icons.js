@@ -14,7 +14,7 @@ Template.MetIcons.helpers({
         try {
             let weather = Template.instance().weather(),
                 time = moment(weather.currently.time * 1000).format(),
-                icon = getWeatherIcon(weather.currently.icon, time, weather.lat, weather.lng);
+                icon = getWeatherIcon(weather.currently.icon, time, weather.latitude, weather.longitude);
 
             return icon;
         } catch (exception) {
@@ -76,17 +76,20 @@ Template.MetIcons.onCreated(() => {
     let _this = Template.instance();
     const DURATION = Meteor.settings.public.defaultDuration;
     const TIMER_DELAY = 1000 * Meteor.settings.public.screenRefreshDelaySeconds;
-    let weatherCollection = Weather.find({}).fetch();
+    const weatherDep = new Tracker.Dependency;
+    let weatherCollection = Weather.find({}).fetch(),
+        weather = {};
 
     Template.instance().weather = (() => {
-        // weather = weatherCollection.filter((obj) => {
-        //     return obj.currently.time === unixTime;
-        // });
-        return weather;
+        weatherDep.depend();
+        return weather[0];
     });
 
     Tracker.autorun(() => {
-        console.log(Session.get('globalTimer'));
+        weather = weatherCollection.filter((obj) => {
+            return obj.currently.time === moment(Session.get('globalTimer')).unix();
+        });
+        weatherDep.changed();
     });
 
 });
