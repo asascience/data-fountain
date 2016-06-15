@@ -132,7 +132,7 @@ export default class StationWebService {
             let weather = Weather.find({}).fetch();
 
             if (weather.length === 0) {
-                for (let i=0; i < DURATION; i++) {
+                for (let i=0; i < timeSet.length; i++) {
                     let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
                     HTTP.get(url, (error, response) => {
                         if (error) {
