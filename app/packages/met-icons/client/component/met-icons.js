@@ -1,3 +1,5 @@
+import SunCalc from 'suncalc';
+
 /*****************************************************************************/
 /* MetIcons: Event Handlers */
 /*****************************************************************************/
@@ -8,75 +10,87 @@ Template.MetIcons.events({
 /* MetIcons: Helpers */
 /*****************************************************************************/
 Template.MetIcons.helpers({
-    met() {
-        try {
-            const DURATION = Meteor.settings.defaultDuration;
-            const TIMER_DELAY = 1000 * Meteor.settings.public.screenRefreshDelaySeconds;
-            const weatherCollection = Template.instance().weather;
+    weatherIcon() {
+            let weather = Template.instance().weather(),
+                time = moment(weather.currently.time * 1000).format(),
+                icon = getWeatherIcon(weather.currently.icon, time, weather.lat, weather.lng);
 
-            function* indexGen(limit) {
-                let index = 0;
-                while(true) {
-                    if (index === 48) {
-                        index = 0;
-                    }
-                    yield index++;
-                }
-            }
-
-            let index = indexGen(),
-                weather = {};
-            Meteor.setInterval(() => {
-                weather = weatherCollection[index.next().value].currently;
-            }, TIMER_DELAY);
-
-            console.log(weather);
-            let time = moment(weather.time * 1000).format();
-            let payload = {
-                icon: weather.icon,
-                temp: Math.round(weather.temperature),
-                wdsp: Math.round(weather.windSpeed),
-                wdbr: weather.windBearing,
-                lunr: getLunarPhaseIcon(time)
-            };
-            console.log(payload);
-            return payload;
-        } catch (exception) {
-            console.log(exception);
-        }
+            console.log(new Date(time));
+            return icon;
     },
+    lunarIcon() {
+            let weather = Template.instance().weather(),
+                time = moment(weather.currently.time * 1000).format(),
+                lunr = getLunarPhaseIcon(time);
 
-    getWeatherIcon(byteValue, datetime) {
-        /*
-           gets the weather icon from the metar data, sky conditions
-           */
-        //byteValue-meanings: clear,few scattered, broken, overcast
-        //byteValue: 0, 1, 3, 5, 8
-        //datetime: moment date time of selected time
-        //eg var datetime = moment()
-        var iconSet = {
-            "wi-day":{"0":"wi-day-sunny","1":"wi-day-cloudy","3":"wi-day-cloudy-windy","5":"wi-day-cloudy-high","8":"wi-day-sunny-overcast"},
-            "wi-night":{"0":"wi-night-clear","1":"wi-night-cloudy","3":"wi-night-cloudy-windy","5":"wi-night-cloudy-high","8":"wi-night-alt-partly-cloudy"}
-        }
-
-        var times = SunCalc.getTimes(datetime, 39.544, -76.075);
-        var icon;
-        //is current time in daylight
-        if (datetime.isAfter(moment(times.sunrise)) && datetime.isBefore(moment(times.sunset))){
-            icon = iconSet['wi-day'][byteValue];
-        }else{
-            icon = iconSet['wi-night'][byteValue];
-        }
-        return icon;
-
+            return lunr;
     },
+    tempIcon() {
+        let weather = Template.instance().weather(),
+            temp = Math.round(weather.currently.temperature);
+
+        return temp;
+    },
+    windBearing() {
+        let weather = Template.instance().weather(),
+            windBearing = weather.currently.windBearing;
+
+        return windBearing;
+    },
+    windSpeed() {
+        let weather = Template.instance().weather(),
+            windSpeed = Math.round(weather.currently.windSpeed);
+
+        return windSpeed;
+    }
 });
 
 /*****************************************************************************/
 /* MetIcons: Lifecycle Hooks */
 /*****************************************************************************/
 Template.MetIcons.onCreated(() => {
-    Template.instance().weather = Weather.find({}).fetch();
+    const DURATION = Meteor.settings.public.defaultDuration;
+    const TIMER_DELAY = 1000 * Meteor.settings.public.screenRefreshDelaySeconds;
+    const weatherDep = new Tracker.Dependency;
+    let weatherCollection = Weather.find({}).fetch();
+
+    weatherCollection.sort((a,b) => {
+        return a.currently.time - b.currently.time;
+    });
+
+    // using var explicitly
+    var weather = {};
+
+    let tmp = 0;
+    Template.instance().weather = (() => {
+        weatherDep.depend();
+        return weather;
+    });
+
+    function* indexGen() {
+        let index = 0;
+        while(true) {
+            if (index == DURATION) {
+                index = 0;
+            }
+            console.log(index);
+            yield index++;
+        }
+    }
+
+    let index = indexGen();
+    Meteor.setInterval(() => {
+        let tmp = weatherCollection[index.next().value];
+
+        let payload = {
+            currently: tmp.currently,
+            lat: tmp.latitude,
+            lng: tmp.longitude
+        };
+
+        weather = payload;
+        weatherDep.changed();
+    }, TIMER_DELAY);
 });
 
 Template.MetIcons.onRendered(() => {
@@ -90,7 +104,7 @@ Template.MetIcons.onDestroyed(() => {
 (function(window, document, $, undefined){
 
     window.initSkycon = function(){
-        var element = $(this),
+        let element = $(this),
             skycons = new Skycons({'color': (element.data('color') || 'white')});
 
         // element.html('<canvas width="' + element.data('width') + '" height="' + element.data('height') + '"></canvas>');
@@ -123,4 +137,29 @@ phase: 0.0 to 1.0
 
     var idx = Math.floor(o(moonStatus.fraction.toFixed(2)));
     return iconList[idx];
+});
+
+
+const getWeatherIcon = ((skycon, datetime, lat, lng) => {
+    datetime = moment(datetime);
+    /*
+       gets the weather icon from the metar data, sky conditions
+       */
+    //byteValue-meanings: clear,few scattered, broken, overcast
+    //byteValue: 0, 1, 3, 5, 8
+    //datetime: moment date time of selected time
+    //eg var datetime = moment()
+    var iconSet = {
+        "wi-day":{"clear-day":"wi-day-sunny","partly-cloudy-day":"wi-day-cloudy","wind":"wi-day-cloudy-windy","cloudy":"wi-day-cloudy-high","rain":"wi-day-rain", "sleet": "wi-day-sleet", "fog": "wi-day-fog", "snow": "wi-day-snow"},
+        "wi-night":{"clear-night":"wi-night-clear","partly-cloudy-night":"wi-night-cloudy","wind":"wi-night-cloudy-windy","cloudy":"wi-night-cloudy-high","rain":"wi-night-rain", "sleet": "wi-night-sleet", "fog": "wi-night-fog", "snow": "wi-night-snow"}
+    }
+    var times = SunCalc.getTimes(datetime, lat, lng);
+    var icon;
+    //is current time in daylight
+    if (datetime.isAfter(moment(times.sunrise)) && datetime.isBefore(moment(times.sunset))){
+        icon = iconSet['wi-day'][skycon];
+    } else {
+        icon = iconSet['wi-night'][skycon];
+    }
+    return icon;
 });

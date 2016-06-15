@@ -42,6 +42,12 @@ Meteor.methods({
         });
 
         return future.wait();
+    },
+    getConfig: function() {
+        // TODO: Set all these to ||
+        return {
+            defaultDuration: Meteor.settings.defaultDuration
+        }
     }
 });
 
