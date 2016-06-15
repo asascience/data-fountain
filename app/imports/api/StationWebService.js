@@ -143,16 +143,20 @@ export default class StationWebService {
                     });
                 }
             } else {
+                console.log(timeSet);
                 let mm = timeSet[0];
+                console.log(mm);
                 let result = Weather.remove({'currently.time': {$lte: moment(mm).unix()}});
                 console.log(result);
                 if (result !== 0) {
                     for (let i=0; i < result; i++) {
-                        let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
+                        let recentTime = timeSet.length - i;
+                        let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${recentTime}`;
                         HTTP.get(url, (error, response) => {
                             if (error) {
                                 console.log(`fetchWeatherForecast ${error}`);
                             } else {
+                                console.log(new Date(response.data.currently.time * 1000));
                                 Weather.insert(response.data);
                             }
                         });
