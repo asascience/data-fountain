@@ -40,16 +40,6 @@ Template.OceanPlots.onRendered(() => {
     var dataPatapsco=[];
 
     var dataGoosesReef=[];
-	
-	var dataNorfolk=[];
-	
-	var dataStingrayPoint=[];
-	
-	var dataJamestown=[];
-	
-	var dataFirstLanding=[];
-	
-	var dataPotomac=[];
 
     var categories=[];
 
@@ -88,24 +78,24 @@ Template.OceanPlots.onRendered(() => {
     var listOfProjectscolumn = Data.find().fetch();
 
     _.each(listOfProjectscolumn, (obj) => {
-       
+        if(obj.id=="df-10" || obj.id=="df-06" || obj.id=="df-07" || obj.id=="df-08" || obj.id=="df-05")
+            {
                 projectNamesColumn.push({label: obj.title, value: obj.id,data:obj.data.seaWaterSalinity});
-           
+            }
     });
 
-	
-    for(i=0;i<10;i++){
+    for(i=0;i<5;i++){
         for(j=0;j<1;j++){
             categories.push(projectNamesColumn[i].label);
             datacolumn1.push(projectNamesColumn[i].data.values[j][0]);
         }
     }
 
-    for(i=0;i<10;i++)
+    for(i=0;i<5;i++)
     {
         var  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
 
-        if(projectNamesColumn[i].label=="Susquehanna")
+        if(projectNamesColumn[i].label=="First Landing")
             {
                 for(j=0;j<projectNamesColumn[i].data.times.length;j++)
                 {
@@ -115,7 +105,7 @@ Template.OceanPlots.onRendered(() => {
                         title:projectNamesColumn[i].label
                     });
                 }
-            }else if(projectNamesColumn[i].label=="Annapolis")
+            }else if(projectNamesColumn[i].label=="Stingray Point")
                 {
                     for(j=0;j<projectNamesColumn[i].data.times.length;j++)
                     {
@@ -128,7 +118,7 @@ Template.OceanPlots.onRendered(() => {
 
                     }
 
-                }else if(projectNamesColumn[i].label=="Upper Potomac")
+                }else if(projectNamesColumn[i].label=="Potomac")
                     {
                         for(j=0;j<projectNamesColumn[i].data.times.length;j++)
                         {
@@ -141,7 +131,7 @@ Template.OceanPlots.onRendered(() => {
 
 
                         }
-                    }else if(projectNamesColumn[i].label=="Patapsco")
+                    }else if(projectNamesColumn[i].label=="Jamestown")
                         {
                             for(j=0;j<projectNamesColumn[i].data.times.length;j++)
                             {
@@ -158,68 +148,6 @@ Template.OceanPlots.onRendered(() => {
                                 for(j=0;j<projectNamesColumn[i].data.times.length;j++)
                                 {
                                     dataGoosesReef.push({
-                                        x: time,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        title:projectNamesColumn[i].label
-                                    });
-                                }
-                            }
-							
-							else if(projectNamesColumn[i].label=="Norfolk")
-                            {
-								
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-                                    dataNorfolk.push({
-                                        x: time,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        title:projectNamesColumn[i].label
-                                    });
-                                }
-                            }
-							
-							else if(projectNamesColumn[i].label=="Stingray Point")
-                            {
-								
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-                                   dataStingrayPoint.push({
-                                        x: time,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        title:projectNamesColumn[i].label
-                                    });
-                                }
-                            }
-							else if(projectNamesColumn[i].label=="Jamestown")
-                            {
-								
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-                                   dataJamestown.push({
-                                        x: time,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        title:projectNamesColumn[i].label
-                                    });
-                                }
-                            }
-							else if(projectNamesColumn[i].label== "Potomac")
-                            {
-								
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-                                  dataPotomac.push({
-                                        x: time,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        title:projectNamesColumn[i].label
-                                    });
-                                }
-                            }
-							else if(projectNamesColumn[i].label=="First Landing")
-                            {
-								
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-                                  dataFirstLanding.push({
                                         x: time,
                                         y: projectNamesColumn[i].data.values[0][j],
                                         title:projectNamesColumn[i].label
@@ -264,7 +192,7 @@ Template.OceanPlots.onRendered(() => {
                     var l = 30;
                     var xAxis = this.series[0].chart.xAxis[0];
                     var currentindextime=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');
-                    
+
                     xAxis.addPlotLine({
                         value: currentIndex,
                         width: 4,
@@ -300,7 +228,7 @@ Template.OceanPlots.onRendered(() => {
 
                         var columntime=currentIndex;
 
-                        var excelDateString=moment.utc(newIdx).format('MM/DD/YYYY HH:mm A');;
+                        var excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
 
                         var chartseries = $('#container-column').highcharts();
 
@@ -311,37 +239,24 @@ Template.OceanPlots.onRendered(() => {
 
                         var dynamicdata=[];
 
-					
 
 
-                        dynamiccategories=['Susquehanna', 'Annapolis', 'Upper Potomac', 'Patapsco', 'Gooses Reef','Norfolk','Stingray Point','Jamestown','Potomac','First Landing'];
+                        dynamiccategories=['Susquehanna', 'Annapolis', 'Upper Potomac', 'Patapsco', 'Gooses Reef'];
 
 
                         dynamicdata=[{y:dataSusquehanna[loopIndex].y, color:getColorForVal(dataSusquehanna[loopIndex].y,)},
                             {y:dataAnnapolis[loopIndex].y, color:getColorForVal(dataSusquehanna[loopIndex].y,)},
                         {y:dataUpperPotomac[loopIndex].y, color:getColorForVal(dataUpperPotomac[loopIndex].y,)},
                         {y:dataPatapsco[loopIndex].y, color:getColorForVal(dataPatapsco[loopIndex].y,)},
-                        {y:dataGoosesReef[loopIndex].y, color:getColorForVal(dataGoosesReef[loopIndex].y,)},
-						{y:dataNorfolk[loopIndex].y, color:getColorForVal(dataNorfolk[loopIndex].y,)},
-						{y:dataStingrayPoint[loopIndex].y, color:getColorForVal(dataStingrayPoint[loopIndex].y,)},
-						{y:dataJamestown[loopIndex].y, color:getColorForVal(dataJamestown[loopIndex].y,)},
-						{y:dataPotomac[loopIndex].y, color:getColorForVal(dataPotomac[loopIndex].y,)},
-						{y:dataFirstLanding[loopIndex].y, color:getColorForVal(dataFirstLanding[loopIndex].y,)}
-						
+                        {y:dataGoosesReef[loopIndex].y, color:getColorForVal(dataGoosesReef[loopIndex].y,)}
                         ]
 
 
                         chartseries.series[0].chart.xAxis[0].setCategories(dynamiccategories);
                         chartseries.series[0].setData(dynamicdata);
-						
-                         chart.setTitle({text: "Gooses Reef " + excelDateString});              
+
                     }, TIMER_DELAY);
 
-					//
-					
-   
-	//
-					
                 }
             }
         },
@@ -361,18 +276,9 @@ Template.OceanPlots.onRendered(() => {
         },
         yAxis: {
             title: {
-                text: 'Water Level (ft)',
-				style: {
-				fontSize: '20px',
-                    fontFamily: 'Verdana, sans-serif'
-				}
+                text: 'Water Level (ft)'
             },
-  labels: {
-            style: {
-               fontSize: '13px',
-                    fontFamily: 'Verdana, sans-serif'
-            }
-        },
+
             plotLines: [{
                 value: 1464814800,
                 width: 1,
@@ -438,11 +344,7 @@ Template.OceanPlots.onRendered(() => {
             min: 0,
             max: 30,
             title: {
-                text: 'Salinity (PSU)',
-				style: {
-				fontSize: '20px',
-                    fontFamily: 'Verdana, sans-serif'
-				}
+                text: 'Salinity (PSU)'
             },
 
         },

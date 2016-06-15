@@ -147,21 +147,22 @@ export default class StationWebService {
                 let result = Weather.remove({'currently.time': {$lte: moment(mm).unix()}});
                 console.log(result);
                 if (result !== 0) {
-                    let time = moment().minutes(0).seconds(0).utc(timeSet[DURATION-1]).toISOString();
-                    let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[DURATION]}`;
-                    HTTP.get(url, (error, response) => {
-                        if (error) {
-                            console.log(`fetchWeatherForecast ${error}`);
-                        } else {
-                            console.log(Weather.insert(response.data));
-                        }
-                    });
+                    for (let i=0; i < result; i++) {
+                        let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
+                        HTTP.get(url, (error, response) => {
+                            if (error) {
+                                console.log(`fetchWeatherForecast ${error}`);
+                            } else {
+                                Weather.insert(response.data);
+                            }
+                        });
+                    }
                 }
             }
         } catch (exception) {
             console.log('There was an error, trying again in 10 seconds');
             Meteor.setTimeout(() => {
-                fetchWeatherForecast();
+                this.fetchWeatherForecast();
             }, 10000);
         }
 

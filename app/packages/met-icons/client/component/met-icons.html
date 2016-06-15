@@ -1,16 +1,17 @@
 <template name="MetIcons">
-    <div class="met-icons text-center">
+    <div class="met-icons text-center" style="padding-top: 20px;">
         <div class="icons">
-            <i class="wi {{getLunarPhaseIcon}}"></i>
+            <i class="wi {{lunarIcon}}"></i>
             <div class="wi-caption">Lunar</div>
         </div>
         <div class="icons">
-            <div data-skycon="{{met.icon}}" data-color="#4994D0" data-width="10vw" class="center-block" style="top: 15px;"></div>
+            <i class="wi {{weatherIcon}}"></i>
+            <!-- <div data&#45;skycon="{{met.icon}}" data&#45;color="#4994D0" data&#45;width="10vw" class="center&#45;block" style="top: 15px;"></div> -->
             <div class="wi-caption">Weather</div>
         </div>
         <div class="icons">
-            <i class="wi wi-thermometer"></i>
-            <span class="wi-data"> {{met.temp}}</span>
+            <i class="wi wi-thermometer" style="font-size: 3.5vw"></i>
+            <span class="wi-data"> {{tempIcon}}</span>
             <i class="wi wi-fahrenheit wi-units"></i>
             <div class="wi-caption">Temperature</div>
         </div>
@@ -19,12 +20,12 @@
         </div>
         <div class="icons">
             <span class="wi-cardinal">N</span>
-            <i class="wi wi-wind towards-{{met.wdbr}}-deg"></i>
+            <i class="wi wi-wind towards-{{windBearing}}-deg"></i>
             <div class="wi-caption" style="font-size: 1.5vw">Wind Direction</div>
         </div>
         <div class="icons">
             <i class="wi wi-strong-wind" style="font-size: 3vw;"></i>
-            <span class="wi-data"> {{met.wdsp}}<small class="wi-units" style="font-size: 1vw">mph</small></span>
+            <span class="wi-data"> {{windSpeed}}<small class="wi-units" style="font-size: 1vw">mph</small></span>
             <div class="wi-caption" style="font-size: 1.5vw">Wind Speed</div>
         </div>
         <div class="icons">
