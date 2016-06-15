@@ -11,37 +11,61 @@ Template.MetIcons.events({
 /*****************************************************************************/
 Template.MetIcons.helpers({
     weatherIcon() {
+        try {
             let weather = Template.instance().weather(),
                 time = moment(weather.currently.time * 1000).format(),
                 icon = getWeatherIcon(weather.currently.icon, time, weather.lat, weather.lng);
 
-            console.log(new Date(time));
             return icon;
+        } catch (exception) {
+            if (!!exception instanceof TypeError)
+                console.log(exception);
+        }
     },
     lunarIcon() {
+        try {
             let weather = Template.instance().weather(),
                 time = moment(weather.currently.time * 1000).format(),
                 lunr = getLunarPhaseIcon(time);
 
             return lunr;
+        } catch (exception) {
+            if (!!exception instanceof TypeError)
+                console.log(exception);
+        }
     },
     tempIcon() {
-        let weather = Template.instance().weather(),
-            temp = Math.round(weather.currently.temperature);
+        try {
+            let weather = Template.instance().weather(),
+                temp = Math.round(weather.currently.temperature);
 
-        return temp;
+            return temp;
+        } catch (exception) {
+            if (!!exception instanceof TypeError)
+                console.log(exception);
+        }
     },
     windBearing() {
-        let weather = Template.instance().weather(),
-            windBearing = weather.currently.windBearing;
+        try {
+            let weather = Template.instance().weather(),
+                windBearing = weather.currently.windBearing;
 
-        return windBearing;
+            return windBearing;
+        } catch (exception) {
+            if (!!exception instanceof TypeError)
+                console.log(exception);
+        }
     },
     windSpeed() {
-        let weather = Template.instance().weather(),
-            windSpeed = Math.round(weather.currently.windSpeed);
+        try {
+            let weather = Template.instance().weather(),
+                windSpeed = Math.round(weather.currently.windSpeed);
 
-        return windSpeed;
+            return windSpeed;
+        } catch (exception) {
+            if (!!exception instanceof TypeError)
+                console.log(exception);
+        }
     }
 });
 
@@ -49,52 +73,25 @@ Template.MetIcons.helpers({
 /* MetIcons: Lifecycle Hooks */
 /*****************************************************************************/
 Template.MetIcons.onCreated(() => {
+    let _this = Template.instance();
     const DURATION = Meteor.settings.public.defaultDuration;
     const TIMER_DELAY = 1000 * Meteor.settings.public.screenRefreshDelaySeconds;
-    const weatherDep = new Tracker.Dependency;
     let weatherCollection = Weather.find({}).fetch();
 
-    weatherCollection.sort((a,b) => {
-        return a.currently.time - b.currently.time;
-    });
-
-    // using var explicitly
-    var weather = {};
-
-    let tmp = 0;
     Template.instance().weather = (() => {
-        weatherDep.depend();
+        // weather = weatherCollection.filter((obj) => {
+        //     return obj.currently.time === unixTime;
+        // });
         return weather;
     });
 
-    function* indexGen() {
-        let index = 0;
-        while(true) {
-            if (index == DURATION) {
-                index = 0;
-            }
-            console.log(index);
-            yield index++;
-        }
-    }
+    Tracker.autorun(() => {
+        console.log(Session.get('globalTimer'));
+    });
 
-    let index = indexGen();
-    Meteor.setInterval(() => {
-        let tmp = weatherCollection[index.next().value];
-
-        let payload = {
-            currently: tmp.currently,
-            lat: tmp.latitude,
-            lng: tmp.longitude
-        };
-
-        weather = payload;
-        weatherDep.changed();
-    }, TIMER_DELAY);
 });
 
 Template.MetIcons.onRendered(() => {
-
     $('[data-skycon]').each(initSkycon);
 });
 
