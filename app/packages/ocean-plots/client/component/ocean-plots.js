@@ -676,7 +676,10 @@ Template.OceanPlots.onRendered(() => {
             }
         },
         title: {
-            text: null
+             style: {
+       
+        color: "#F58220"
+    }
         },
         xAxis: {
             type: 'datetime',
