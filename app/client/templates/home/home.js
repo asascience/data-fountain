@@ -37,6 +37,7 @@ Template.Home.onCreated(() => {
 
     let index = indexGen();
     Meteor.setInterval(() => {
+        console.log(time);
         time = dataTimes[index.next().value];
         Session.set('globalTimer', time);
     }, TIMER_DELAY);

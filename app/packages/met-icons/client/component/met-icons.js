@@ -66,6 +66,20 @@ Template.MetIcons.helpers({
             if (!!exception instanceof TypeError)
                 console.log(exception);
         }
+    },
+    timeStep() {
+        try {
+            let weather = Template.instance().weather(),
+                timeStep = moment(weather.currently.time*1000).format();
+
+            console.log(weather);
+
+            return timeStep;
+        } catch (exception) {
+            if (!!exception instanceof TypeError)
+                console.log(exception);
+        }
+
     }
 });
 
