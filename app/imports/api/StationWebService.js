@@ -121,6 +121,8 @@ export default class StationWebService {
 
     fetchWeatherForecast() {
         try {
+            const FORECAST_API = process.env.FORECAST_API || Meteor.settings.forecastIoApi;
+            console.log(process.env);
             const DURATION = Meteor.settings.defaultDuration;
             // TODO: The coord here needs to reflect user settings of the reference station
             const COORD = [37.82, -75.98];
@@ -133,7 +135,7 @@ export default class StationWebService {
 
             if (weather.length === 0) {
                 for (let i=0; i < timeSet.length -1; i++) {
-                    let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
+                    let url = `https://api.forecast.io/forecast/${FORECAST_API}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
                     HTTP.get(url, (error, response) => {
                         if (error) {
                             console.log(`fetchWeatherForecast ${error}`);
@@ -149,7 +151,7 @@ export default class StationWebService {
                     for (let i=0; i < result; i++) {
                         let recentTimeIndex = timeSet.length - i,
                             timeRequest = timeSet[recentTimeIndex -1];
-                        let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeRequest}`;
+                        let url = `https://api.forecast.io/forecast/${FORECAST_API}/${COORD[0]},${COORD[1]},${timeRequest}`;
                         HTTP.get(url, (error, response) => {
                             if (error) {
                                 console.log(`fetchWeatherForecast ${error}`);
