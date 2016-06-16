@@ -128,7 +128,6 @@ export default class StationWebService {
             let referenceStation = Data.findOne({id: 'df-05'}, {fields: {'data.times': 1}});
 
             let timeSet = referenceStation.data.times;
-            console.log(timeSet);
 
             let weather = Weather.find({}).fetch();
 
@@ -145,13 +144,10 @@ export default class StationWebService {
                 }
             } else {
                 let mm = timeSet[0];
-                console.log(mm);
                 let result = Weather.remove({'currently.time': {$lte: moment().subtract(DURATION, 'hours').unix()}});
-                console.log(moment().subtract(DURATION, 'hours').toDate());
                 if (result !== 0) {
                     for (let i=0; i < result; i++) {
                         let recentTime = timeSet.length - i;
-                        console.log(recentTime);
 
                         let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[recentTime]}`;
                         HTTP.get(url, (error, response) => {
