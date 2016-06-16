@@ -23,8 +23,13 @@ Template.OceanPlots.onCreated(() => {
 });
 
 Template.OceanPlots.onRendered(() => {
-    const TIMER_DELAY = 1000 * Meteor.settings.public.screenRefreshDelaySeconds;
-
+	
+	 Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+    });
+   
     var data=[];
 
     var datacolumn1=[];
@@ -70,8 +75,7 @@ Template.OceanPlots.onRendered(() => {
 
     for(i=0;i<projectNames[0].times.length;i++)
     {
-        let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
-		
+         let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
 		
         if (projectNames[0].values[0][i] === 'NaN') {
             console.log(`No data available for date (with british accent) ${projectNames}`);
@@ -411,7 +415,7 @@ Template.OceanPlots.onRendered(() => {
 
                         var columntime=currentIndex;
 
-                        var excelDateString=moment.utc(newIdx).format('MM/DD/YYYY HH:mm A');;
+                        var excelDateString=moment(newIdx).format('MM/DD/YYYY HH:mm A');;
 
                         var chartseries = $('#container-column').highcharts();
 
@@ -441,9 +445,7 @@ Template.OceanPlots.onRendered(() => {
 									if(parseInt(dataSusquehanna[i].x)==parseInt(currentIndexnew))
 									{ 
 								
-								      console.log(i);
-									  console.log(dataSusquehanna[i].x);
-									  console.log(currentIndexnew);
+								    
 										
 										findy=dataSusquehanna[i].y;
 									}
