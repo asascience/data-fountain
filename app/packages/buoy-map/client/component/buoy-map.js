@@ -43,7 +43,8 @@ var Stats=Stations.find({}).fetch() ;
          			var long=Number(Stats[i].lon);//longitude
          			var station_name=Stats[i].title;
          			//Adding a point
-         			if(i==0)
+                    console.log(Stats);
+         			if(i==4)
          			{
 						var row = legend.insertRow();
 					    var cell1 = row.insertCell(0);
