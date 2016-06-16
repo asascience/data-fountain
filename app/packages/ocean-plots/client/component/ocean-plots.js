@@ -18,6 +18,7 @@ Template.OceanPlots.helpers({
 /* OceanPlots: Lifecycle Hooks */
 /*****************************************************************************/
 Template.OceanPlots.onCreated(() => {
+   
 
 });
 
@@ -40,6 +41,16 @@ Template.OceanPlots.onRendered(() => {
     var dataPatapsco=[];
 
     var dataGoosesReef=[];
+	
+	var dataNorfolk=[];
+	
+	var dataStingrayPoint=[];
+	
+	var dataJamestown=[];
+	
+	var dataFirstLanding=[];
+	
+	var dataPotomac=[];
 
     var categories=[];
 
@@ -49,7 +60,7 @@ Template.OceanPlots.onRendered(() => {
     _.each(listOfProjects, (obj) => {
 
 
-        if(obj.id=="df-01")
+        if(obj.id=="df-05")
             {
                 projectNames.push(obj.data.gageHeight);
             }
@@ -60,6 +71,8 @@ Template.OceanPlots.onRendered(() => {
     for(i=0;i<projectNames[0].times.length;i++)
     {
         let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
+		
+		
         if (projectNames[0].values[0][i] === 'NaN') {
             console.log(`No data available for date (with british accent) ${projectNames}`);
         } else {
@@ -78,39 +91,56 @@ Template.OceanPlots.onRendered(() => {
     var listOfProjectscolumn = Data.find().fetch();
 
     _.each(listOfProjectscolumn, (obj) => {
-        if(obj.id=="df-10" || obj.id=="df-06" || obj.id=="df-07" || obj.id=="df-08" || obj.id=="df-05")
-            {
+       
                 projectNamesColumn.push({label: obj.title, value: obj.id,data:obj.data.seaWaterSalinity});
-            }
+           
     });
 
-    for(i=0;i<5;i++){
+	
+    for(i=0;i<10;i++){
         for(j=0;j<1;j++){
-            categories.push(projectNamesColumn[i].label);
+			
+			if(projectNamesColumn[i].data!=undefined)
+			{
+				categories.push(projectNamesColumn[i].label);
             datacolumn1.push(projectNamesColumn[i].data.values[j][0]);
+			}
+			
+            
         }
     }
 
-    for(i=0;i<5;i++)
+	
+    for(i=0;i<10;i++)
     {
-        var  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
+		if(projectNames[0].times[i]!=undefined)
+		{
+		
+		
+     
 
-        if(projectNamesColumn[i].label=="First Landing")
+        if(projectNamesColumn[i].label=="Susquehanna")
             {
                 for(j=0;j<projectNamesColumn[i].data.times.length;j++)
                 {
+					
+					var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
                     dataSusquehanna.push({
-                        x: time,
+						
+                        x: updatedtime,
                         y: projectNamesColumn[i].data.values[0][j],
                         title:projectNamesColumn[i].label
                     });
+					
+					
                 }
-            }else if(projectNamesColumn[i].label=="Stingray Point")
+            }else if(projectNamesColumn[i].label=="Annapolis")
                 {
                     for(j=0;j<projectNamesColumn[i].data.times.length;j++)
                     {
+						var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
                         dataAnnapolis.push({
-                            x: time,
+                           x: updatedtime,
                             y: projectNamesColumn[i].data.values[0][j],
                             title:projectNamesColumn[i].label
                         });
@@ -118,25 +148,26 @@ Template.OceanPlots.onRendered(() => {
 
                     }
 
-                }else if(projectNamesColumn[i].label=="Potomac")
+                }else if(projectNamesColumn[i].label=="Upper Potomac")
                     {
                         for(j=0;j<projectNamesColumn[i].data.times.length;j++)
                         {
-
+                             var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
                             dataUpperPotomac.push({
-                                x: time,
+                                x: updatedtime,
                                 y: projectNamesColumn[i].data.values[0][j],
                                 title:projectNamesColumn[i].label
                             });
 
 
                         }
-                    }else if(projectNamesColumn[i].label=="Jamestown")
+                    }else if(projectNamesColumn[i].label=="Patapsco")
                         {
                             for(j=0;j<projectNamesColumn[i].data.times.length;j++)
                             {
+								var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
                                 dataPatapsco.push({
-                                    x: time,
+                                    x: updatedtime,
                                     y: projectNamesColumn[i].data.values[0][j],
                                     title:projectNamesColumn[i].label
                                 });
@@ -145,167 +176,96 @@ Template.OceanPlots.onRendered(() => {
                             }
                         }else if(projectNamesColumn[i].label=="Gooses Reef")
                             {
+								if(projectNamesColumn[i].data!=undefined)
+								{
+									
+								
                                 for(j=0;j<projectNamesColumn[i].data.times.length;j++)
                                 {
+									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
                                     dataGoosesReef.push({
-                                        x: time,
+                                         x: updatedtime,
+                                        y: projectNamesColumn[i].data.values[0][j],
+                                        title:projectNamesColumn[i].label
+                                    });
+                                }
+							}
+                            }
+							
+							else if(projectNamesColumn[i].label=="Norfolk")
+                            {
+								if(projectNamesColumn[i].data!=undefined)
+								{
+								
+                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+                                {
+									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
+                                    dataNorfolk.push({
+                                         x: updatedtime,
+                                        y: projectNamesColumn[i].data.values[0][j],
+                                        title:projectNamesColumn[i].label
+                                    });
+                                }
+								}
+                            }
+							
+							else if(projectNamesColumn[i].label=="Stingray Point")
+                            {
+								
+                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+                                {
+									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
+                                   dataStingrayPoint.push({
+                                       x: updatedtime,
                                         y: projectNamesColumn[i].data.values[0][j],
                                         title:projectNamesColumn[i].label
                                     });
                                 }
                             }
+							else if(projectNamesColumn[i].label=="Jamestown")
+                            {
+								
+                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+                                {
+									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
+                                   dataJamestown.push({
+                                       x: updatedtime,
+                                        y: projectNamesColumn[i].data.values[0][j],
+                                        title:projectNamesColumn[i].label
+                                    });
+                                }
+                            }
+							else if(projectNamesColumn[i].label== "Potomac")
+                            {
+								
+                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+                                {
+									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
+                                  dataPotomac.push({
+                                       x: updatedtime,
+                                        y: projectNamesColumn[i].data.values[0][j],
+                                        title:projectNamesColumn[i].label
+                                    });
+                                }
+                            }
+							else if(projectNamesColumn[i].label=="First Landing")
+                            {
+								
+                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
+                                {
+									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
+                                  dataFirstLanding.push({
+                                         x: updatedtime,
+                                        y: projectNamesColumn[i].data.values[0][j],
+                                        title:projectNamesColumn[i].label
+                                    });
+                                }
+                            }
+	}
     }
 
     datacolumn1
-
-
-    //series
-    $('#container-series').highcharts({
-        credits:{
-            enabled: false
-        },
-        plotOptions: {
-            spline: {
-                lineWidth: 6,
-                states: {
-                    hover: {
-                        lineWidth: 5
-                    }
-                },
-                marker: {
-                    enabled: false
-                }
-            }
-        },
-        chart: {
-            type: 'spline',
-            animation: Highcharts.svg, // don't animate in old IE
-            marginRight: 10,
-            events: {
-                load: function () {
-                    var  j=0;
-                    var myPlotLineId = "myPlotLine";
-                    var currentIndex = data[0].x;
-                    var length=data.length;
-                    var lastindex=data[length-1].x;
-                    var chart = $('#container-series').highcharts();
-                    var l = 30;
-                    var xAxis = this.series[0].chart.xAxis[0];
-                    var currentindextime=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');
-
-                    xAxis.addPlotLine({
-                        value: currentIndex,
-                        width: 4,
-                        color: 'Orange',
-                        id: myPlotLineId
-                    });
-
-                    var loopIndex = 0;
-
-                    Meteor.setInterval(function () {
-                        if (loopIndex > 44){
-                            loopIndex = 0;
-                        }
-
-                        var plotB = null;
-                        _.each(xAxis.plotLinesAndBands, function (plotLineBand) {
-                            if (plotLineBand.id === myPlotLineId) {
-                                plotB = plotLineBand;
-                            }
-                        });
-
-                        var newIdx = currentIndex + (loopIndex * 3600000);
-                        plotB.svgElem.destroy();
-                        plotB.svgElem = undefined;
-
-                        $.extend(plotB.options, {
-                            value : newIdx
-                        });
-
-                        plotB.render();
-
-                        loopIndex+=1;
-
-                        var columntime=currentIndex;
-
-                        var excelDateString=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');;
-
-                        var chartseries = $('#container-column').highcharts();
-
-                        var dataColumn=datacolumn1;
-                        var length=dataColumn.length;
-                        var xAxisColumn = chartseries.series[0].chart.xAxis[0];
-                        var dynamiccategories=[];
-
-                        var dynamicdata=[];
-
-
-
-                        dynamiccategories=['Susquehanna', 'Annapolis', 'Upper Potomac', 'Patapsco', 'Gooses Reef'];
-
-
-                        dynamicdata=[{y:dataSusquehanna[loopIndex].y, color:getColorForVal(dataSusquehanna[loopIndex].y,)},
-                            {y:dataAnnapolis[loopIndex].y, color:getColorForVal(dataSusquehanna[loopIndex].y,)},
-                        {y:dataUpperPotomac[loopIndex].y, color:getColorForVal(dataUpperPotomac[loopIndex].y,)},
-                        {y:dataPatapsco[loopIndex].y, color:getColorForVal(dataPatapsco[loopIndex].y,)},
-                        {y:dataGoosesReef[loopIndex].y, color:getColorForVal(dataGoosesReef[loopIndex].y,)}
-                        ]
-
-
-                        chartseries.series[0].chart.xAxis[0].setCategories(dynamiccategories);
-                        chartseries.series[0].setData(dynamicdata);
-
-                    }, TIMER_DELAY);
-
-                }
-            }
-        },
-        title: {
-            text: null
-        },
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 60,
-            labels: {
-                rotation:0,
-                style: {
-                    fontSize: '13px',
-                    fontFamily: 'Verdana, sans-serif'
-                }
-            }
-        },
-        yAxis: {
-            title: {
-                text: 'Water Level (ft)'
-            },
-
-            plotLines: [{
-                value: 1464814800,
-                width: 1,
-                color: '#808080'
-            }]
-        },
-        tooltip: {
-            enabled : false,
-            formatter: function () {
-                return '<b>' + this.series.name + '</b><br/>' +
-                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                    Highcharts.numberFormat(this.y, 2);
-            }
-        },
-        legend: {
-            enabled: false
-        },
-        exporting: {
-            enabled: false
-        },
-        series: [{
-            name : 'Random data',
-            data : data,
-        }]
-
-    });
-    //
+ //
     //column chart start
 
     $('#container-column').highcharts({
@@ -344,7 +304,11 @@ Template.OceanPlots.onRendered(() => {
             min: 0,
             max: 30,
             title: {
-                text: 'Salinity (PSU)'
+                text: 'Salinity (PSU)',
+				style: {
+				fontSize: '20px',
+                    fontFamily: 'Verdana, sans-serif'
+				}
             },
 
         },
@@ -369,6 +333,402 @@ Template.OceanPlots.onRendered(() => {
     });
 
 
+    //series
+    $('#container-series').highcharts({
+        credits:{
+            enabled: false
+        },
+        plotOptions: {
+            spline: {
+                lineWidth: 6,
+                states: {
+                    hover: {
+                        lineWidth: 5
+                    }
+                },
+                marker: {
+                    enabled: false
+                }
+            }
+        },
+        chart: {
+            type: 'spline',
+            animation: Highcharts.svg, // don't animate in old IE
+            marginRight: 10,
+            events: {
+                load: function () {
+                   
+	   var loopIndex = 0;
+	  
+	  
+	   var  j=0;
+                    var myPlotLineId = "myPlotLine";
+					
+					
+                   
+					
+					
+					 let  currenttime = (new Date(Session.get('globalTimer'))).getTime();
+					var currentIndex=currenttime;
+					
+                    var length=data.length;
+                    var lastindex=data[length-1].x;
+                    var chart = $('#container-series').highcharts();
+                    var l = 30;
+                    var xAxis = this.series[0].chart.xAxis[0];
+                    var currentindextime=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');
+                    
+                    xAxis.addPlotLine({
+                        value: currentIndex,
+                        width: 4,
+                        color: 'Orange',
+                        id: myPlotLineId
+                    });
+
+			
+					Meteor.autorun(() => {
+      
+              
+						 let  currenttimenew = (new Date(Session.get('globalTimer'))).getTime();
+					var currentIndexnew=currenttimenew;
+                        
+                        var plotB = null;
+                        _.each(xAxis.plotLinesAndBands, function (plotLineBand) {
+                            if (plotLineBand.id === myPlotLineId) {
+                                plotB = plotLineBand;
+                            }
+                        });
+
+                        var newIdx = currentIndexnew;
+                       /*   plotB.svgElem.destroy();
+                        plotB.svgElem = undefined;  */
+
+                        $.extend(plotB.options, {
+                            value : newIdx
+                        });
+
+                        plotB.render();
+
+                        var columntime=currentIndex;
+
+                        var excelDateString=moment.utc(newIdx).format('MM/DD/YYYY HH:mm A');;
+
+                        var chartseries = $('#container-column').highcharts();
+
+                        var dataColumn=datacolumn1;
+                        var length=dataColumn.length;
+                       
+                        var dynamiccategories=[];
+
+                        var dynamicdata=[];
+						
+						var findy="";
+
+						dynamiccategories=categories;
+						
+						
+						
+						for (k=0;k<dynamiccategories.length;k++)
+						{
+							if(dynamiccategories[k]=='Susquehanna')
+							{
+							   	
+							 
+							  
+								for(i=0;i<dataSusquehanna.length;i++)
+								{
+									
+									if(parseInt(dataSusquehanna[i].x)==parseInt(currentIndexnew))
+									{ 
+								
+								      console.log(i);
+									  console.log(dataSusquehanna[i].x);
+									  console.log(currentIndexnew);
+										
+										findy=dataSusquehanna[i].y;
+									}
+								}
+						
+								
+							dynamicdata.push({
+                                        y:findy,
+                                        color: getColorForVal(findy)
+                                    });
+									
+									
+							}
+							
+							
+							if(dynamiccategories[k]=='Annapolis')
+							{
+								
+								for(i=0;i<dataAnnapolis.length;i++)
+								{
+									
+									if(parseInt(dataAnnapolis[i].x)==parseInt(currentIndexnew))
+									{ 
+								
+										
+										findy=dataAnnapolis[i].y;
+									}
+								}
+						
+								
+							dynamicdata.push({
+                                        y:findy,
+                                        color: getColorForVal(findy)
+                                    });
+						
+							}
+							if(dynamiccategories[k]=='Upper Potomac')
+							{
+								
+								
+								for(i=0;i<dataUpperPotomac.length;i++)
+								{
+									
+									if(parseInt(dataUpperPotomac[i].x)==parseInt(currentIndexnew))
+									{ 
+								 
+										
+										findy=dataUpperPotomac[i].y;
+										
+										
+									}
+								}
+						
+								
+							dynamicdata.push({
+                                        y:findy,
+                                        color: getColorForVal(findy)
+                                    });
+							
+							}
+							if(dynamiccategories[k]=='Patapsco')
+							{
+								for(i=0;i<dataPatapsco.length;i++)
+								{
+									
+									if(parseInt(dataPatapsco[i].x)==parseInt(currentIndexnew))
+									{ 
+								
+										
+										findy=dataPatapsco[i].y;
+									}
+								}
+						
+								
+							dynamicdata.push({
+                                        y:findy,
+                                        color: getColorForVal(findy)
+                                    });
+								
+						
+							}
+							if(dynamiccategories[k]=='Gooses Reef')
+							{
+								
+								for(i=0;i<dataGoosesReef.length;i++)
+								{
+									
+									if(parseInt(dataGoosesReef[i].x)==parseInt(currentIndexnew))
+									{ 
+								
+										
+										findy=dataGoosesReef[i].y;
+									}
+								}
+						
+								
+							dynamicdata.push({
+                                        y:findy,
+                                        color: getColorForVal(findy)
+                                    });
+							
+							}
+							if(dynamiccategories[k]=='Norfolk')
+							{
+								
+								for(i=0;i<dataNorfolk.length;i++)
+								{
+									
+									if(parseInt(dataNorfolk[i].x)==parseInt(currentIndexnew))
+									{ 
+								
+										
+										findy=dataNorfolk[i].y;
+									}
+								}
+						
+								
+							dynamicdata.push({
+                                        y:findy,
+                                        color: getColorForVal(findy)
+                                    });
+							
+							}
+							if(dynamiccategories[k]=='Stingray Point')
+							{
+								
+								for(i=0;i<dataStingrayPoint.length;i++)
+								{
+									
+									if(parseInt(dataStingrayPoint[i].x)==parseInt(currentIndexnew))
+									{ 
+								
+										
+										findy=dataStingrayPoint[i].y;
+									}
+								}
+						
+								
+							dynamicdata.push({
+                                        y:findy,
+                                        color: getColorForVal(findy)
+                                    });
+								
+							
+							}
+							if(dynamiccategories[k]=='Jamestown')
+							{
+								
+								for(i=0;i<dataJamestown.length;i++)
+								{
+									
+									if(parseInt(dataJamestown[i].x)==parseInt(currentIndexnew))
+									{ 
+								
+										
+										findy=dataJamestown[i].y;
+									}
+								}
+						
+								
+							dynamicdata.push({
+                                        y:findy,
+                                        color: getColorForVal(findy)
+                                    });
+								
+							
+							}
+							if(dynamiccategories[k]=='Potomac')
+							{
+								
+								for(i=0;i<dataPotomac.length;i++)
+								{
+									
+									if(parseInt(dataPotomac[i].x)==parseInt(currentIndexnew))
+									{ 
+								
+										
+										findy=dataPotomac[i].y;
+									}
+								}
+						
+								
+							dynamicdata.push({
+                                        y:findy,
+                                        color: getColorForVal(findy)
+                                    });
+							
+							}
+							if(dynamiccategories[k]=='First Landing')
+							{
+								
+								for(i=0;i<dataFirstLanding.length;i++)
+								{
+									
+									if(parseInt(dataFirstLanding[i].x)==parseInt(currentIndexnew))
+									{ 
+								
+										
+										findy=dataFirstLanding[i].y;
+									}
+								}
+						
+								
+							dynamicdata.push({
+                                        y:findy,
+                                        color: getColorForVal(findy)
+                                    });
+							
+							}
+						}
+
+
+                        $('#container-column').highcharts().series[0].chart.xAxis[0].setCategories(dynamiccategories);
+                        $('#container-column').highcharts().series[0].setData(dynamicdata);
+						
+						
+						
+                         chart.setTitle({text: "Gooses Reef " + excelDateString});   
+					
+					
+					
+		
+		
+    });
+
+					
+                }
+            }
+        },
+        title: {
+            text: null
+        },
+        xAxis: {
+            type: 'datetime',
+            tickPixelInterval: 60,
+            labels: {
+                rotation:0,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Water Level (ft)',
+				style: {
+				fontSize: '20px',
+                    fontFamily: 'Verdana, sans-serif'
+				}
+            },
+  labels: {
+            style: {
+               fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+            }
+        },
+            plotLines: [{
+                value: 1464814800,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            enabled : false,
+            formatter: function () {
+                return '<b>' + this.series.name + '</b><br/>' +
+                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                    Highcharts.numberFormat(this.y, 2);
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        exporting: {
+            enabled: false
+        },
+        series: [{
+            name : 'Random data',
+            data : data,
+        }]
+
+    });
+   
+
 });
 
 function getColorForVal(data){
@@ -382,3 +742,4 @@ function getColorForVal(data){
     }
     return color;
 }
+
