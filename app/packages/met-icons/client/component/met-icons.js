@@ -70,7 +70,7 @@ Template.MetIcons.helpers({
     timeStep() {
         try {
             let weather = Template.instance().weather(),
-                timeStep = moment(weather.currently.time*1000).format();
+                timeStep = moment(weather.currently.time*1000).format('DD/MM HH:00');
 
             console.log(weather);
 
