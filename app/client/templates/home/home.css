@@ -35,6 +35,9 @@
     background-color: #4994D0;
     color: white;
     border-radius: 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 .home {
 }
