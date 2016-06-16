@@ -28,7 +28,7 @@ Template.Home.onCreated(() => {
     function* indexGen() {
         let index = 0;
         while(true) {
-            if (index == DURATION) {
+            if (index === dataTimes.length) {
                 index = 0;
             }
             yield index++;
