@@ -147,9 +147,11 @@ export default class StationWebService {
                 let result = Weather.remove({'currently.time': {$lte: moment().subtract(DURATION, 'hours').unix()}});
                 if (result !== 0) {
                     for (let i=0; i < result; i++) {
-                        let recentTime = timeSet.length - i;
+                        let recentTimeIndex = timeSet.length - i,
+                            timeRequest = timeSet[recentTimeIndex];
+                        console.log(timeRequest);
 
-                        let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeSet[recentTime]}`;
+                        let url = `https://api.forecast.io/forecast/${Meteor.settings.forecastIoApi}/${COORD[0]},${COORD[1]},${timeRequest}`;
                         HTTP.get(url, (error, response) => {
                             if (error) {
                                 console.log(`fetchWeatherForecast ${error}`);
