@@ -122,7 +122,6 @@ export default class StationWebService {
     fetchWeatherForecast() {
         try {
             const FORECAST_API = process.env.FORECAST_API || Meteor.settings.forecastIoApi;
-            console.log(process.env);
             const DURATION = Meteor.settings.defaultDuration;
             // TODO: The coord here needs to reflect user settings of the reference station
             const COORD = [37.82, -75.98];
