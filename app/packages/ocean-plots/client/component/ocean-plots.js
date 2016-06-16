@@ -441,9 +441,7 @@ Template.OceanPlots.onRendered(() => {
 									if(parseInt(dataSusquehanna[i].x)==parseInt(currentIndexnew))
 									{ 
 								
-								      console.log(i);
-									  console.log(dataSusquehanna[i].x);
-									  console.log(currentIndexnew);
+								    
 										
 										findy=dataSusquehanna[i].y;
 									}
