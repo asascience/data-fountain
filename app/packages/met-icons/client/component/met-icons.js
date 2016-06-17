@@ -92,12 +92,10 @@ Template.MetIcons.onCreated(() => {
 
     Template.instance().weather = (() => {
         weatherDep.depend();
-        console.log(weather[0]);
         return weather[0];
     });
 
     Tracker.autorun(() => {
-        console.log(moment(Session.get('globalTimer')).unix());
         weather = weatherCollection.filter((obj) => {
             return obj.currently.time === moment(Session.get('globalTimer')).unix();
         });
