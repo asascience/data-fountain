@@ -49,7 +49,7 @@ var Stats=Stations.find({}).fetch() ;
 					    var cell1 = row.insertCell(0);
 					    var cell2 = row.insertCell(1);
 					    cell1.innerHTML = "<div id='orangecircle' style='height: 20px; width: 20px;'></div>";
-					    cell2.innerHTML = `<span style="font-size: 20px">${station_name}</span>`;
+					    cell2.innerHTML = `<span style="font-size: 26px">${station_name}</span>`;
          				L.circle([lat, long], 4500, {
 						color: 'orange',
 						fillColor: 'orange',
@@ -62,7 +62,7 @@ var Stats=Stations.find({}).fetch() ;
 					    var cell1 = row.insertCell(0);
 					    var cell2 = row.insertCell(1);
 					    cell1.innerHTML = "<div id='blackcircle' style='height: 20px; width: 20px;'></div>";
-					    cell2.innerHTML = `<span style="font-size: 22px">${station_name}</span>`;
+					    cell2.innerHTML = `<span style="font-size: 26px">${station_name}</span>`;
 						L.circle([lat, long], 4500, {
 						color: 'black',
 						fillColor: 'black',

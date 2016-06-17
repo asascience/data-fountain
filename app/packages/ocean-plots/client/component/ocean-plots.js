@@ -310,6 +310,7 @@ Template.OceanPlots.onRendered(() => {
                 style: {
                     color: '#000',
                     font: '14px Verdana, sans-serif',
+                    fontWeight: 'bold'
                 },
             }
         },
@@ -321,7 +322,8 @@ Template.OceanPlots.onRendered(() => {
                 text: 'Salinity (PSU)',
 				style: {
 				fontSize: '20px',
-                    fontFamily: 'Verdana, sans-serif'
+                    fontFamily: 'Verdana, sans-serif',
+                    fontWeight: 'bold'
 				}
             },
 
@@ -711,12 +713,13 @@ Template.OceanPlots.onRendered(() => {
         },
         xAxis: {
             type: 'datetime',
-            tickPixelInterval: 60,
+            tickPixelInterval: 80,
             labels: {
                 rotation:0,
                 style: {
-                    fontSize: '13px',
-                    fontFamily: 'Verdana, sans-serif'
+                    fontSize: '16px',
+                    fontFamily: 'Verdana, sans-serif',
+                    fontWeight: 'bold'
                 }
             }
         },
@@ -725,13 +728,15 @@ Template.OceanPlots.onRendered(() => {
                 text: 'Water Level (ft)',
 				style: {
 				fontSize: '20px',
-                    fontFamily: 'Verdana, sans-serif'
+                    fontFamily: 'Verdana, sans-serif',
+                    fontWeight: 'bold'
 				}
             },
   labels: {
             style: {
                fontSize: '13px',
-                    fontFamily: 'Verdana, sans-serif'
+                    fontFamily: 'Verdana, sans-serif',
+                    fontWeight: 'bold'
             }
         },
             plotLines: [{

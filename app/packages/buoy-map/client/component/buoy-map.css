@@ -9,8 +9,8 @@
 }
 
 #map {
-    min-height: 675px;
-    min-width: 100%;
+    min-height: 742px;
+    width: 100%;
 }
 
 
@@ -21,8 +21,8 @@
 
 
 .legendTable {
-    width:200px;
-    margin-top: 15px;
+    width:250px;
+    margin-top: 17px;
     color:black;border-spacing: 5px; border-collapse: collapse; }
 .legendTable td {
     padding:3px;
@@ -48,7 +48,7 @@
 }
 #stationimg
 {
-    width:200px;
+    width:250px;
     height:275px;
     background-image: url("http://buoybay.noaa.gov/sites/default/files/images/Dominion_Gooses_Reef.jpg");
     background-repeat: no-repeat;

@@ -5,15 +5,19 @@
     margin-top: 10px;
 }
 .met-icons > div.icons {
-    width: 10%;
+    width: 14%;
+    padding-right: 10px;
     display: inline-block;
+    text-align: center;
 }
 
 .met-icons > div.logo-brand {
-    width: 35%;
+    width: 28%;
     display: inline-block;
     position: relative;
     vertical-align: top;
+    text-align: left;
+    padding-left: 20px;
 }
 
 .met-icons .logo-brand img {
