@@ -766,13 +766,17 @@ Template.OceanPlots.onRendered(() => {
 
 function getColorForVal(data){
     var color = '#4994D0'
-    if (data > 20){
-        color = '#990000';
-    }else if (data > 13){
-        color = '#e5e500';
-    }else{
-
-    }
+    // DISABLED COLOR FOR NOW... Paul wanted it all blue if
+    // we can only show salinity at this time.
+    //
+    //
+    // if (data > 20){
+    //     color = '#990000';
+    // }else if (data > 13){
+    //     color = '#e5e500';
+    // }else{
+    //
+    // }
     return color;
 }
 
