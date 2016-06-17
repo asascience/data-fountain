@@ -2,6 +2,7 @@
 /* MetIcons: Style */
 /*****************************************************************************/
 .met-icons: {
+    margin-top: 10px;
 }
 .met-icons > div.icons {
     width: 10%;
@@ -12,7 +13,7 @@
     width: 35%;
     display: inline-block;
     position: relative;
-    top: -30px;
+    vertical-align: top;
 }
 
 .met-icons .logo-brand img {
@@ -39,7 +40,7 @@
 
 .met-icons .wi-caption {
     font-weight:bold;
-    font-size: 2vw;
+    font-size: 1.5vw;
     color: #F58220;
 }
 
@@ -49,8 +50,8 @@
     font-size: 2vw;
     font-weight: bold;
     text-align: center;
-    padding-left: .8vw;
-    bottom: 7vw;
+    padding-left: .75vw;
+    bottom: 5.2vw;
     font-family: 'pirate';
     color: #4994d0;
 }

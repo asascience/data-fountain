@@ -1,22 +1,21 @@
 <template name="BuoyMap">
-	  <div class="buoy-map">
-	  	<table class='maintable'>
-	 	 <tr>
-	 	 <td class="left" >
-	    	<img id='stationimg'/>
-	  	 </td>
-	  	 <td class="right">
-
-	    	 <table  id='legendTable'  class='legendTable'> </table>
-	  	 </td>
-	 	 </tr>
-	 	 <tr>
-	  	<td colspan="2">
-			<div id='map'></div>
-	 	 </td>
-	 	 </tr>
-	 	 </table>
-
-	   </div>
-
+    <div class="buoy-map">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <img id='stationimg'/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table  id='legendTable'  class='legendTable'> </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div id='map'></div>
+            </div>
+        </div>
+    </div>
 </template>
