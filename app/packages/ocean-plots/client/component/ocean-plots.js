@@ -308,7 +308,6 @@ Template.OceanPlots.onRendered(() => {
                 rotation: 0,
                 y: 20,
                 style: {
-                    color: '#000',
                     font: '14px Verdana, sans-serif',
                     fontWeight: 'bold'
                 },
