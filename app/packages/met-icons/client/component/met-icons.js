@@ -135,7 +135,9 @@ datetime: moment date time of selected time, eg var datetime = moment()
 fraction: 0.0 (new moon) to 1.0 (full moon)
 phase: 0.0 to 1.0
 */
+    console.log(datetime);
     var moonStatus = SunCalc.getMoonIllumination(datetime);
+    console.log(moonStatus);
     //Phase Name: 0 New Moon, Waxing Crescent, 0.25  First Quarter, Waxing Gibbous, 0.5 Full Moon, Waning Gibbous, 0.75  Last Quarter, Waning Crescent
     var iconList = ['wi-moon-alt-new', 'wi-moon-alt-waxing-crescent-1', 'wi-moon-alt-waxing-crescent-2', 'wi-moon-alt-waxing-crescent-3', 'wi-moon-alt-waxing-crescent-4', 'wi-moon-alt-waxing-crescent-5', 'wi-moon-alt-waxing-crescent-6', 'wi-moon-alt-first-quarter', 'wi-moon-alt-waxing-gibbous-1', 'wi-moon-alt-waxing-gibbous-2', 'wi-moon-alt-waxing-gibbous-3', 'wi-moon-alt-waxing-gibbous-4', 'wi-moon-alt-waxing-gibbous-5', 'wi-moon-alt-waxing-gibbous-6', 'wi-moon-alt-full', 'wi-moon-alt-waning-gibbous-1', 'wi-moon-alt-waning-gibbous-2', 'wi-moon-alt-waning-gibbous-3', 'wi-moon-alt-waning-gibbous-4', 'wi-moon-alt-waning-gibbous-5', 'wi-moon-alt-waning-gibbous-6', 'wi-moon-alt-third-quarter', 'wi-moon-alt-waning-crescent-1', 'wi-moon-alt-waning-crescent-2', 'wi-moon-alt-waning-crescent-3', 'wi-moon-alt-waning-crescent-4', 'wi-moon-alt-waning-crescent-5', 'wi-moon-alt-waning-crescent-6']
     var step = 1/iconList.length
@@ -144,7 +146,8 @@ phase: 0.0 to 1.0
     .domain(d3.range(0,1+step,step))
     .range(d3.range(0,iconList.length+1));
 
-    var idx = Math.floor(o(moonStatus.fraction.toFixed(2)));
+
+    var idx = Math.floor(o(moonStatus.phase.toFixed(2)));
     return iconList[idx];
 });
 
