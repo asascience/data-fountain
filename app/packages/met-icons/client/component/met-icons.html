@@ -1,5 +1,8 @@
 <template name="MetIcons">
-    <div class="met-icons text-center" style="padding-top: 20px;">
+    <div class="met-icons" style="padding: 20px 0 0 150px;">
+        <div class="logo-brand">
+            <img src="logo.png">
+        </div>
         <div class="icons">
             <i class="wi {{lunarIcon}}"></i>
             <div class="wi-caption">Lunar</div>
@@ -15,22 +18,19 @@
             <i class="wi wi-fahrenheit wi-units"></i>
             <div class="wi-caption">Temperature</div>
         </div>
-        <div class="logo-brand">
-            <img src="logo.png">
-        </div>
         <div class="icons">
             <span class="wi-cardinal">N</span>
             <i class="wi wi-wind towards-{{windBearing}}-deg"></i>
-            <div class="wi-caption" style="font-size: 1.5vw">Wind Direction</div>
+            <div class="wi-caption">Wind Direction</div>
         </div>
         <div class="icons">
             <i class="wi wi-strong-wind" style="font-size: 3vw;"></i>
             <span class="wi-data"> {{windSpeed}}<small class="wi-units" style="font-size: 1vw">mph</small></span>
-            <div class="wi-caption" style="font-size: 1.5vw">Wind Speed</div>
+            <div class="wi-caption">Wind Speed</div>
         </div>
-        <div class="icons">
-            <span class="wi-data">48 Hours</span>
-          <div class="wi-caption">Duration</div>
-        </div>
+        <!-- <div class="icons"> -->
+        <!--     <span class="wi&#45;data">48 Hours</span> -->
+        <!--   <div class="wi&#45;caption">Duration</div> -->
+        <!-- </div> -->
     </div>
 </template>

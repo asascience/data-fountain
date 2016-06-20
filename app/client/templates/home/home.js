@@ -21,7 +21,7 @@ Template.Home.onCreated(() => {
     let REFERENCE_STATION = _this.data.referenceStation;
     let dataTimes = Data.findOne({id: REFERENCE_STATION}, {fields: {'data.times': 1}});
     dataTimes = dataTimes.data.times;
-    
+
     // using var explicitly
     var time;
 
@@ -40,10 +40,6 @@ Template.Home.onCreated(() => {
         time = dataTimes[index.next().value];
         Session.set('globalTimer', time);
     }, TIMER_DELAY);
-	
-	
-
-	 
 });
 
 Template.Home.onRendered(() => {

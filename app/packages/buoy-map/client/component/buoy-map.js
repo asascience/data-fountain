@@ -43,14 +43,13 @@ var Stats=Stations.find({}).fetch() ;
          			var long=Number(Stats[i].lon);//longitude
          			var station_name=Stats[i].title;
          			//Adding a point
-                    console.log(Stats);
          			if(i==4)
          			{
 						var row = legend.insertRow();
 					    var cell1 = row.insertCell(0);
 					    var cell2 = row.insertCell(1);
-					    cell1.innerHTML = "<div id='orangecircle'></div>";
-					    cell2.innerHTML = station_name;
+					    cell1.innerHTML = "<div id='orangecircle' style='height: 20px; width: 20px;'></div>";
+					    cell2.innerHTML = `<span style="font-size: 26px">${station_name}</span>`;
          				L.circle([lat, long], 4500, {
 						color: 'orange',
 						fillColor: 'orange',
@@ -62,8 +61,8 @@ var Stats=Stations.find({}).fetch() ;
 						var row = legend.insertRow();
 					    var cell1 = row.insertCell(0);
 					    var cell2 = row.insertCell(1);
-					    cell1.innerHTML = "<div id='blackcircle'></div>";
-					    cell2.innerHTML = station_name;
+					    cell1.innerHTML = "<div id='blackcircle' style='height: 20px; width: 20px;'></div>";
+					    cell2.innerHTML = `<span style="font-size: 26px">${station_name}</span>`;
 						L.circle([lat, long], 4500, {
 						color: 'black',
 						fillColor: 'black',

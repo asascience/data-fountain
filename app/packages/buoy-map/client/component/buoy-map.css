@@ -9,8 +9,8 @@
 }
 
 #map {
-    min-height: 415px;
-    min-width: 100%;
+    min-height: 742px;
+    width: 100%;
 }
 
 
@@ -20,12 +20,22 @@
 .maintable td.right{vertical-align:top;width:100%;}
 
 
-.legendTable { width:100%;color:black;border-spacing: 5px; border-collapse: collapse; }
-.legendTable td {padding:3px;}
+.legendTable {
+    width:250px;
+    margin-top: 17px;
+    color:black;border-spacing: 5px; border-collapse: collapse; }
+.legendTable td {
+    padding:3px;
+    text-size: 20px;
+
+}
 
 /* provide some minimal visual accomodation for IE8 and below */
 .legendTable tr{
     background: #b8d1f3;
+}
+.legendTable td {
+    font-size: 30px;
 }
 /*  Define the background color for all the ODD background rows  */
 .legendTable tr:nth-child(odd){
@@ -38,9 +48,10 @@
 }
 #stationimg
 {
-    width:200px;
-    height:235px;
+    width:250px;
+    height:275px;
     background-image: url("http://buoybay.noaa.gov/sites/default/files/images/Dominion_Gooses_Reef.jpg");
+    background-repeat: no-repeat;
 }
 
 .text-labels

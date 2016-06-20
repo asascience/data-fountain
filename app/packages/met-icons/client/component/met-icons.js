@@ -72,8 +72,6 @@ Template.MetIcons.helpers({
             let weather = Template.instance().weather(),
                 timeStep = moment(weather.currently.time*1000).format('DD/MM HH:00');
 
-            console.log(weather);
-
             return timeStep;
         } catch (exception) {
             if (!!exception instanceof TypeError)
@@ -87,10 +85,8 @@ Template.MetIcons.helpers({
 /* MetIcons: Lifecycle Hooks */
 /*****************************************************************************/
 Template.MetIcons.onCreated(() => {
-    let _this = Template.instance();
-    const DURATION = Meteor.settings.public.defaultDuration;
-    const TIMER_DELAY = 1000 * Meteor.settings.public.screenRefreshDelaySeconds;
     const weatherDep = new Tracker.Dependency;
+
     let weatherCollection = Weather.find({}).fetch(),
         weather = {};
 
@@ -105,7 +101,6 @@ Template.MetIcons.onCreated(() => {
         });
         weatherDep.changed();
     });
-
 });
 
 Template.MetIcons.onRendered(() => {
