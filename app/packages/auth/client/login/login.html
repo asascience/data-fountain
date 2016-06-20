@@ -1,0 +1,42 @@
+<template name="Login">
+
+    <div class="block-center mt-xl wd-xl">
+        <!-- START panel-->
+        <div class="panel panel-dark panel-flat">
+            <div class="panel-heading text-center">
+                <a href="#">
+                    <img src="logo.png" alt="Image" class="block-center img-rounded" width="100%" />
+                </a>
+            </div>
+            <div class="panel-body">
+                <p class="text-center pv">SIGN IN TO CONTINUE.</p>
+                <form class="m-t" role="form" action="{{pathFor route='home'}}">
+                    <div class="form-group">
+                        <input type="email" class="form-control" placeholder="Username" required="">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" placeholder="Password" required="">
+                    </div>
+                    <div class="pull-right">
+                        <a href="{{pathFor route='Recover'}}">
+                            <small>Forgot password?</small>
+                        </a>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary block full-width m-b">Login</button>
+                        <br>
+                        <br>
+                    </div>
+                    <p class="text-muted text-center">
+                    <small>Do not have an account?</small>
+                    <br>
+                    <a class="btn btn-sm btn-white btn-block" href="{{pathFor route='Register'}}">Create an account</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+        <!-- END panel-->
+
+
+  </div>
+</template>

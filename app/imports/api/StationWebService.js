@@ -146,7 +146,7 @@ export default class StationWebService {
                 }
             } else {
                 let mm = timeSet[0];
-                if (result !== 0) {
+                if (removeCount !== 0) {
                     for (let i=0; i < removeCount; i++) {
                         let recentTimeIndex = timeSet.length - i,
                             timeRequest = timeSet[recentTimeIndex -1];
@@ -155,8 +155,7 @@ export default class StationWebService {
                             if (error) {
                                 console.log(`fetchWeatherForecast ${error}`);
                             } else {
-                                let result = Weather.insert(response.data);
-                                console.log(result);
+                                Weather.insert(response.data);
                             }
                         });
                     }
@@ -164,6 +163,7 @@ export default class StationWebService {
             }
         } catch (exception) {
             console.log('There was an error, trying again in 10 seconds');
+            console.log(exception);
             Meteor.setTimeout(() => {
                 this.fetchWeatherForecast();
             }, 10000);
