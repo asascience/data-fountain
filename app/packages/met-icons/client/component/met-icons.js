@@ -144,7 +144,8 @@ phase: 0.0 to 1.0
     .domain(d3.range(0,1+step,step))
     .range(d3.range(0,iconList.length+1));
 
-    var idx = Math.floor(o(moonStatus.fraction.toFixed(2)));
+
+    var idx = Math.floor(o(moonStatus.phase.toFixed(2)));
     return iconList[idx];
 });
 
