@@ -1,3 +1,4 @@
+import swal from 'sweetalert';
 /*****************************************************************************/
 /* Login: Event Handlers */
 /*****************************************************************************/
@@ -11,16 +12,16 @@ Template.Login.events({
 
         Meteor.loginWithPassword(data.email.toLowerCase(), data.password, (err) => {
             if (err) {
-                swal('Nope!', 'That was not the right login', 'warning');
+                swal('Sorry!', 'That was not the right login', 'warning');
                 return;
+            } else {
+                if (Router.current().route.name === 'login') {
+                    Router.render('/admin');
+                }
             }
-            if (Router.current().route.name === 'login') {
-                console.log('test');
-               Router.render('/admin');
-            }
-            setTimeout(function() {
-                Router.go('/admin');
-            }, 500);
+            // setTimeout(function() {
+            //     Router.go('/admin');
+            // }, 500);
         });
     }
 });

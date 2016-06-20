@@ -1,7 +1,6 @@
 Router.onBeforeAction(function() {
     if (!Meteor.userId() && !Meteor.loggingIn()) {
         this.render('Login');
-        this.stop();
     } else {
         this.next();
     }

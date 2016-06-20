@@ -5,7 +5,9 @@ Package.describe({
   git: "https://github.com/<username>/auth.git",
 });
 
-//Npm.depends({});
+Npm.depends({
+    'sweetalert': '1.1.3'
+});
 
 Package.onUse(function(api) {
   api.versionsFrom('1.3.2');
@@ -22,6 +24,8 @@ Package.onUse(function(api) {
 
   api.mainModule('server/auth.js', 'server');
   api.mainModule('client/auth.js', 'client');
+
+  api.addFiles('client/sweetalert.css', 'client');
 
   api.addFiles('client/login/login.html', 'client');
   api.addFiles('client/login/login.js', 'client');
