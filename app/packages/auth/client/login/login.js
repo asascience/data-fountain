@@ -15,10 +15,11 @@ Template.Login.events({
                 return;
             }
             if (Router.current().route.name === 'login') {
-               Router.go('/');
+                console.log('test');
+               Router.render('/admin');
             }
             setTimeout(function() {
-                Router.go('/');
+                Router.go('/admin');
             }, 500);
         });
     }

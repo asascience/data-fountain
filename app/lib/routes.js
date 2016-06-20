@@ -12,7 +12,7 @@ Router.route('/', {
 });
 
 
-Router.route('admin', {
+Router.route('/admin', {
   name: 'admin',
   controller: 'AdminController',
   where: 'client'
