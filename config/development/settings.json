@@ -1,10 +1,11 @@
 {
   "public": {
-      "screenRefreshDelaySeconds": 1,
+      "screenRefreshDelaySeconds": 2,
       "defaultDuration": 48
   },
   "dataFountainUrl": "http://dev.oceansmap.com/data-fountain",
   "defaultDuration": 48,
   "refreshTheData": "every 1 hour",
-  "forecastIoApi": "86789bf312dce55b29fd2f8444e3f5d5"
+  "forecastIoApi": "30ff0831d323444ba01b79a9b94faa0e",
+  "forecastIoCoord": [37.82, -75.98]
 }
