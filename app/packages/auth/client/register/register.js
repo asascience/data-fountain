@@ -14,13 +14,23 @@ Template.Register.events({
             email: email,
             password: password,
             profile: {
-                name: name
+                name,
+                primaryStation: null,
+                proximityStations: [],
+                dataDuration: null,
+                refreshInterval: null,
+                temperatureUnit: null,
+                infoTickerText: null,
+                timeZone: null,
+                topPlotDataParameter: null,
+                bottomPlotDataParameter: null,
+                forecastIoApi: null
             },
         }, (err) => {
             if (err) {
                 console.log(err);
             } else {
-                Router.go('/');
+                Router.go('/admin');
             }
         });
     }
