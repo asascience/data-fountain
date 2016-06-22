@@ -17,3 +17,10 @@ Router.route('/admin', {
   controller: 'AdminController',
   where: 'client'
 });
+
+
+Router.route('maintenance', {
+  name: 'maintenance',
+  controller: 'MaintenanceController',
+  where: 'client'
+});
