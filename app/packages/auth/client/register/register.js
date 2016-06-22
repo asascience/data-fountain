@@ -23,13 +23,14 @@ Template.Register.events({
                 infoTickerText: null,
                 timeZone: null,
                 topPlotDataParameter: null,
-                bottomPlotDataParameter: null
+                bottomPlotDataParameter: null,
+                forecastIoApi: null
             },
         }, (err) => {
             if (err) {
                 console.log(err);
             } else {
-                Router.go('/');
+                Router.go('/admin');
             }
         });
     }
