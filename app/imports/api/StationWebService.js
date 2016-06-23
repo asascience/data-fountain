@@ -124,7 +124,7 @@ export default class StationWebService {
             // These are server settings, and should be configured via the user profile.
             const FORECAST_API = process.env.FORECAST_API || Meteor.settings.forecastIoApi;
             const DURATION = Meteor.settings.defaultDuration;
-            const COORD = process.env.FORECAST_COORD || Meteor.settings.forecastIoApi;
+            const COORD = [process.env.FORECAST_COORD_LAT, process.env.FORECAST_COORD_LON] || Meteor.settings.forecastIoApi;
             let referenceStation = Data.find({}, {fields: {'data.times': 1}}).fetch();
 
             // We don't want to force a station to reference, so lets just get the times
@@ -159,7 +159,6 @@ export default class StationWebService {
                     });
                 }
             } else {
-                let mm = timeSet[0];
                 if (removeCount !== 0) {
                     for (let i=0; i < removeCount; i++) {
                         let recentTimeIndex = timeSet.length - i,
@@ -182,6 +181,5 @@ export default class StationWebService {
                 this.fetchWeatherForecast();
             }, 10000);
         }
-
     }
 }
