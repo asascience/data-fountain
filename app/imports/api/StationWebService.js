@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { EJSON } from 'meteor/ejson';
 import { moment } from 'meteor/mrt:moment';
+import Buoy from 'buoyjs';
 
 import humps from 'humps';
 
@@ -32,6 +33,7 @@ export default class StationWebService {
 
             data.forEach((station) => {
                 Object.assign(station, {createdAt: currentUnix});
+                Object.assign(station, {stationId: station.ndbc.split(':').reverse()[0]});
                 Stations.upsert({id: station.id}, station);
             });
             console.log('[+] Station compilations complete.');
@@ -56,7 +58,9 @@ export default class StationWebService {
                 console.log(`${exception}, please make sure settings are configured.`);
             }
         }
+    }
 
+    fetchBuoyData() {
     }
 
     fetchStationsData() {
@@ -75,19 +79,20 @@ export default class StationWebService {
             startDate.setHours(startDate.getHours() - DURATION);
             startDate = startDate.toISOString();
 
-            let stationUrls = Stations.find({}, {fields: {dataUrl: 1, id: 1, title: 1}}).fetch();
+            let stations = Stations.find({}, {fields: {dataUrl: 1, id: 1, title: 1, stationId: 1}}).fetch();
 
             // create a place to store the results
             let dataSet = [];
 
-            for (let stationUrl of stationUrls) {
+            for (let station of stations) {
                 let data = {};
                 let headers;
 
                 // create the URL
-                let compiledUrl = `${Meteor.settings.dataFountainUrl}${stationUrl.dataUrl}?time=${startDate}/${endDate}`;
-                data.id = stationUrl.id;
-                data.title = stationUrl.title;
+                let compiledUrl = `${Meteor.settings.dataFountainUrl}${station.dataUrl}?time=${startDate}/${endDate}`;
+                data.id = station.id;
+                data.title = station.title;
+                data.stationId = station.stationId;
 
                 // make the call to get the scientific data, and block with future.
                 HTTP.call('GET', compiledUrl, (error, response) => {
@@ -96,7 +101,7 @@ export default class StationWebService {
                         // TODO: Add this into logs.  Not doing it now because logs have not
                         // TODO: been setup for this project.
                         //console.log(`${error} or ${response.error} . . . one of the two. Removing this station.`);
-                        Stations.remove({dataUrl: stationUrl.dataUrl});
+                        Stations.remove({dataUrl: station.dataUrl});
                     } else {
                         // make the data usable for JavaScript
                         Object.assign(data, Humps.camelizeKeys(response.data));
@@ -104,7 +109,32 @@ export default class StationWebService {
                         // keep the headers
                         Object.assign(data, response.headers);
 
-                        Data.upsert({id: data.id}, data);
+                        let result = Data.upsert({id: data.id}, data);
+
+                        if (result.numberAffected !== 0) {
+                            let ndbcRootUrl = `http://www.ndbc.noaa.gov/data/realtime2/`;
+                            HTTP.get(`${ndbcRootUrl}${data.stationId}.ocean`, (error, response) => {
+                                if (!error) {
+                                    let currentBuoyData = Buoy.Buoy.realTime(response.content),
+                                        times = [],
+                                        values = [];
+
+                                    currentBuoyData.forEach((datum) => {
+                                        times.push(moment(datum.date).seconds(0).milliseconds(0).toISOString());
+                                        values.push(datum.oceanTemp);
+                                    });
+
+                                    let oceanTemp = {
+                                        times,
+                                        values,
+                                        units: 'degrees_Celsius',
+                                        type: 'timeSeries'
+                                    };
+                                    data.oceanTemp = oceanTemp;
+                                    Data.upsert({id: data.id}, data);
+                                }
+                            });
+                        }
                     }
                 });
             }

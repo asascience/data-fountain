@@ -12,4 +12,5 @@ Meteor.startup(() => {
     stationWebService.fetchStations();
     stationWebService.fetchStationsData();
     stationWebService.fetchWeatherForecast();
+    stationWebService.fetchBuoyData();
 });
