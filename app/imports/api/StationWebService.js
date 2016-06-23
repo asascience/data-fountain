@@ -17,6 +17,11 @@ export default class StationWebService {
         return Math.round(new Date().getTime()/1000);
     }
 
+    _convertCtoF(value) {
+        let fahr = value * 9 / 5 + 32;
+        return fahr;
+    }
+
     fetchStations() {
         console.log('[+] Compiling a collection of stations');
         try {
@@ -60,13 +65,11 @@ export default class StationWebService {
         }
     }
 
-    fetchBuoyData() {
-    }
-
     fetchStationsData() {
         console.log(`[+] Compiling a collection of data from stations`);
         try {
             // define our method constants
+            let _this = this;
             const Humps = Npm.require('humps');
             const DATE = new Date();
             const DURATION = Meteor.settings.defaultDuration;
@@ -121,16 +124,16 @@ export default class StationWebService {
 
                                     currentBuoyData.forEach((datum) => {
                                         times.push(moment(datum.date).seconds(0).milliseconds(0).toISOString());
-                                        values.push(datum.oceanTemp);
+                                        values.push(_this._convertCtoF(datum.oceanTemp));
                                     });
 
                                     let oceanTemp = {
                                         times,
-                                        values,
+                                        values: Array(values),
                                         units: 'degrees_Celsius',
                                         type: 'timeSeries'
                                     };
-                                    data.oceanTemp = oceanTemp;
+                                    data.data.oceanTemp = oceanTemp;
                                     Data.upsert({id: data.id}, data);
                                 }
                             });
