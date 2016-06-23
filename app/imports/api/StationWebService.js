@@ -34,7 +34,7 @@ export default class StationWebService {
                 Object.assign(station, {createdAt: currentUnix});
                 Stations.upsert({id: station.id}, station);
             });
-            console.log('[+] Station compilations complete.  Station Collection now available.');
+            console.log('[+] Station compilations complete.');
             return;
         } catch (exception) {
             if (exception.response) {
@@ -109,7 +109,7 @@ export default class StationWebService {
                 });
             }
 
-            console.log(`[+] Station Data compilations complete. Data Collection now available`);
+            console.log(`[+] Station Data compilations complete.`);
             return;
             // when the future is ready, return the data.
         } catch(exception) {
@@ -121,14 +121,28 @@ export default class StationWebService {
 
     fetchWeatherForecast() {
         try {
+            // These are server settings, and should be configured via the user profile.
             const FORECAST_API = process.env.FORECAST_API || Meteor.settings.forecastIoApi;
             const DURATION = Meteor.settings.defaultDuration;
-            // TODO: The coord here needs to reflect user settings of the reference station
-            const COORD = [37.82, -75.98];
-            // TODO: The id here needs to reflect user settings of the reference station.
-            let referenceStation = Data.findOne({id: 'df-05'}, {fields: {'data.times': 1}});
+            const COORD = process.env.FORECAST_COORD || Meteor.settings.forecastIoApi;
+            let referenceStation = Data.find({}, {fields: {'data.times': 1}}).fetch();
 
-            let timeSet = referenceStation.data.times;
+            // We don't want to force a station to reference, so lets just get the times
+            // form any available station.  Loop through each and exit when we find
+            // any valid time array.
+            let timeSet = undefined,
+                killLoop = referenceStation.length - 1,
+                i = 0;
+
+            do {
+                timeSet = referenceStation[i].data.times;
+                i++;
+
+                // In case all the stations are invalid, lets not create an infinite loop.
+                // Also, if that's the case, kill the server.
+                if (i === killLoop) process.exit(1);
+
+            } while(!timeSet);
 
             let weather = Weather.find({}).fetch();
 

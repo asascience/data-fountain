@@ -6,7 +6,6 @@ Package.describe({
 });
 
 Npm.depends({
-    'forecast': '0.2.1',
     'suncalc': '1.7.0'
 });
 

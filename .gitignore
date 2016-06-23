@@ -1,6 +1,7 @@
 .electrify/
 node_modules/
 .npm/
+config/production/
 *.DS_Store
 *.swp
 *.swo
