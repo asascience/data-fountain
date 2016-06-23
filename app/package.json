@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "dist": "^0.1.2",
+    "buoyjs": "^1.3.6",
     "humps": "^1.1.0"
   },
   "devDependencies": {},
