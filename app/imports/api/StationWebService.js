@@ -99,7 +99,6 @@ export default class StationWebService {
 
                 // make the call to get the scientific data, and block with future.
                 HTTP.call('GET', compiledUrl, (error, response) => {
-
                     if (error || response.error) {
                         // TODO: Add this into logs.  Not doing it now because logs have not
                         // TODO: been setup for this project.
@@ -112,31 +111,66 @@ export default class StationWebService {
                         // keep the headers
                         Object.assign(data, response.headers);
 
-                        let result = Data.upsert({id: data.id}, data);
+                        if (data.data.times !== null) {
+                            let result = Data.upsert({id: data.id}, data);
 
-                        if (result.numberAffected !== 0) {
-                            let ndbcRootUrl = `http://www.ndbc.noaa.gov/data/realtime2/`;
-                            HTTP.get(`${ndbcRootUrl}${data.stationId}.ocean`, (error, response) => {
-                                if (!error) {
-                                    let currentBuoyData = Buoy.Buoy.realTime(response.content),
-                                        times = [],
-                                        values = [];
+                            if (result.numberAffected !== 0) {
+                                let ndbcRootUrl = `http://www.ndbc.noaa.gov/data/realtime2/`;
+                                HTTP.get(`${ndbcRootUrl}${data.stationId}.ocean`, (error, response) => {
+                                    if (!error) {
+                                        let currentBuoyData = Buoy.Buoy.realTime(response.content),
+                                            times = [],
+                                            oceanTempValues = [],
+                                            clconValues = [],
+                                            o2ppmValues = [],
+                                            turbidityValues = [];
 
-                                    currentBuoyData.forEach((datum) => {
-                                        times.push(moment(datum.date).seconds(0).milliseconds(0).toISOString());
-                                        values.push(_this._convertCtoF(datum.oceanTemp));
-                                    });
+                                        currentBuoyData.forEach((datum) => {
+                                            times.push(moment(datum.date).seconds(0).milliseconds(0).toISOString());
+                                            oceanTempValues.push(_this._convertCtoF(datum.oceanTemp));
+                                            clconValues.push(datum.chlorophyllConcentration);
+                                            o2ppmValues.push(datum.oxygenPartsPerMil);
+                                            turbidityValues.push(datum.turbidity);
+                                        });
 
-                                    let oceanTemp = {
-                                        times,
-                                        values: Array(values),
-                                        units: 'degrees_Celsius',
-                                        type: 'timeSeries'
-                                    };
-                                    data.data.oceanTemp = oceanTemp;
-                                    Data.upsert({id: data.id}, data);
-                                }
-                            });
+                                        // values have to be put into another array to stay consistent
+                                        // with OceansMap.  For some reason they are a multi array.
+                                        let oceanTemp = {
+                                            times,
+                                            values: Array(oceanTempValues),
+                                            units: 'degrees_Celsius',
+                                            type: 'timeSeries'
+                                        };
+
+                                        let chloriohyllCon = {
+                                            times,
+                                            values: Array(clconValues),
+                                            units: 'ug/1',
+                                            type: 'timeSeries'
+                                        };
+
+                                        let oxygenPartsPerMil = {
+                                            times,
+                                            values: Array(o2ppmValues),
+                                            units: 'ppm',
+                                            type: 'timeSeries'
+                                        };
+
+                                        let turbidity = {
+                                            times,
+                                            values: Array(turbidityValues),
+                                            units: 'ftu',
+                                            type: 'timeSeries'
+                                        };
+
+                                        data.data.oceanTemp = oceanTemp;
+                                        data.data.chloriohyllCon = chloriohyllCon;
+                                        data.data.oxygenPartsPerMil = oxygenPartsPerMil;
+                                        data.data.turbidity = turbidity;
+                                        Data.upsert({id: data.id}, data);
+                                    }
+                                });
+                            }
                         }
                     }
                 });
