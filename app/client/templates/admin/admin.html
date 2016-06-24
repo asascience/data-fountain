@@ -1,5 +1,115 @@
 <template name="Admin">
   <div class="admin">
-    <h1>Find me in app/client/templates/admin/admin</h1>
+   
+    <div class="main-content">
+
+        <!-- You only need this form and the form-basic.css -->
+
+        <form class="form-basic" method="post" action="#">
+
+            <div class="form-title-row">
+                <h1>User Settings</h1>
+            </div>
+
+            <div class="form-row">
+                <label>
+                    <span>Reference Station</span>
+                  	<select class="category-select" id="category-select">
+    
+    {{#each categories}}
+        <option value="{{this}}">{{this}}</option>
+    {{/each}}
+</select>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <label>
+                    <span>Other Station</span>
+                 </label>
+  <select  class="chosen-select" id="chosen-select"  multiple  style="width:250px">
+   {{#each categories}}
+        <option value="{{this}}">{{this}}</option>
+    {{/each}}
+  </select>
+  
+  
+   
+            </div>
+
+            <div class="form-row">
+               <label>
+			   <span>Time(max 48hrs)</span>
+       
+            <input type="text" style="max-width:80px" id="maxtime" />
+       
+		</label>
+            </div>
+
+			
+			  <div class="form-row">
+               <label>
+			   <span>Page refresh interval(in seconds) </span>
+       
+            <input type="text" style="max-width:80px" id="pagerefresh" />
+       
+		</label>
+            </div>
+           
+
+           
+
+            <div class="form-row">
+                <label><span>Temperature</span></label>
+                <div class="form-radio-buttons">
+
+                    <div>
+                        <label>
+                            <input type="radio" name="radio" value="Celsius">
+                            <span>Celsius</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            <input type="radio" name="radio" value="Fahrenheit">
+                            <span>Fahrenheit</span>
+                        </label>
+                    </div>
+
+                 
+
+                </div>
+            </div>
+			
+			<div class="form-row">
+                <label>
+                    <span>Time Zone</span>
+                  	<select class="timezone-select" id="timezone-select">
+    
+   
+        <option value="EST">Eastern Standard Time (EST).</option>
+		<option value="CST">Central Standard Time (CST).</option>
+		<option value="MST">Mountain Standard Time (MST).</option>
+		<option value="PST">Pacific Standard Time (PST).</option>
+    
+</select>
+                </label>
+            </div>
+ <div class="form-row">
+                <label>
+                    <span>Ticket Marquee</span>
+                    <textarea id="ticketmarquee" name="textarea"></textarea>
+                </label>
+            </div>
+			 
+			
+            <div class="form-row">
+                <button type="submit">Submit Form</button>
+            </div>
+
+        </form>
+
+    </div>
   </div>
 </template>

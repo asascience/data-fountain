@@ -46,3 +46,5 @@ meteorhacks:kadira
 auth
 accounts-password
 ian:accounts-ui-bootstrap-3
+jss:bootstrap-multi-select
+mrt:chosen-package

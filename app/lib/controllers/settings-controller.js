@@ -1,4 +1,4 @@
-AdminController = RouteController.extend({
+SettingsController = RouteController.extend({
   
   // A place to put your subscriptions
   // this.subscribe('items');
@@ -6,10 +6,6 @@ AdminController = RouteController.extend({
   // this.subscribe('item', this.params._id).wait();
   
   subscriptions: function() {
-	    this.subscribe('Stations').wait();
-      this.subscribe('Data').wait();
-      this.subscribe('Weather').wait();
-	   this.subscribe('users');
   },
   
   // Subscriptions or other things we want to "wait" on. This also
