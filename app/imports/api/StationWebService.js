@@ -142,7 +142,7 @@ export default class StationWebService {
                                             type: 'timeSeries'
                                         };
 
-                                        let chloriohyllCon = {
+                                        let chlorophyllCon = {
                                             times,
                                             values: Array(clconValues),
                                             units: 'ug/1',
@@ -164,7 +164,7 @@ export default class StationWebService {
                                         };
 
                                         data.data.oceanTemp = oceanTemp;
-                                        data.data.chloriohyllCon = chloriohyllCon;
+                                        data.data.chlorophyllCon = chlorophyllCon;
                                         data.data.oxygenPartsPerMil = oxygenPartsPerMil;
                                         data.data.turbidity = turbidity;
                                         Data.upsert({id: data.id}, data);
