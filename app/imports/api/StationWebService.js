@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { EJSON } from 'meteor/ejson';
 import { moment } from 'meteor/mrt:moment';
+import Buoy from 'buoyjs';
 
 import humps from 'humps';
 
@@ -14,6 +15,11 @@ export default class StationWebService {
 
     _getTimeStamp() {
         return Math.round(new Date().getTime()/1000);
+    }
+
+    _convertCtoF(value) {
+        let fahr = value * 9 / 5 + 32;
+        return fahr;
     }
 
     fetchStations() {
@@ -32,6 +38,7 @@ export default class StationWebService {
 
             data.forEach((station) => {
                 Object.assign(station, {createdAt: currentUnix});
+                Object.assign(station, {stationId: station.ndbc.split(':').reverse()[0]});
                 Stations.upsert({id: station.id}, station);
             });
             console.log('[+] Station compilations complete.');
@@ -56,13 +63,13 @@ export default class StationWebService {
                 console.log(`${exception}, please make sure settings are configured.`);
             }
         }
-
     }
 
     fetchStationsData() {
         console.log(`[+] Compiling a collection of data from stations`);
         try {
             // define our method constants
+            let _this = this;
             const Humps = Npm.require('humps');
             const DATE = new Date();
             const DURATION = Meteor.settings.defaultDuration;
@@ -75,28 +82,28 @@ export default class StationWebService {
             startDate.setHours(startDate.getHours() - DURATION);
             startDate = startDate.toISOString();
 
-            let stationUrls = Stations.find({}, {fields: {dataUrl: 1, id: 1, title: 1}}).fetch();
+            let stations = Stations.find({}, {fields: {dataUrl: 1, id: 1, title: 1, stationId: 1}}).fetch();
 
             // create a place to store the results
             let dataSet = [];
 
-            for (let stationUrl of stationUrls) {
+            for (let station of stations) {
                 let data = {};
                 let headers;
 
                 // create the URL
-                let compiledUrl = `${Meteor.settings.dataFountainUrl}${stationUrl.dataUrl}?time=${startDate}/${endDate}`;
-                data.id = stationUrl.id;
-                data.title = stationUrl.title;
+                let compiledUrl = `${Meteor.settings.dataFountainUrl}${station.dataUrl}?time=${startDate}/${endDate}`;
+                data.id = station.id;
+                data.title = station.title;
+                data.stationId = station.stationId;
 
                 // make the call to get the scientific data, and block with future.
                 HTTP.call('GET', compiledUrl, (error, response) => {
-
                     if (error || response.error) {
                         // TODO: Add this into logs.  Not doing it now because logs have not
                         // TODO: been setup for this project.
                         //console.log(`${error} or ${response.error} . . . one of the two. Removing this station.`);
-                        Stations.remove({dataUrl: stationUrl.dataUrl});
+                        Stations.remove({dataUrl: station.dataUrl});
                     } else {
                         // make the data usable for JavaScript
                         Object.assign(data, Humps.camelizeKeys(response.data));
@@ -104,7 +111,67 @@ export default class StationWebService {
                         // keep the headers
                         Object.assign(data, response.headers);
 
-                        Data.upsert({id: data.id}, data);
+                        if (data.data.times !== null) {
+                            let result = Data.upsert({id: data.id}, data);
+
+                            if (result.numberAffected !== 0) {
+                                let ndbcRootUrl = `http://www.ndbc.noaa.gov/data/realtime2/`;
+                                HTTP.get(`${ndbcRootUrl}${data.stationId}.ocean`, (error, response) => {
+                                    if (!error) {
+                                        let currentBuoyData = Buoy.Buoy.realTime(response.content),
+                                            times = [],
+                                            oceanTempValues = [],
+                                            clconValues = [],
+                                            o2ppmValues = [],
+                                            turbidityValues = [];
+
+                                        currentBuoyData.forEach((datum) => {
+                                            times.push(moment(datum.date).seconds(0).milliseconds(0).toISOString());
+                                            oceanTempValues.push(_this._convertCtoF(datum.oceanTemp));
+                                            clconValues.push(datum.chlorophyllConcentration);
+                                            o2ppmValues.push(datum.oxygenPartsPerMil);
+                                            turbidityValues.push(datum.turbidity);
+                                        });
+
+                                        // values have to be put into another array to stay consistent
+                                        // with OceansMap.  For some reason they are a multi array.
+                                        let oceanTemp = {
+                                            times,
+                                            values: Array(oceanTempValues),
+                                            units: 'degrees_Celsius',
+                                            type: 'timeSeries'
+                                        };
+
+                                        let chloriohyllCon = {
+                                            times,
+                                            values: Array(clconValues),
+                                            units: 'ug/1',
+                                            type: 'timeSeries'
+                                        };
+
+                                        let oxygenPartsPerMil = {
+                                            times,
+                                            values: Array(o2ppmValues),
+                                            units: 'ppm',
+                                            type: 'timeSeries'
+                                        };
+
+                                        let turbidity = {
+                                            times,
+                                            values: Array(turbidityValues),
+                                            units: 'ftu',
+                                            type: 'timeSeries'
+                                        };
+
+                                        data.data.oceanTemp = oceanTemp;
+                                        data.data.chloriohyllCon = chloriohyllCon;
+                                        data.data.oxygenPartsPerMil = oxygenPartsPerMil;
+                                        data.data.turbidity = turbidity;
+                                        Data.upsert({id: data.id}, data);
+                                    }
+                                });
+                            }
+                        }
                     }
                 });
             }
@@ -124,7 +191,7 @@ export default class StationWebService {
             // These are server settings, and should be configured via the user profile.
             const FORECAST_API = process.env.FORECAST_API || Meteor.settings.forecastIoApi;
             const DURATION = Meteor.settings.defaultDuration;
-            const COORD = process.env.FORECAST_COORD || Meteor.settings.forecastIoApi;
+            const COORD = [process.env.FORECAST_COORD_LAT, process.env.FORECAST_COORD_LON] || Meteor.settings.forecastIoApi;
             let referenceStation = Data.find({}, {fields: {'data.times': 1}}).fetch();
 
             // We don't want to force a station to reference, so lets just get the times
@@ -159,7 +226,6 @@ export default class StationWebService {
                     });
                 }
             } else {
-                let mm = timeSet[0];
                 if (removeCount !== 0) {
                     for (let i=0; i < removeCount; i++) {
                         let recentTimeIndex = timeSet.length - i,
@@ -182,6 +248,5 @@ export default class StationWebService {
                 this.fetchWeatherForecast();
             }, 10000);
         }
-
     }
 }

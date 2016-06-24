@@ -106,7 +106,7 @@ Template.OceanPlots.onRendered(() => {
 
     _.each(listOfProjectscolumn, (obj) => {
 
-                projectNamesColumn.push({label: obj.title, value: obj.id,data:obj.data.seaWaterSalinity});
+                projectNamesColumn.push({label: obj.title, value: obj.id,data:obj.data.oceanTemp});
 
     });
 
@@ -316,9 +316,9 @@ Template.OceanPlots.onRendered(() => {
 
         yAxis: {
             min: 0,
-            max: 30,
+            max: 100,
             title: {
-                text: 'Salinity (PSU)',
+                text: 'Water Temperature (F)',
 				style: {
 				fontSize: '20px',
                     fontFamily: 'Verdana, sans-serif',

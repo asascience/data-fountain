@@ -8,4 +8,5 @@
 
 export DATA_FOUNTAIN_URL="http://dev.oceansmap.com/data-fountain"
 export FORECAST_API="30ff0831d323444ba01b79a9b94faa0e"
-export FORECAST_COORD=[37.82, -75.98]
+export FORECAST_COORD_LAT=37.82
+export FORECAST_COORD_LON=-75.98
