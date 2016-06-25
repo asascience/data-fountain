@@ -171,6 +171,9 @@ export default class StationWebService {
                                     }
                                 });
                             }
+                        } else {
+                            Stations.remove({id: station.id});
+
                         }
                     }
                 });

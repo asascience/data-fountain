@@ -1,10 +1,8 @@
 import Highcharts from 'highcharts';
-
 /*****************************************************************************/
 /* OceanPlots: Event Handlers */
 /*****************************************************************************/
 Template.OceanPlots.events({
-
 });
 
 /*****************************************************************************/
@@ -15,12 +13,191 @@ Template.OceanPlots.helpers({
         try {
             let reactiveTime = new ReactiveVar();
             Tracker.autorun(() => {
-                reactiveTime.set(moment(Session.get('globalTimer')).format("MM/DD/YYYY HH:00"));
+                reactiveTime.set(moment(Session.get('globalTimer')).format("HH:00 MM/DD/YYYY"));
             });
             return reactiveTime.get();
         } catch (exception) {
             console.log(exception);
         }
+    },
+    topPlot() {
+        try {
+            let primaryStation = Meteor.user().profile.primaryStation;
+            let topPlotDataParameter = Meteor.user().profile.topPlotDataParameter;
+            let primaryStationData = Data.findOne({title: primaryStation},
+                                                  {fields: {data: 1, title: 1}});
+
+            if (!primaryStationData.data) throw `No Data available for ${primaryStation}`;
+            if (!primaryStationData.data.times) throw `No Time for ${primaryStation}`;
+
+            // Look into turning the values data from an array of array, to just one array.
+            let times = primaryStationData.data.times,
+                plotData = primaryStationData.data[topPlotDataParameter].values[0],
+                units = primaryStationData.data[topPlotDataParameter].units;
+
+            let dataSet = times.map((data, index) => {
+                return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN') ? null : plotData[index]];
+            });
+
+            Meteor.defer(() => {
+                try {
+                    Highcharts.chart('topPlot', {
+                        animation: Highcharts.svg, // don't animate in old IE
+                        credits:{
+                            enabled: false
+                        },
+                        title: {
+                            text: null
+                        },
+                        legend: {
+                            enabled: false
+                        },
+                        yAxis: {
+                            title: {
+                                text: `${topPlotDataParameter} (${units})`,
+                                style: {
+                                    fontSize: '20px',
+                                    fontFamily: 'Verdana, sans-serif',
+                                    fontWeight: 'bold'
+                                }
+                            },
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            tickPixelInterval: 80,
+                            labels: {
+                                style: {
+                                    fontSize: '16px',
+                                    fontFamily: 'Verdana, sans-serif',
+                                    fontWeight: 'bold'
+                                }
+                            },
+                            title: {
+                                text: null
+                            }
+                        },
+                        series: [{
+                            data: dataSet,
+                            type: 'area',
+                        }]
+                    });
+                } catch(exception) {
+                    console.log(exception);
+                }
+            });
+        } catch(exception) {
+            console.log(exception);
+        }
+    },
+    bottomPlot() {
+        try {
+            let proximityStations = Meteor.user().profile.proximityStations,
+                primaryStation =  Meteor.user().profile.primaryStation;
+                proximityStationsData = Data.find({'title': {$in: proximityStations}}, {fields: {data: 1, title: 1}}).fetch(),
+                bottomPlotDataParameter = Meteor.user().profile.bottomPlotDataParameter,
+                primaryStationData = Data.findOne({title: primaryStation},
+                                                  {fields: {title: 1, data: 1}});
+
+                let dataSet = [],
+                    axisLabels = [],
+                    times = primaryStationData.data.times,
+                    units = primaryStationData.data[bottomPlotDataParameter].units;
+
+                proximityStationsData.forEach((item, index) => {
+                    dataSet.push(item.data[bottomPlotDataParameter].values[0]);
+                    axisLabels.push(item.title);
+                });
+
+                let plotData = dataSet[0].map((datum, index) => {
+                    return dataSet.map((row) => {
+                        return row[index];
+                    });
+                });
+
+                let ticker;
+                Tracker.nonreactive(() => {
+                    ticker = Session.get('globalTicker');
+                });
+
+                Template.instance().plotData = plotData;
+
+                Meteor.defer(() => {
+                    try {
+                        Highcharts.chart('bottomPlot', {
+                            chart: {
+                                type: 'column',
+                                animation: Highcharts.svg, // don't animate in old IE
+                            },
+                            legend: {
+                                enabled: false
+                            },
+                            exporting: {
+                                enabled: false
+                            },
+                            title: {
+                                text: null
+                            },
+                            credits:{
+                                enabled: false
+                            },
+                            series: [{
+                                name: 'Random data',
+                                data: plotData[ticker],
+                                animation: {
+                                    duration: 1000
+                                },
+                                dataLabels: {
+                                    enabled: true,
+                                    color: '#F58220',
+                                    align: 'center',
+                                    format: '{point.y:.1f}', // one decimal
+                                    y: -2, // 10 pixels down from the top
+                                    x: 2,
+                                    style: {
+                                        fontSize: '20px',
+                                        fontFamily: 'Verdana, sans-serif',
+                                        border: 'none',
+                                        textShadow: false,
+                                    }
+                                },
+                            }],
+                            xAxis: {
+                                categories: axisLabels,
+                                labels: {
+                                    style: {
+                                        fontSize: '20px',
+                                        fontFamily: 'Verdana, sans-serif',
+                                        border: 'none',
+                                        textShadow: false,
+                                        fontWeight: 'bold'
+                                    }
+                                },
+                            },
+                            yAxis: {
+                                title: {
+                                    text: `${bottomPlotDataParameter} (${units})`,
+                                    style: {
+                                        fontSize: '20px',
+                                        fontFamily: 'Verdana, sans-serif',
+                                        fontWeight: 'bold'
+                                    }
+                                }
+                            }
+                        });
+                    } catch(exception) {
+                        console.log(exception);
+                    }
+                });
+        } catch(exception) {
+            console.log(exception);
+        }
+    },
+    primaryStation() {
+        return Meteor.user().profile.primaryStation;
+
+    },
+    proximityStations() {
+        return Meteor.user().profile.proximityStations;
     }
 });
 
@@ -28,759 +205,55 @@ Template.OceanPlots.helpers({
 /* OceanPlots: Lifecycle Hooks */
 /*****************************************************************************/
 Template.OceanPlots.onCreated(() => {
-
-
 });
 
 Template.OceanPlots.onRendered(() => {
-
-	 Highcharts.setOptions({
-        global: {
-            useUTC: false
-        }
-    });
-
-    var data=[];
-
-    var datacolumn1=[];
-    var datacolumnfull=[];
-
-
-    var dataSusquehanna=[];
-
-    var dataAnnapolis=[];
-
-    var dataUpperPotomac=[];
-
-
-    var dataPatapsco=[];
-
-    var dataGoosesReef=[];
-
-	var dataNorfolk=[];
-
-	var dataStingrayPoint=[];
-
-	var dataJamestown=[];
-
-	var dataFirstLanding=[];
-
-	var dataPotomac=[];
-
-    var categories=[];
-
-    var projectNames = [];
-    var listOfProjects = Data.find().fetch();
-
-    _.each(listOfProjects, (obj) => {
-
-
-        if(obj.id=="df-05")
-            {
-                projectNames.push(obj.data.gageHeight);
-            }
-    });
-
-
-
-    for(i=0;i<projectNames[0].times.length;i++)
-    {
-         let  time = (new Date(projectNames[0].times[i].toLocaleString())).getTime();
-
-        if (projectNames[0].values[0][i] === 'NaN') {
-            console.log(`No data available for date ${projectNames}`);
-        } else {
-            data.push({
-                x: time,
-                y: projectNames[0].values[0][i]
-            });
-        }
-
-    }
-
-
-    //column
-
-    var projectNamesColumn = [];
-    var listOfProjectscolumn = Data.find().fetch();
-
-    _.each(listOfProjectscolumn, (obj) => {
-
-                projectNamesColumn.push({label: obj.title, value: obj.id,data:obj.data.oceanTemp});
-
-    });
-
-
-    for(i=0;i<10;i++){
-        for(j=0;j<1;j++){
-
-			if(projectNamesColumn[i].data!=undefined)
-			{
-				categories.push(projectNamesColumn[i].label);
-            datacolumn1.push(projectNamesColumn[i].data.values[j][0]);
-			}
-
-
-        }
-    }
-
-
-    for(i=0;i<10;i++)
-    {
-		if(projectNames[0].times[i]!=undefined)
-		{
-
-
-
-
-        if(projectNamesColumn[i].label=="Susquehanna")
-            {
-                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                {
-
-					var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
-                    dataSusquehanna.push({
-
-                        x: updatedtime,
-                        y: projectNamesColumn[i].data.values[0][j],
-                        title:projectNamesColumn[i].label
-                    });
-
-
-                }
-            }else if(projectNamesColumn[i].label=="Annapolis")
-                {
-                    for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                    {
-						var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
-                        dataAnnapolis.push({
-                           x: updatedtime,
-                            y: projectNamesColumn[i].data.values[0][j],
-                            title:projectNamesColumn[i].label
-                        });
-
-
-                    }
-
-                }else if(projectNamesColumn[i].label=="Upper Potomac")
-                    {
-                        for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                        {
-                             var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
-                            dataUpperPotomac.push({
-                                x: updatedtime,
-                                y: projectNamesColumn[i].data.values[0][j],
-                                title:projectNamesColumn[i].label
-                            });
-
-
-                        }
-                    }else if(projectNamesColumn[i].label=="Patapsco")
-                        {
-                            for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                            {
-								var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
-                                dataPatapsco.push({
-                                    x: updatedtime,
-                                    y: projectNamesColumn[i].data.values[0][j],
-                                    title:projectNamesColumn[i].label
-                                });
-
-
-                            }
-                        }else if(projectNamesColumn[i].label=="Gooses Reef")
-                            {
-								if(projectNamesColumn[i].data!=undefined)
-								{
-
-
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
-                                    dataGoosesReef.push({
-                                         x: updatedtime,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        //title:projectNamesColumn[i].label
-                                    });
-                                }
-							}
-                            }
-
-							else if(projectNamesColumn[i].label=="Norfolk")
-                            {
-								if(projectNamesColumn[i].data!=undefined)
-								{
-
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
-                                    dataNorfolk.push({
-                                         x: updatedtime,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        title:projectNamesColumn[i].label
-                                    });
-                                }
-								}
-                            }
-
-							else if(projectNamesColumn[i].label=="Stingray Point")
-                            {
-
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
-                                   dataStingrayPoint.push({
-                                       x: updatedtime,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        title:projectNamesColumn[i].label
-                                    });
-                                }
-                            }
-							else if(projectNamesColumn[i].label=="Jamestown")
-                            {
-
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
-                                   dataJamestown.push({
-                                       x: updatedtime,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        title:projectNamesColumn[i].label
-                                    });
-                                }
-                            }
-							else if(projectNamesColumn[i].label== "Potomac")
-                            {
-
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
-                                  dataPotomac.push({
-                                       x: updatedtime,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        title:projectNamesColumn[i].label
-                                    });
-                                }
-                            }
-							else if(projectNamesColumn[i].label=="First Landing")
-                            {
-
-                                for(j=0;j<projectNamesColumn[i].data.times.length;j++)
-                                {
-									var updatedtime=(new Date(projectNamesColumn[i].data.times[j].toLocaleString())).getTime();
-                                  dataFirstLanding.push({
-                                         x: updatedtime,
-                                        y: projectNamesColumn[i].data.values[0][j],
-                                        title:projectNamesColumn[i].label
-                                    });
-                                }
-                            }
-	}
-    }
-
-    datacolumn1
- //
-    //column chart start
-
-    $('#container-column').highcharts({
-        credits:{
-            enabled: false
-        },
-        chart: {
-            type: 'column',
-            animation: Highcharts.svg, // don't animate in old IE
-            marginRight: 10,
-            events: {
-                load: function () {
-
-                }
-            }
-        },
-        title: {
-            text: null
-        },
-
-        plotOptions: {
-        },
-        xAxis: {
-            categories: categories,
-            labels: {
-                rotation: 0,
-                y: 20,
-                style: {
-                    font: '14px Verdana, sans-serif',
-                    fontWeight: 'bold'
-                },
-            }
-        },
-
-        yAxis: {
-            min: 0,
-            max: 100,
-            title: {
-                text: 'Water Temperature (F)',
-				style: {
-				fontSize: '20px',
-                    fontFamily: 'Verdana, sans-serif',
-                    fontWeight: 'bold'
-				}
-            },
-
-        },
-        tooltip: {
-            enabled: false,
-            formatter: function () {
-                return '<b>' + this.series.name + '</b><br/>' +
-                    (this.x) + '<br/>' +
-                    Highcharts.numberFormat(this.y, 2);
-            }
-        },
-        legend: {
-            enabled: false
-        },
-        exporting: {
-            enabled: false
-        },
-        series: [{
-            name: 'Random data',
-            data: datacolumn1,
-            dataLabels: {
-                enabled: true,
-                color: '#F58220',
-                align: 'center',
-                format: '{point.y:.1f}', // one decimal
-                y: -2, // 10 pixels down from the top
-                x: 2,
-                style: {
-                    fontSize: '20px',
-                    fontFamily: 'Verdana, sans-serif',
-                    border: 'none',
-                    textShadow: false,
-                }
-            },
-        }]
-    });
-
-
-    //series
-    $('#container-series').highcharts({
-        credits:{
-            enabled: false
-        },
-        plotOptions: {
-            spline: {
-                lineWidth: 6,
-                states: {
-                    hover: {
-                        lineWidth: 5
-                    }
-                },
-                marker: {
-                    enabled: false
-                }
-            }
-        },
-        chart: {
-            type: 'spline',
-            animation: Highcharts.svg, // don't animate in old IE
-            marginRight: 10,
-            events: {
-                load: function () {
-
-	   var loopIndex = 0;
-
-
-	   var  j=0;
-                    var myPlotLineId = "myPlotLine";
-
-
-
-
-
-					 let  currenttime = (new Date(Session.get('globalTimer'))).getTime();
-					var currentIndex=currenttime;
-
-                    var length=data.length;
-                    var lastindex=data[length-1].x;
-                    var chart = $('#container-series').highcharts();
-                    var l = 30;
-                    var xAxis = this.series[0].chart.xAxis[0];
-                    var currentindextime=moment.utc(currentIndex).format('MM/DD/YYYY HH:mm A');
-
-                    xAxis.addPlotLine({
-                        value: currentIndex,
-                        width: 4,
-                        color: 'Orange',
-                        id: myPlotLineId,
-                    });
-
-
-					Tracker.autorun(() => {
-
-
-						 let  currenttimenew = (new Date(Session.get('globalTimer'))).getTime();
-					var currentIndexnew=currenttimenew;
-
-                        var plotB = null;
-
-                        _.each(xAxis.plotLinesAndBands, function (plotLineBand) {
-                            if (plotLineBand.id === myPlotLineId) {
+    let _this = Blaze.Template.instance();
+    Meteor.defer(() => {
+        Meteor.setTimeout(() => {
+            try {
+                let topPlot = $('#topPlot').highcharts();
+                let bottomPlot = $('#bottomPlot').highcharts();
+                let globalTimer = (new Date(Session.get('globalTimer'))).getTime();
+                let plotLineId = 'plotLineId';
+
+                topPlot.xAxis[0].addPlotLine({
+                    value: globalTimer,
+                    width: 4,
+                    color: 'Orange',
+                    id: plotLineId
+                });
+
+                Tracker.autorun(() => {
+                    try {
+                        let globalTimer = (new Date(Session.get('globalTimer'))).getTime();
+                        _.each(topPlot.xAxis[0].plotLinesAndBands,(plotLineBand) => {
+                            if (plotLineBand.id === plotLineId) {
                                 plotB = plotLineBand;
                             }
                         });
 
-                        var newIdx = currentIndexnew;
-                        // let currentData = $.grep(data, (e) => { return e.x === newIdx; } );
-                        // currentData = (currentData[0]) ? currentData[0].y : null;
-
                         Object.assign(plotB.options, {
-                            value : newIdx,
-                            // label: {
-                            //     text: currentData
-                            // }
+                            value : globalTimer,
                         });
                         plotB.render();
-
-                        var columntime=currentIndex;
-
-                        var excelDateString=moment(newIdx).format('MM/DD/YYYY HH:mm A');;
-
-                        var chartseries = $('#container-column').highcharts();
-
-                        var dataColumn=datacolumn1;
-                        var length=dataColumn.length;
-
-                        var dynamiccategories=[];
-
-                        var dynamicdata=[];
-
-						var findy="";
-
-						dynamiccategories=categories;
-
-
-
-						for (k=0;k<dynamiccategories.length;k++)
-						{
-							if(dynamiccategories[k]=='Susquehanna')
-							{
-
-
-
-								for(i=0;i<dataSusquehanna.length;i++)
-								{
-
-									if(parseInt(dataSusquehanna[i].x)==parseInt(currentIndexnew))
-									{
-
-
-
-										findy=dataSusquehanna[i].y;
-									}
-								}
-
-
-							dynamicdata.push({
-                                        y:findy,
-                                        color: getColorForVal(findy)
-                                    });
-
-
-							}
-
-
-							if(dynamiccategories[k]=='Annapolis')
-							{
-
-								for(i=0;i<dataAnnapolis.length;i++)
-								{
-
-									if(parseInt(dataAnnapolis[i].x)==parseInt(currentIndexnew))
-									{
-
-
-										findy=dataAnnapolis[i].y;
-									}
-								}
-
-
-							dynamicdata.push({
-                                        y:findy,
-                                        color: getColorForVal(findy)
-                                    });
-
-							}
-							if(dynamiccategories[k]=='Upper Potomac')
-							{
-
-
-								for(i=0;i<dataUpperPotomac.length;i++)
-								{
-
-									if(parseInt(dataUpperPotomac[i].x)==parseInt(currentIndexnew))
-									{
-
-
-										findy=dataUpperPotomac[i].y;
-
-
-									}
-								}
-
-
-							dynamicdata.push({
-                                        y:findy,
-                                        color: getColorForVal(findy)
-                                    });
-
-							}
-							if(dynamiccategories[k]=='Patapsco')
-							{
-								for(i=0;i<dataPatapsco.length;i++)
-								{
-
-									if(parseInt(dataPatapsco[i].x)==parseInt(currentIndexnew))
-									{
-
-
-										findy=dataPatapsco[i].y;
-									}
-								}
-
-
-							dynamicdata.push({
-                                        y:findy,
-                                        color: getColorForVal(findy)
-                                    });
-
-
-							}
-							if(dynamiccategories[k]=='Gooses Reef')
-							{
-
-								for(i=0;i<dataGoosesReef.length;i++)
-								{
-
-									if(parseInt(dataGoosesReef[i].x)==parseInt(currentIndexnew))
-									{
-
-
-										findy=dataGoosesReef[i].y;
-									}
-								}
-
-
-							dynamicdata.push({
-                                        y:findy,
-                                        color: getColorForVal(findy)
-                                    });
-
-							}
-							if(dynamiccategories[k]=='Norfolk')
-							{
-
-								for(i=0;i<dataNorfolk.length;i++)
-								{
-
-									if(parseInt(dataNorfolk[i].x)==parseInt(currentIndexnew))
-									{
-
-
-										findy=dataNorfolk[i].y;
-									}
-								}
-
-
-							dynamicdata.push({
-                                        y:findy,
-                                        color: getColorForVal(findy)
-                                    });
-
-							}
-							if(dynamiccategories[k]=='Stingray Point')
-							{
-
-								for(i=0;i<dataStingrayPoint.length;i++)
-								{
-
-									if(parseInt(dataStingrayPoint[i].x)==parseInt(currentIndexnew))
-									{
-
-
-										findy=dataStingrayPoint[i].y;
-									}
-								}
-
-
-							dynamicdata.push({
-                                        y:findy,
-                                        color: getColorForVal(findy)
-                                    });
-
-
-							}
-							if(dynamiccategories[k]=='Jamestown')
-							{
-
-								for(i=0;i<dataJamestown.length;i++)
-								{
-
-									if(parseInt(dataJamestown[i].x)==parseInt(currentIndexnew))
-									{
-
-
-										findy=dataJamestown[i].y;
-									}
-								}
-
-
-							dynamicdata.push({
-                                        y:findy,
-                                        color: getColorForVal(findy)
-                                    });
-
-
-							}
-							if(dynamiccategories[k]=='Potomac')
-							{
-
-								for(i=0;i<dataPotomac.length;i++)
-								{
-
-									if(parseInt(dataPotomac[i].x)==parseInt(currentIndexnew))
-									{
-
-
-										findy=dataPotomac[i].y;
-									}
-								}
-
-
-							dynamicdata.push({
-                                        y:findy,
-                                        color: getColorForVal(findy)
-                                    });
-
-							}
-							if(dynamiccategories[k]=='First Landing')
-							{
-
-								for(i=0;i<dataFirstLanding.length;i++)
-								{
-
-									if(parseInt(dataFirstLanding[i].x)==parseInt(currentIndexnew))
-									{
-
-
-										findy=dataFirstLanding[i].y;
-									}
-								}
-
-
-							dynamicdata.push({
-                                        y:findy,
-                                        color: getColorForVal(findy)
-                                    });
-
-							}
-						}
-
-
-                        $('#container-column').highcharts().series[0].chart.xAxis[0].setCategories(dynamiccategories);
-                        $('#container-column').highcharts().series[0].setData(dynamicdata);
-
-
-
-                        chart.setTitle({text: null});
-                        //chart.setTitle({text: "Gooses Reef " + excelDateString});
-
-
-
-
-
-                    });
-
-
-                }
+                    } catch(exception) {
+                        console.log(exception);
+                    }
+                });
+
+
+                Tracker.autorun(() => {
+                    try {
+                        let ticker = Session.get('globalTicker');
+                        bottomPlot.series[0].setData( _this.plotData[ticker]);
+                    } catch(exception) {
+                        console.log(exception);
+                    }
+                });
+            } catch(exception) {
+                console.log(exception);
             }
-        },
-        title: {
-            style: {
-
-                color: "#F58220"
-            }
-        },
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 80,
-            labels: {
-                rotation:0,
-                style: {
-                    fontSize: '16px',
-                    fontFamily: 'Verdana, sans-serif',
-                    fontWeight: 'bold'
-                }
-            }
-        },
-        yAxis: {
-            title: {
-                text: 'Water Level (ft)',
-				style: {
-				fontSize: '20px',
-                    fontFamily: 'Verdana, sans-serif',
-                    fontWeight: 'bold'
-				}
-            },
-  labels: {
-            style: {
-               fontSize: '13px',
-                    fontFamily: 'Verdana, sans-serif',
-                    fontWeight: 'bold'
-            }
-        },
-            plotLines: [{
-                value: 1464814800,
-                width: 1,
-                color: '#808080'
-            }]
-        },
-        tooltip: {
-            enabled : true,
-            formatter: function () {
-                return '<b>' + this.series.name + '</b><br/>' +
-                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                    Highcharts.numberFormat(this.y, 2);
-            }
-        },
-        legend: {
-            enabled: false
-        },
-        exporting: {
-            enabled: false
-        },
-        series: [{
-            name : 'Water Level',
-            data : data,
-        }]
-
+        }, 2000);
     });
-
-
 });
-
-function getColorForVal(data){
-    var color = '#4994D0'
-    // DISABLED COLOR FOR NOW... Paul wanted it all blue if
-    // we can only show salinity at this time.
-    //
-    //
-    // if (data > 20){
-    //     color = '#990000';
-    // }else if (data > 13){
-    //     color = '#e5e500';
-    // }else{
-    //
-    // }
-    return color;
-}
-

@@ -4,7 +4,7 @@ Router.onBeforeAction(function() {
     } else {
         this.next();
     }
-}, {except: ['Recover', 'Register', 'Home']});
+}, {except: ['Recover', 'Register']});
 
 Router.route('/login', {
   name: 'Login',

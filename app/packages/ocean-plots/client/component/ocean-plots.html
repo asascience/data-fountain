@@ -2,17 +2,17 @@
     <div class="ocean-plots">
         <div class="panel">
             <div class="panel-body plot-banner">
-                <h3 class="pull-left">Gooses Reef</h3><h3 class="pull-right">{{timeInterval}}</h3>
+                <h3 class="pull-left">{{primaryStation}}</h3><h3 class="pull-right">{{timeInterval}}</h3>
+            </div>
+        </div>
+        <div class="panel panel-default" >
+            <div class="panel-body" >
+                <div id="topPlot" style="height: 15.5vw;">{{topPlot}}</div>
             </div>
         </div>
         <div class="panel panel-default">
             <div class="panel-body">
-                <div id="container-series" class="plot"></div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div id="container-column" class="plot"></div>
+                <div id="bottomPlot" style="height: 15.5vw;">{{bottomPlot}}</div>
             </div>
         </div>
     </div>
