@@ -138,7 +138,7 @@ export default class StationWebService {
                                         let oceanTemp = {
                                             times,
                                             values: Array(oceanTempValues),
-                                            units: 'C',
+                                            units: 'F',
                                             type: 'timeSeries'
                                         };
 
@@ -165,7 +165,7 @@ export default class StationWebService {
 
                                         data.data.oceanTemp = oceanTemp;
                                         data.data.chloriohyllCon = chloriohyllCon;
-                                        data.data.oxygenPartsPerMil = oxygenPartsPerMil;
+                                        data.data.dissolvedOxygen = oxygenPartsPerMil;
                                         data.data.turbidity = turbidity;
                                         Data.upsert({id: data.id}, data);
                                     }

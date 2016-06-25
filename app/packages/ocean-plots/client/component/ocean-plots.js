@@ -1,4 +1,5 @@
 import Highcharts from 'highcharts';
+import camelToRegular from '../ocean-plots';
 /*****************************************************************************/
 /* OceanPlots: Event Handlers */
 /*****************************************************************************/
@@ -22,10 +23,11 @@ Template.OceanPlots.helpers({
     },
     topPlot() {
         try {
-            let primaryStation = Meteor.user().profile.primaryStation;
-            let topPlotDataParameter = Meteor.user().profile.topPlotDataParameter;
-            let primaryStationData = Data.findOne({title: primaryStation},
-                                                  {fields: {data: 1, title: 1}});
+            let primaryStation = Meteor.user().profile.primaryStation,
+                topPlotDataParameter = Meteor.user().profile.topPlotDataParameter,
+                primaryStationData = Data.findOne({title: primaryStation},
+                                                  {fields: {data: 1, title: 1}}),
+                plotDisplayName = camelToRegular(topPlotDataParameter);
 
             if (!primaryStationData.data) throw `No Data available for ${primaryStation}`;
             if (!primaryStationData.data.times) throw `No Time for ${primaryStation}`;
@@ -33,7 +35,7 @@ Template.OceanPlots.helpers({
             // Look into turning the values data from an array of array, to just one array.
             let times = primaryStationData.data.times,
                 plotData = primaryStationData.data[topPlotDataParameter].values[0],
-                units = primaryStationData.data[topPlotDataParameter].units;
+                units = primaryStationData.data[topPlotDataParameter].units
 
             let dataSet = times.map((data, index) => {
                 return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN') ? null : plotData[index]];
@@ -54,7 +56,7 @@ Template.OceanPlots.helpers({
                         },
                         yAxis: {
                             title: {
-                                text: `${topPlotDataParameter} (${units})`,
+                                text: `${plotDisplayName} (${units})`,
                                 style: {
                                     fontSize: '20px',
                                     fontFamily: 'Verdana, sans-serif',
@@ -109,7 +111,8 @@ Template.OceanPlots.helpers({
                 proximityStationsData = Data.find({'title': {$in: proximityStations}}, {fields: {data: 1, title: 1}}).fetch(),
                 bottomPlotDataParameter = Meteor.user().profile.bottomPlotDataParameter,
                 primaryStationData = Data.findOne({title: primaryStation},
-                                                  {fields: {title: 1, data: 1}});
+                                                  {fields: {title: 1, data: 1}}),
+                plotDisplayName = camelToRegular(bottomPlotDataParameter);
 
                 let dataSet = [],
                     axisLabels = [],
@@ -188,7 +191,7 @@ Template.OceanPlots.helpers({
                             },
                             yAxis: {
                                 title: {
-                                    text: `${bottomPlotDataParameter} (${units})`,
+                                    text: `${plotDisplayName} (${units})`,
                                     style: {
                                         fontSize: '20px',
                                         fontFamily: 'Verdana, sans-serif',

@@ -15,3 +15,8 @@ Highcharts.setOptions({
     useUTC: false
   }
 });
+
+export default function camelToRegular(string) {
+    return string.replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (str) => { return str.toUpperCase(); })
+}
