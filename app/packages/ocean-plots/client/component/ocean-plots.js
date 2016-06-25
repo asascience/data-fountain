@@ -76,9 +76,22 @@ Template.OceanPlots.helpers({
                                 text: null
                             }
                         },
+                        plotOptions: {
+                            spline: {
+                                lineWidth: 6,
+                                stats: {
+                                    hover: {
+                                        lineWidth: 5
+                                    }
+                                },
+                                marker: {
+                                    enabled: false
+                                }
+                            }
+                        },
                         series: [{
                             data: dataSet,
-                            type: 'area',
+                            type: 'spline',
                         }]
                     });
                 } catch(exception) {
