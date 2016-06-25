@@ -138,7 +138,7 @@ export default class StationWebService {
                                         let oceanTemp = {
                                             times,
                                             values: Array(oceanTempValues),
-                                            units: 'degrees_Celsius',
+                                            units: 'C',
                                             type: 'timeSeries'
                                         };
 

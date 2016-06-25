@@ -9,3 +9,9 @@ Highcharts.PlotLineOrBand.prototype.update = function (newOptions){
         plotBand.render();
     }
 }
+
+Highcharts.setOptions({
+  global: {
+    useUTC: false
+  }
+});

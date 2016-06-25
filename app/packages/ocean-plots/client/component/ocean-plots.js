@@ -194,7 +194,6 @@ Template.OceanPlots.helpers({
     },
     primaryStation() {
         return Meteor.user().profile.primaryStation;
-
     },
     proximityStations() {
         return Meteor.user().profile.proximityStations;
@@ -208,52 +207,55 @@ Template.OceanPlots.onCreated(() => {
 });
 
 Template.OceanPlots.onRendered(() => {
-    let _this = Blaze.Template.instance();
-    Meteor.defer(() => {
-        Meteor.setTimeout(() => {
-            try {
-                let topPlot = $('#topPlot').highcharts();
-                let bottomPlot = $('#bottomPlot').highcharts();
-                let globalTimer = (new Date(Session.get('globalTimer'))).getTime();
-                let plotLineId = 'plotLineId';
+    try {
+        let _this = Blaze.Template.instance();
 
-                topPlot.xAxis[0].addPlotLine({
-                    value: globalTimer,
-                    width: 4,
-                    color: 'Orange',
-                    id: plotLineId
-                });
+        Meteor.defer(() => {
+            let topPlot = $('#topPlot').highcharts();
+            let bottomPlot = $('#bottomPlot').highcharts();
+            let globalTimer = (new Date(Session.get('globalTimer'))).getTime();
+            let plotLineId = 'plotLineId';
+            Meteor.setTimeout(() => {
+                try {
+                    topPlot.xAxis[0].addPlotLine({
+                        value: globalTimer,
+                        width: 4,
+                        color: 'Orange',
+                        id: plotLineId
+                    });
 
-                Tracker.autorun(() => {
-                    try {
-                        let globalTimer = (new Date(Session.get('globalTimer'))).getTime();
-                        _.each(topPlot.xAxis[0].plotLinesAndBands,(plotLineBand) => {
-                            if (plotLineBand.id === plotLineId) {
-                                plotB = plotLineBand;
-                            }
-                        });
+                    Tracker.autorun(() => {
+                        try {
+                            let globalTimer = (new Date(Session.get('globalTimer'))).getTime();
+                            _.each(topPlot.xAxis[0].plotLinesAndBands,(plotLineBand) => {
+                                if (plotLineBand.id === plotLineId) {
+                                    plotB = plotLineBand;
+                                }
+                            });
 
-                        Object.assign(plotB.options, {
-                            value : globalTimer,
-                        });
-                        plotB.render();
-                    } catch(exception) {
-                        console.log(exception);
-                    }
-                });
+                            Object.assign(plotB.options, {
+                                value : globalTimer,
+                            });
+                            plotB.render();
+                        } catch(exception) {
+                            console.log(exception);
+                        }
+                    });
 
-
-                Tracker.autorun(() => {
-                    try {
-                        let ticker = Session.get('globalTicker');
-                        bottomPlot.series[0].setData( _this.plotData[ticker]);
-                    } catch(exception) {
-                        console.log(exception);
-                    }
-                });
-            } catch(exception) {
-                console.log(exception);
-            }
-        }, 2000);
-    });
+                    Tracker.autorun(() => {
+                        try {
+                            let ticker = Session.get('globalTicker');
+                            bottomPlot.series[0].setData( _this.plotData[ticker]);
+                        } catch(exception) {
+                            console.log(exception);
+                        }
+                    });
+                } catch(exception) {
+                    console.log(exception);
+                }
+            }, 2000);
+        });
+    } catch(exception) {
+        console.log(exception);
+    }
 });

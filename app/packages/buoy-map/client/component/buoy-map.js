@@ -17,15 +17,11 @@ Template.BuoyMap.onCreated(() => {
 });
 
 Template.BuoyMap.onRendered(() => {
-    let proximityStations = Meteor.user().profile.proximityStations;
-    let stations = Stations.find({'title': {$in: proximityStations}}).fetch(),
-        primaryStation = Stations.findOne({title: Meteor.user().profile.primaryStation});
+    try {
+        let proximityStations = Meteor.user().profile.proximityStations;
+        let stations = Stations.find({'title': {$in: proximityStations}}).fetch(),
+            primaryStation = Stations.findOne({title: Meteor.user().profile.primaryStation});
 
-
-    if(stations.length==0){
-        console.log( error );
-    }
-    else {
         //Map Initialization
         let map = L.map('map').setView([37.9,-76.2574], 7);
         // map.createPane('labels');
@@ -87,6 +83,8 @@ Template.BuoyMap.onRendered(() => {
             zIndexOffset: 1000
         }).addTo(map);
 
+    } catch(exception) {
+        console.log(exception);
     }
 });
 
