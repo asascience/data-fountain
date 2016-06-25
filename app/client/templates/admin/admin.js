@@ -1,3 +1,5 @@
+import swal from 'sweetalert';
+
 /*****************************************************************************/
 /* Admin: Event Handlers */
 /*****************************************************************************/
@@ -8,107 +10,115 @@ Template.Admin.events({
 /* Admin: Helpers */
 /*****************************************************************************/
 Template.Admin.helpers({
-	
-	
-	 categories: function(){
-		
-		  let listOfStations = Stations.find().fetch();
-		  
-		 
-		  var StationsNames = [];
-    
+    stations: function(){
+        let listOfStations = Stations.find().fetch(),
+            stationNames = [];
 
-    _.each(listOfStations, (obj) => {
+        _.each(listOfStations, (obj) => {
+            stationNames.push(obj.title);
+        });
 
-                StationsNames.push(obj.title);
-            
-    });
-		 
-        return StationsNames;
+        return stationNames;
     },
-	
-//options
+    dataParams() {
+        try {
+            let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation}),
+                dataParams = Object.keys(dataSource.data);
 
+            let timesIndex = dataParams.indexOf('times');
+            if (timesIndex > -1) dataParams.splice(timesIndex, 1);
 
-  
-	
+            return dataParams;
+        } catch (exception) {
+            console.log(exception);
+        }
+    },
+    topPlotDataParameter() {
+        return Meteor.user().profile.topPlotDataParameter;
+    },
+    bottomPlotDataParameter() {
+        return Meteor.user().profile.bottomPlotDataParameter;
+    },
+    primaryStation() {
+        return Meteor.user().profile.primaryStation;
+    },
+    proximityStations() {
+        return Meteor.user().profile.proximityStations;
+    },
+    dataDuration() {
+        return Meteor.user().profile.dataDuration;
+    },
+    refreshInterval() {
+        return Meteor.user().profile.refreshInterval;
+    },
+    infoTickerText() {
+        return Meteor.user().profile.infoTickerText;
+    }
 });
 
 /*****************************************************************************/
 /* Admin: Lifecycle Hooks */
 /*****************************************************************************/
 Template.Admin.onCreated(() => {
+
 });
-
-
-
 
 Template.Admin.onRendered(() => {
-	  
-            var config = {
-      '.chosen-select'           : {},
-      '.chosen-select-deselect'  : {allow_single_deselect:true},
-      '.chosen-select-no-single' : {disable_search_threshold:10},
-      '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
-      '.chosen-select-width'     : {width:"95%"}
+    if ( $.fn.select2 ) {
+        $('#proximityStations').select2({
+            theme: 'bootstrap'
+        });
     }
-    for (var selector in config) {
-      $(selector).chosen(config[selector]);
-    }
-       
-});
 
+    let userProfile = Meteor.user().profile;
+
+    $('#primaryStation').val(userProfile.primaryStation);
+    $('#proximityStations').val(userProfile.proximityStations).change();
+    $('#dataDuration').val(userProfile.dataDuration);
+    $('#refreshInterval').val(userProfile.refreshInterval);
+    $('#topPlotDataParam').val(userProfile.topPlotDataParameter);
+    $('#bottomPlotDataParam').val(userProfile.bottomPlotDataParameter);
+
+});
 
 Template.Admin.onDestroyed(() => {
-});
 
+});
 
 Template.Admin.events({
     'submit form': function(event,tmpl){
-      alert("form submitted");
-	  
-	   event.preventDefault();
-  var categoryselectedOption = tmpl.find('.category-select :selected');
-  
-  var timezoneselect=tmpl.find('.timezone-select :selected');
-  
-  var otherselectionsstations = [];
-        $("#chosen-select option:selected").each(function(){
-            var optionValue = $(this).val();
-            var optionText = $(this).text();
-                 
-            otherselectionsstations.push(optionValue);
-        });
-	
-var maxtimeperiod=$("#maxtime").val();
+        event.preventDefault();
 
-var pagerefreshinterval=$("#pagerefresh").val();
+        let proximityStations = [];
+        $('#proximityStations').trigger('chosen:updated');
 
- var element = tmpl.find('input:radio[name=radio]:checked');
-    
-var ticketmarquee=$("#ticketmarquee").val();	
+        let result = Meteor.users.update(Meteor.userId(), {
+            $set: {
+                "profile.primaryStation":       $('#primaryStation').val(),
+                "profile.proximityStations":    $('#proximityStations').val(),
+                "profile.dataDuration":         $('#dataDuration').val(),
+                "profile.refreshInterval":      $('#refreshInterval').val(),
+                // "profile.temperatureUnit":   $(element).val(),
+                "profile.infoTickerText":       $('#infoTickerText').val(),
+                "profile.timeZone":             $('#timezoneSelect').val(),
+                'profile.topPlotDataParameter': $('#topPlotDataParameter').val(),
+                'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val()
+            }
+        }, {multi: true});
 
-var data=[];
-
-data.primaryStation=categoryselectedOption;
-
-data.proximityStations=otherselectionsstations;
-
-data.dataDuration=maxtimeperiod;
-
-data.refreshInterval=pagerefreshinterval;
-
-data.temperatureUnit=element;
-
-data.infoTickerText=ticketmarquee;
-
-
-Meteor.users.update({_id:Meteor.userId()}, { $set:{"profile.primaryStation":$(categoryselectedOption).val(),"profile.proximityStations":otherselectionsstations,"profile.dataDuration":maxtimeperiod,"profile.refreshInterval":pagerefreshinterval,"profile.temperatureUnit":$(element).val(),"profile.infoTickerText":ticketmarquee,"profile.timeZone":$(timezoneselect).val()}}, {multi: true} );
-
-
-
-	
-
-	}
+        if (result === 1) {
+            swal({
+                title: 'Saved!',
+                text: 'Your settings have been saved, go to the Data Fountain?',
+                type: 'success',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, please!',
+                cancelButtonText: 'No thanks.',
+                closeOnConfirm: true
+            }, () => {
+                Router.go('/');
+            });
+        }
+    }
 });
 

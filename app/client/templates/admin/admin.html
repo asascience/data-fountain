@@ -1,115 +1,129 @@
 <template name="Admin">
-  <div class="admin">
-   
-    <div class="main-content">
-
-        <!-- You only need this form and the form-basic.css -->
-
-        <form class="form-basic" method="post" action="#">
-
-            <div class="form-title-row">
-                <h1>User Settings</h1>
+    <div class="admin">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h1>User Settings <small>{{> loginButtons }}</small></h1>
             </div>
+            <div class="panel-body">
+                <!-- You only need this form and the form-basic.css -->
+                <form class="form-horizontal" method="post" action="#">
+                    <fieldset>
+                        <div class="form-title-row">
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Primary Station
+                            </label>
+                            <div class="col-md-10">
+                                <select class="category-select form-control" id="primaryStation">
+                                    <option value="{{primaryStation}}" selected>{{primaryStation}}</option>
+                                    {{#each stations}}
+                                    <option value="{{this}}">{{this}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Proximity Stations
+                            </label>
+                            <div class="col-md-10">
+                                <select class="chosen-select input-md form-control" id="proximityStations"  multiple="multiple">
+                                    {{#each stations}}
+                                        <option value="{{this}}">{{this}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Time (max 48 hours)
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control form-control-rounded" id="dataDuration" value={{dataDuration}} />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Page Refresh Interval (seconds)
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control form-control-rounded" id="refreshInterval" value={{refreshInterval}} />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Line Plot (top)
+                            </label>
+                            <div class="col-md-10">
+                                <select class="category-select form-control" id="topPlotDataParameter">
+                                    <option value="{{topPlotDataParameter}}" selected>{{topPlotDataParameter}}</option>
+                                    {{#each dataParams}}
+                                    <option value="{{this}}">{{this}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Bar Plot (bottom)
+                            </label>
+                            <div class="col-md-10">
+                                <select class="category-select form-control" id="bottomPlotDataParameter">
+                                    <option value="{{bottomPlotDataParameter}}" selected>{{bottomPlotDataParameter}}</option>
+                                    {{#each dataParams}}
+                                    <option value="{{this}}">{{this}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+                        <!-- <div class="form&#45;row"> -->
+                        <!--     <label>Temperature</label> -->
+                        <!--     <div class="form&#45;radio&#45;buttons"> -->
+                        <!--  -->
+                        <!--         <div> -->
+                        <!--             <label> -->
+                        <!--                 <input type="radio" name="radio" value="Celsius"> -->
+                        <!--                 Celsius -->
+                        <!--             </label> -->
+                        <!--         </div> -->
+                        <!--  -->
+                        <!--         <div> -->
+                        <!--             <label> -->
+                        <!--                 <input type="radio" name="radio" value="Fahrenheit"> -->
+                        <!--                 Fahrenheit -->
+                        <!--             </label> -->
+                        <!--         </div> -->
+                        <!--     </div> -->
+                        <!-- </div> -->
+                        <!-- <div class="form&#45;row"> -->
+                        <!--     <label> -->
+                        <!--         Time Zone -->
+                        <!--         <select class="timezone&#45;select" id="timezone&#45;select"> -->
+                        <!--             <option value="EST">Eastern Standard Time (EST).</option> -->
+                        <!--             <option value="CST">Central Standard Time (CST).</option> -->
+                        <!--             <option value="MST">Mountain Standard Time (MST).</option> -->
+                        <!--             <option value="PST">Pacific Standard Time (PST).</option> -->
+                        <!--         </select> -->
+                        <!--     </label> -->
+                        <!-- </div> -->
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Ticker Marquee
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}} />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
 
-            <div class="form-row">
-                <label>
-                    <span>Reference Station</span>
-                  	<select class="category-select" id="category-select">
-    
-    {{#each categories}}
-        <option value="{{this}}">{{this}}</option>
-    {{/each}}
-</select>
-                </label>
+                                <button class="pull-right" type="submit">Save Settings</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
             </div>
-
-            <div class="form-row">
-                <label>
-                    <span>Other Station</span>
-                 </label>
-  <select  class="chosen-select" id="chosen-select"  multiple  style="width:250px">
-   {{#each categories}}
-        <option value="{{this}}">{{this}}</option>
-    {{/each}}
-  </select>
-  
-  
-   
-            </div>
-
-            <div class="form-row">
-               <label>
-			   <span>Time(max 48hrs)</span>
-       
-            <input type="text" style="max-width:80px" id="maxtime" />
-       
-		</label>
-            </div>
-
-			
-			  <div class="form-row">
-               <label>
-			   <span>Page refresh interval(in seconds) </span>
-       
-            <input type="text" style="max-width:80px" id="pagerefresh" />
-       
-		</label>
-            </div>
-           
-
-           
-
-            <div class="form-row">
-                <label><span>Temperature</span></label>
-                <div class="form-radio-buttons">
-
-                    <div>
-                        <label>
-                            <input type="radio" name="radio" value="Celsius">
-                            <span>Celsius</span>
-                        </label>
-                    </div>
-
-                    <div>
-                        <label>
-                            <input type="radio" name="radio" value="Fahrenheit">
-                            <span>Fahrenheit</span>
-                        </label>
-                    </div>
-
-                 
-
-                </div>
-            </div>
-			
-			<div class="form-row">
-                <label>
-                    <span>Time Zone</span>
-                  	<select class="timezone-select" id="timezone-select">
-    
-   
-        <option value="EST">Eastern Standard Time (EST).</option>
-		<option value="CST">Central Standard Time (CST).</option>
-		<option value="MST">Mountain Standard Time (MST).</option>
-		<option value="PST">Pacific Standard Time (PST).</option>
-    
-</select>
-                </label>
-            </div>
- <div class="form-row">
-                <label>
-                    <span>Ticket Marquee</span>
-                    <textarea id="ticketmarquee" name="textarea"></textarea>
-                </label>
-            </div>
-			 
-			
-            <div class="form-row">
-                <button type="submit">Submit Form</button>
-            </div>
-
-        </form>
-
+        </div>
     </div>
-  </div>
 </template>

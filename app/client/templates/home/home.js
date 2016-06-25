@@ -39,6 +39,7 @@ Template.Home.onCreated(() => {
     Meteor.setInterval(() => {
         time = dataTimes[index.next().value];
         Session.set('globalTimer', time);
+        Session.set('globalTicker', index.next().value);
     }, TIMER_DELAY);
 });
 
