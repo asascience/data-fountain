@@ -253,7 +253,6 @@ Template.OceanPlots.onRendered(() => {
                             });
                             plotB.render();
                         } catch(exception) {
-                            throw new Meteor.Error(`Top Plot busted! ${exception}`);
                             document.location.reload(true);
                         }
                     });
@@ -263,7 +262,6 @@ Template.OceanPlots.onRendered(() => {
                             let ticker = Session.get('globalTicker');
                             bottomPlot.series[0].setData( _this.plotData[ticker]);
                         } catch(exception) {
-                            throw new Meteor.Error(`Bottom Plot busted! ${exception}`);
                             document.location.reload(true);
                         }
                     });

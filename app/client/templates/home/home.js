@@ -37,9 +37,10 @@ Template.Home.onCreated(() => {
 
     let index = indexGen();
     Meteor.setInterval(() => {
-        time = dataTimes[index.next().value];
+        let currIndex = index.next().value;
+        time = dataTimes[currIndex];
         Session.set('globalTimer', time);
-        Session.set('globalTicker', index.next().value);
+        Session.set('globalTicker', currIndex);
     }, TIMER_DELAY);
 });
 
