@@ -32,9 +32,8 @@ Template.OceanPlots.helpers({
             if (!primaryStationData.data) throw `No Data available for ${primaryStation}`;
             if (!primaryStationData.data.times) throw `No Time for ${primaryStation}`;
 
-            // Look into turning the values data from an array of array, to just one array.
             let times = primaryStationData.data.times,
-                plotData = primaryStationData.data[topPlotDataParameter].values[0],
+                plotData = primaryStationData.data[topPlotDataParameter].values,
                 units = primaryStationData.data[topPlotDataParameter].units
 
             let dataSet = times.map((data, index) => {
@@ -120,7 +119,7 @@ Template.OceanPlots.helpers({
                     units = primaryStationData.data[bottomPlotDataParameter].units;
 
                 proximityStationsData.forEach((item, index) => {
-                    dataSet.push(item.data[bottomPlotDataParameter].values[0]);
+                    dataSet.push(item.data[bottomPlotDataParameter].values);
                     axisLabels.push(item.title);
                 });
 
@@ -254,7 +253,8 @@ Template.OceanPlots.onRendered(() => {
                             });
                             plotB.render();
                         } catch(exception) {
-                            console.log(exception);
+                            throw new Meteor.Error(`Top Plot busted! ${exception}`);
+                            document.location.reload(true);
                         }
                     });
 
@@ -263,7 +263,8 @@ Template.OceanPlots.onRendered(() => {
                             let ticker = Session.get('globalTicker');
                             bottomPlot.series[0].setData( _this.plotData[ticker]);
                         } catch(exception) {
-                            console.log(exception);
+                            throw new Meteor.Error(`Bottom Plot busted! ${exception}`);
+                            document.location.reload(true);
                         }
                     });
                 } catch(exception) {

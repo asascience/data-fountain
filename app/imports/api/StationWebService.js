@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { EJSON } from 'meteor/ejson';
 import { moment } from 'meteor/mrt:moment';
 import Buoy from 'buoyjs';
 
@@ -9,9 +8,7 @@ import humps from 'humps';
 const Future = Npm.require('fibers/future');
 
 export default class StationWebService {
-    constructor() {
-
-    }
+    constructor() {}
 
     _getTimeStamp() {
         return Math.round(new Date().getTime()/1000);
@@ -29,16 +26,20 @@ export default class StationWebService {
 
             // go and get the stations, and convert the heathen snake case to
             // glorious camel case.
-            let response = HTTP.get(`${Meteor.settings.dataFountainUrl}/api/station_list`),
-                snakeData = EJSON.fromJSONValue(response.data.stations),
+            let response = Assets.getText('stations/cbibs.json'),
+                snakeData = JSON.parse(response),
                 data = HUMPS.camelizeKeys(snakeData);
+
+            console.log(data);
 
             // time stuff
             let currentUnix = this._getTimeStamp();
 
+
             data.forEach((station) => {
                 Object.assign(station, {createdAt: currentUnix});
                 Object.assign(station, {stationId: station.ndbc.split(':').reverse()[0]});
+                Object.assign(station, {isPrimary: false});
                 Stations.upsert({id: station.id}, station);
             });
             console.log('[+] Station compilations complete.');
@@ -73,6 +74,8 @@ export default class StationWebService {
             const Humps = Npm.require('humps');
             const DATE = new Date();
             const DURATION = Meteor.settings.defaultDuration;
+            const KNOTS_TO_MPH = 1.152;
+            const METER_TO_FT = 3.28084;
 
             // set the end date to today.
             let endDate = DATE.toISOString();
@@ -93,85 +96,105 @@ export default class StationWebService {
 
                 // create the URL
                 let compiledUrl = `${Meteor.settings.dataFountainUrl}${station.dataUrl}?time=${startDate}/${endDate}`;
+                data.data = {};
                 data.id = station.id;
                 data.title = station.title;
                 data.stationId = station.stationId;
 
-                // make the call to get the scientific data, and block with future.
-                HTTP.call('GET', compiledUrl, (error, response) => {
-                    if (error || response.error) {
-                        // TODO: Add this into logs.  Not doing it now because logs have not
-                        // TODO: been setup for this project.
-                        //console.log(`${error} or ${response.error} . . . one of the two. Removing this station.`);
-                        Stations.remove({dataUrl: station.dataUrl});
-                    } else {
-                        // make the data usable for JavaScript
-                        Object.assign(data, Humps.camelizeKeys(response.data));
+                let ndbcRootUrl = `http://www.ndbc.noaa.gov/data/realtime2/`;
+                HTTP.get(`${ndbcRootUrl}${data.stationId}.ocean`, (error, response) => {
+                    if (!error) {
+                        let currentBuoyData = Buoy.Buoy.realTime(response.content),
+                            times = [],
+                            oceanTempValues = [],
+                            clconValues = [],
+                            o2ppmValues = [],
+                            turbidityValues = [];
 
-                        // keep the headers
-                        Object.assign(data, response.headers);
+                        currentBuoyData.forEach((datum) => {
+                            times.push(moment(datum.date).seconds(0).milliseconds(0).toISOString());
+                            oceanTempValues.push(_this._convertCtoF(datum.oceanTemp));
+                            clconValues.push(datum.chlorophyllConcentration);
+                            o2ppmValues.push(datum.oxygenPartsPerMil);
+                            turbidityValues.push(datum.turbidity);
+                        });
 
-                        if (data.data.times !== null) {
-                            let result = Data.upsert({id: data.id}, data);
+                        times.sort((a,b) => {
+                            return new Date(a) - new Date(b);
+                        });
 
-                            if (result.numberAffected !== 0) {
-                                let ndbcRootUrl = `http://www.ndbc.noaa.gov/data/realtime2/`;
-                                HTTP.get(`${ndbcRootUrl}${data.stationId}.ocean`, (error, response) => {
-                                    if (!error) {
-                                        let currentBuoyData = Buoy.Buoy.realTime(response.content),
-                                            times = [],
-                                            oceanTempValues = [],
-                                            clconValues = [],
-                                            o2ppmValues = [],
-                                            turbidityValues = [];
+                        // values have to be put into another array to stay consistent
+                        // with OceansMap.  For some reason they are a multi array.
+                        let oceanTemp = {
+                            values: oceanTempValues,
+                            units: 'F',
+                            type: 'timeSeries'
+                        };
 
-                                        currentBuoyData.forEach((datum) => {
-                                            times.push(moment(datum.date).seconds(0).milliseconds(0).toISOString());
-                                            oceanTempValues.push(_this._convertCtoF(datum.oceanTemp));
-                                            clconValues.push(datum.chlorophyllConcentration);
-                                            o2ppmValues.push(datum.oxygenPartsPerMil);
-                                            turbidityValues.push(datum.turbidity);
-                                        });
+                        let chloriohyllCon = {
+                            values: clconValues,
+                            units: 'ug/1',
+                            type: 'timeSeries'
+                        };
 
-                                        // values have to be put into another array to stay consistent
-                                        // with OceansMap.  For some reason they are a multi array.
-                                        let oceanTemp = {
-                                            times,
-                                            values: Array(oceanTempValues),
-                                            units: 'F',
-                                            type: 'timeSeries'
-                                        };
+                        let oxygenPartsPerMil = {
+                            values: o2ppmValues,
+                            units: 'ppm',
+                            type: 'timeSeries'
+                        };
 
-                                        let chloriohyllCon = {
-                                            times,
-                                            values: Array(clconValues),
-                                            units: 'ug/1',
-                                            type: 'timeSeries'
-                                        };
+                        let turbidity = {
+                            values: turbidityValues,
+                            units: 'ftu',
+                            type: 'timeSeries'
+                        };
 
-                                        let oxygenPartsPerMil = {
-                                            times,
-                                            values: Array(o2ppmValues),
-                                            units: 'ppm',
-                                            type: 'timeSeries'
-                                        };
+                        data.data.oceanTemp = oceanTemp;
+                        data.data.chloriohyllCon = chloriohyllCon;
+                        data.data.dissolvedOxygen = oxygenPartsPerMil;
+                        data.data.turbidity = turbidity;
+                        data.data.times = times;
+                        Data.upsert({id: data.id}, data);
+                    }
+                });
 
-                                        let turbidity = {
-                                            times,
-                                            values: Array(turbidityValues),
-                                            units: 'ftu',
-                                            type: 'timeSeries'
-                                        };
+                HTTP.get(`${ndbcRootUrl}${data.stationId}.txt`, (error, response) => {
+                    if (!error) {
+                        let currentBuoyData = Buoy.Buoy.realTime(response.content),
+                            wdir = [],
+                            wspd = [],
+                            wvht = [];
 
-                                        data.data.oceanTemp = oceanTemp;
-                                        data.data.chloriohyllCon = chloriohyllCon;
-                                        data.data.dissolvedOxygen = oxygenPartsPerMil;
-                                        data.data.turbidity = turbidity;
-                                        Data.upsert({id: data.id}, data);
-                                    }
-                                });
-                            }
-                        }
+                        currentBuoyData.forEach((datum) => {
+                            wdir.push(datum.windDirection);
+                            wspd.push(datum.windSpeed * KNOTS_TO_MPH);
+                            wvht.push(datum.waveHeight * METER_TO_FT);
+                        });
+
+                        // values have to be put into another array to stay consistent
+                        // with OceansMap.  For some reason they are a multi array.
+                        let windDirection = {
+                            values: wdir,
+                            units: 'deg',
+                            type: 'timeSeries'
+                        };
+
+                        let windSpeed = {
+                            values: wspd,
+                            units: 'mph',
+                            type: 'timeSeries'
+                        };
+
+                        let waveHeight = {
+                            values: wvht,
+                            units: 'ft',
+                            type: 'timeSeries'
+                        };
+
+                        // data.data.windDirection = windDirection;
+                        // data.data.windSpeed = windSpeed;
+                        data.data.waveHeight = waveHeight;
+                        Data.upsert({id: data.id}, data);
                     }
                 });
             }
@@ -192,45 +215,17 @@ export default class StationWebService {
             const FORECAST_API = process.env.FORECAST_API || Meteor.settings.forecastIoApi;
             const DURATION = Meteor.settings.defaultDuration;
             const COORD = [process.env.FORECAST_COORD_LAT, process.env.FORECAST_COORD_LON] || Meteor.settings.forecastIoApi;
-            let referenceStation = Data.find({}, {fields: {'data.times': 1}}).fetch();
+            let referenceStation = Stations.findOne({isPrimary: true}, {fields: {'title': 1, 'lon': 1, 'lat': 1, 'stationId': 1}});
+            if (referenceStation) {
+                let referenceStationData = Data.findOne({stationId: referenceStation.stationId}, {fields: {'data.times': 1}});
+                let timeSet = referenceStationData.data.times;
+                let weather = Weather.find({}).fetch();
 
-            // We don't want to force a station to reference, so lets just get the times
-            // form any available station.  Loop through each and exit when we find
-            // any valid time array.
-            let timeSet = undefined,
-                killLoop = referenceStation.length - 1,
-                i = 0;
-
-            do {
-                timeSet = referenceStation[i].data.times;
-                i++;
-
-                // In case all the stations are invalid, lets not create an infinite loop.
-                // Also, if that's the case, kill the server.
-                //if (i === killLoop) process.exit(1);
-
-            } while(!timeSet);
-
-            let weather = Weather.find({}).fetch();
-
-            let removeCount = Weather.remove({'currently.time': {$lte: moment().subtract(DURATION, 'hours').unix()}});
-            if (weather.length === 0 && removeCount === 0) {
-                for (let i=0; i < timeSet.length -1; i++) {
-                    let url = `https://api.forecast.io/forecast/${FORECAST_API}/${COORD[0]},${COORD[1]},${timeSet[i]}`;
-                    HTTP.get(url, (error, response) => {
-                        if (error) {
-                            console.log(`fetchWeatherForecast ${error}`);
-                        } else {
-                            Weather.insert(response.data);
-                        }
-                    });
-                }
-            } else {
-                if (removeCount !== 0) {
-                    for (let i=0; i < removeCount; i++) {
-                        let recentTimeIndex = timeSet.length - i,
-                            timeRequest = timeSet[recentTimeIndex -1];
-                        let url = `https://api.forecast.io/forecast/${FORECAST_API}/${COORD[0]},${COORD[1]},${timeRequest}`;
+                let removeCount = Weather.remove({'currently.time': {$lte: moment().subtract(DURATION, 'hours').unix()}});
+                if (weather.length === 0 && removeCount === 0) {
+                    for (let i=0; i < timeSet.length -1; i++) {
+                        let unixTime = moment(timeSet[i]).unix();
+                        let url = `https://api.forecast.io/forecast/${FORECAST_API}/${referenceStation.lat},${referenceStation.lon},${unixTime}`;
                         HTTP.get(url, (error, response) => {
                             if (error) {
                                 console.log(`fetchWeatherForecast ${error}`);
@@ -238,6 +233,21 @@ export default class StationWebService {
                                 Weather.insert(response.data);
                             }
                         });
+                    }
+                } else {
+                    if (removeCount !== 0) {
+                        for (let i=0; i < removeCount; i++) {
+                            let recentTimeIndex = timeSet.length - i,
+                                timeRequest = timeSet[recentTimeIndex -1];
+                            let url = `https://api.forecast.io/forecast/${FORECAST_API}/${COORD[0]},${COORD[1]},${timeRequest}`;
+                            HTTP.get(url, (error, response) => {
+                                if (error) {
+                                    console.log(`fetchWeatherForecast ${error}`);
+                                } else {
+                                    Weather.insert(response.data);
+                                }
+                            });
+                        }
                     }
                 }
             }

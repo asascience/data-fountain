@@ -1,0 +1,342 @@
+[
+    {
+      "data_url": "/api/data/df-01", 
+      "id": "df-01", 
+      "image_url": "/api/image/df-01", 
+      "lat": 39.544, 
+      "lon": -76.075, 
+      "met": "data.oceansmap.com:KTGI", 
+      "met_data": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml", 
+      "met_parameters": [
+        "general_conditions", 
+        "visibility_in_air", 
+        "flight_category", 
+        "dew_point_temperature"
+      ], 
+      "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44057", 
+      "ndbc_data": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44057/44057.ncml", 
+      "ndbc_parameters": [
+        "wind_speed", 
+        "wind_from_direction", 
+        "sea_water_salinity", 
+        "wind_speed_of_gust", 
+        "air_temperature", 
+        "sea_surface_wave_significant_height", 
+        "sea_surface_wave_to_direction", 
+        "sea_surface_wave_mean_period", 
+        "sea_water_temperature"
+      ], 
+      "title": "Susquehanna", 
+      "usgs": "data.oceansmap.com:01580620", 
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml", 
+      "usgs_parameters": [
+        "Gage_height"
+      ]
+    }, 
+    {
+      "data_url": "/api/data/df-02", 
+      "id": "df-02", 
+      "image_url": "/api/image/df-02", 
+      "lat": 39.152, 
+      "lon": -76.391, 
+      "met": "data.oceansmap.com:KTGI", 
+      "met_data": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml", 
+      "met_parameters": [
+        "general_conditions", 
+        "visibility_in_air", 
+        "flight_category", 
+        "dew_point_temperature"
+      ], 
+      "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44043", 
+      "ndbc_data": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44043/44043.ncml", 
+      "ndbc_parameters": [
+        "wind_speed", 
+        "wind_from_direction", 
+        "sea_water_salinity", 
+        "wind_speed_of_gust", 
+        "air_temperature", 
+        "sea_surface_wave_significant_height", 
+        "sea_surface_wave_to_direction", 
+        "sea_surface_wave_mean_period", 
+        "sea_water_temperature"
+      ], 
+      "title": "Patapsco", 
+      "usgs": "data.oceansmap.com:01580620", 
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml", 
+      "usgs_parameters": [
+        "Gage_height"
+      ]
+    }, 
+    {
+      "data_url": "/api/data/df-03", 
+      "id": "df-03", 
+      "image_url": "/api/image/df-03", 
+      "lat": 38.963, 
+      "lon": -76.448, 
+      "met": "data.oceansmap.com:KTGI", 
+      "met_data": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml", 
+      "met_parameters": [
+        "general_conditions", 
+        "visibility_in_air", 
+        "flight_category", 
+        "dew_point_temperature"
+      ], 
+      "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44063", 
+      "ndbc_data": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44063/44063.ncml", 
+      "ndbc_parameters": [
+        "wind_speed", 
+        "wind_from_direction", 
+        "sea_water_salinity", 
+        "wind_speed_of_gust", 
+        "air_temperature", 
+        "sea_surface_wave_significant_height", 
+        "sea_surface_wave_to_direction", 
+        "sea_surface_wave_mean_period", 
+        "sea_water_temperature"
+      ], 
+      "title": "Annapolis", 
+      "usgs": "data.oceansmap.com:01580620", 
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml", 
+      "usgs_parameters": [
+        "Gage_height"
+      ]
+    }, 
+    {
+      "data_url": "/api/data/df-04", 
+      "id": "df-04", 
+      "image_url": "/api/image/df-04", 
+      "lat": 38.785, 
+      "lon": -77.036, 
+      "met": "data.oceansmap.com:KTGI", 
+      "met_data": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml", 
+      "met_parameters": [
+        "general_conditions", 
+        "visibility_in_air", 
+        "flight_category", 
+        "dew_point_temperature"
+      ], 
+      "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44061", 
+      "ndbc_data": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44061/44061.ncml", 
+      "ndbc_parameters": [
+        "wind_speed", 
+        "wind_from_direction", 
+        "sea_water_salinity", 
+        "wind_speed_of_gust", 
+        "air_temperature", 
+        "sea_surface_wave_significant_height", 
+        "sea_surface_wave_to_direction", 
+        "sea_surface_wave_mean_period", 
+        "sea_water_temperature"
+      ], 
+      "title": "Upper Potomac", 
+      "usgs": "data.oceansmap.com:01484938", 
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01484938/01484938.ncml", 
+      "usgs_parameters": [
+        "Gage_height"
+      ]
+    }, 
+    {
+      "data_url": "/api/data/df-05", 
+      "id": "df-05", 
+      "image_url": "/api/image/df-05", 
+      "lat": 38.553, 
+      "lon": -76.415, 
+      "met": "data.oceansmap.com:KTGI", 
+      "met_data": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml", 
+      "met_parameters": [
+        "general_conditions", 
+        "visibility_in_air", 
+        "flight_category", 
+        "dew_point_temperature"
+      ], 
+      "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44062", 
+      "ndbc_data": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44062/44062.ncml", 
+      "ndbc_parameters": [
+        "wind_speed", 
+        "wind_from_direction", 
+        "sea_water_salinity", 
+        "wind_speed_of_gust", 
+        "air_temperature", 
+        "sea_surface_wave_significant_height", 
+        "sea_surface_wave_to_direction", 
+        "sea_surface_wave_mean_period", 
+        "sea_water_temperature"
+      ], 
+      "title": "Gooses Reef", 
+      "usgs": "data.oceansmap.com:01580620", 
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml", 
+      "usgs_parameters": [
+        "Gage_height"
+      ]
+    }, 
+    {
+      "data_url": "/api/data/df-06", 
+      "id": "df-06", 
+      "image_url": "/api/image/df-06", 
+      "lat": 38.033, 
+      "lon": -76.336, 
+      "met": "data.oceansmap.com:KTGI", 
+      "met_data": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml", 
+      "met_parameters": [
+        "general_conditions", 
+        "visibility_in_air", 
+        "flight_category", 
+        "dew_point_temperature"
+      ], 
+      "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44042", 
+      "ndbc_data": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44042/44042.ncml", 
+      "ndbc_parameters": [
+        "wind_speed", 
+        "wind_from_direction", 
+        "sea_water_salinity", 
+        "wind_speed_of_gust", 
+        "air_temperature", 
+        "sea_surface_wave_significant_height", 
+        "sea_surface_wave_to_direction", 
+        "sea_surface_wave_mean_period", 
+        "sea_water_temperature"
+      ], 
+      "title": "Potomac", 
+      "usgs": "data.oceansmap.com:01484938", 
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01484938/01484938.ncml", 
+      "usgs_parameters": [
+        "Gage_height"
+      ]
+    }, 
+    {
+      "data_url": "/api/data/df-07", 
+      "id": "df-07", 
+      "image_url": "/api/image/df-07", 
+      "lat": 37.552, 
+      "lon": -76.251, 
+      "met": "data.oceansmap.com:KTGI", 
+      "met_data": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml", 
+      "met_parameters": [
+        "general_conditions", 
+        "visibility_in_air", 
+        "flight_category", 
+        "dew_point_temperature"
+      ], 
+      "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44058", 
+      "ndbc_data": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44058/44058.ncml", 
+      "ndbc_parameters": [
+        "wind_speed", 
+        "wind_from_direction", 
+        "sea_water_salinity", 
+        "wind_speed_of_gust", 
+        "air_temperature", 
+        "sea_surface_wave_significant_height", 
+        "sea_surface_wave_to_direction", 
+        "sea_surface_wave_mean_period", 
+        "sea_water_temperature"
+      ], 
+      "title": "Stingray Point", 
+      "usgs": "data.oceansmap.com:01484812", 
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01484812/01484812.ncml", 
+      "usgs_parameters": [
+        "Gage_height"
+      ]
+    }, 
+    {
+      "data_url": "/api/data/df-08", 
+      "id": "df-08", 
+      "image_url": "/api/image/df-08", 
+      "lat": 37.204, 
+      "lon": -76.777, 
+      "met": "data.oceansmap.com:KTGI", 
+      "met_data": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml", 
+      "met_parameters": [
+        "general_conditions", 
+        "visibility_in_air", 
+        "flight_category", 
+        "dew_point_temperature"
+      ], 
+      "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44041", 
+      "ndbc_data": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44041/44041.ncml", 
+      "ndbc_parameters": [
+        "wind_speed", 
+        "wind_from_direction", 
+        "sea_water_salinity", 
+        "wind_speed_of_gust", 
+        "air_temperature", 
+        "sea_surface_wave_significant_height", 
+        "sea_surface_wave_to_direction", 
+        "sea_surface_wave_mean_period", 
+        "sea_water_temperature"
+      ], 
+      "title": "Jamestown", 
+      "usgs": "data.oceansmap.com:02042770", 
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/02042770/02042770.ncml", 
+      "usgs_parameters": [
+        "Gage_height"
+      ]
+    }, 
+    {
+      "data_url": "/api/data/df-09", 
+      "id": "df-09", 
+      "image_url": "/api/image/df-09", 
+      "lat": 36.846, 
+      "lon": -76.298, 
+      "met": "data.oceansmap.com:KTGI", 
+      "met_data": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml", 
+      "met_parameters": [
+        "general_conditions", 
+        "visibility_in_air", 
+        "flight_category", 
+        "dew_point_temperature"
+      ], 
+      "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44059", 
+      "ndbc_data": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44059/44059.ncml", 
+      "ndbc_parameters": [
+        "wind_speed", 
+        "wind_from_direction", 
+        "sea_water_salinity", 
+        "wind_speed_of_gust", 
+        "air_temperature", 
+        "sea_surface_wave_significant_height", 
+        "sea_surface_wave_to_direction", 
+        "sea_surface_wave_mean_period", 
+        "sea_water_temperature"
+      ], 
+      "title": "Norfolk", 
+      "usgs": "data.oceansmap.com:02042893", 
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/02042893/02042893.ncml", 
+      "usgs_parameters": [
+        "Gage_height"
+      ]
+    }, 
+    {
+      "data_url": "/api/data/df-10", 
+      "id": "df-10", 
+      "image_url": "/api/image/df-10", 
+      "lat": 36.979, 
+      "lon": -76.043, 
+      "met": "data.oceansmap.com:KTGI", 
+      "met_data": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml", 
+      "met_parameters": [
+        "general_conditions", 
+        "visibility_in_air", 
+        "flight_category", 
+        "dew_point_temperature"
+      ], 
+      "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44064", 
+      "ndbc_data": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44064/44064.ncml", 
+      "ndbc_parameters": [
+        "wind_speed", 
+        "wind_from_direction", 
+        "sea_water_salinity", 
+        "wind_speed_of_gust", 
+        "air_temperature", 
+        "sea_surface_wave_significant_height", 
+        "sea_surface_wave_to_direction", 
+        "sea_surface_wave_mean_period", 
+        "sea_water_temperature"
+      ], 
+      "title": "First Landing", 
+      "usgs": "data.oceansmap.com:365423076051300", 
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/365423076051300/365423076051300.ncml", 
+      "usgs_parameters": [
+        "Gage_height"
+      ]
+    }
+  ]
