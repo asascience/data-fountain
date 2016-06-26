@@ -1,16 +1,67 @@
 import swal from 'sweetalert';
+import HUMPS from 'humps';
 
 /*****************************************************************************/
 /* Admin: Event Handlers */
 /*****************************************************************************/
 Template.Admin.events({
+    'submit form': function(event,tmpl){
+        event.preventDefault();
+
+        let proximityStations = [];
+        $('#proximityStations').trigger('chosen:updated');
+
+        let result = Meteor.users.update(Meteor.userId(), {
+            $set: {
+                "profile.primaryStation":       $('#primaryStation').val(),
+                "profile.proximityStations":    $('#proximityStations').val(),
+                "profile.dataDuration":         $('#dataDuration').val(),
+                "profile.refreshInterval":      $('#refreshInterval').val(),
+                // "profile.temperatureUnit":   $(element).val(),
+                "profile.infoTickerText":       $('#infoTickerText').val(),
+                "profile.timeZone":             $('#timezoneSelect').val(),
+                'profile.topPlotDataParameter': $('#topPlotDataParameter').val(),
+                'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val()
+            }
+        }, {multi: true});
+
+        if (result === 1) {
+            swal({
+                title: 'Saved!',
+                text: 'Your settings have been saved, go to the Data Fountain?',
+                type: 'success',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, please!',
+                cancelButtonText: 'No thanks.',
+                closeOnConfirm: true
+            }, () => {
+                Router.go('/');
+            });
+        }
+    },
+
+    'change .js-select-primary'(event, template) {
+        Meteor.users.update(Meteor.userId(), {
+            $set: {
+                "profile.primaryStation": $('#primaryStation').val(),
+            }
+        });
+    },
+
+    'change .js-select-bottom-parameter'(event, template) {
+        Meteor.users.update(Meteor.userId(), {
+            $set: {
+                'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val()
+            }
+        });
+    }
 });
 
 /*****************************************************************************/
 /* Admin: Helpers */
 /*****************************************************************************/
 Template.Admin.helpers({
-    stations: function(){
+    primaryStationOptions: function(){
         let listOfStations = Stations.find().fetch(),
             stationNames = [];
 
@@ -19,6 +70,22 @@ Template.Admin.helpers({
         });
 
         return stationNames;
+    },
+    proximityStationOptions: function(){
+        try {
+            let filterByParameter = HUMPS.decamelize(Meteor.user().profile.bottomPlotDataParameter);
+
+            let listOfStations = Stations.find({}).fetch(),
+                stationNames = [];
+
+            _.each(listOfStations, (obj) => {
+                stationNames.push(obj.title);
+            });
+
+            return stationNames;
+        } catch(e) {
+            console.log(e);
+        }
     },
     dataParams() {
         try {
@@ -84,41 +151,3 @@ Template.Admin.onRendered(() => {
 Template.Admin.onDestroyed(() => {
 
 });
-
-Template.Admin.events({
-    'submit form': function(event,tmpl){
-        event.preventDefault();
-
-        let proximityStations = [];
-        $('#proximityStations').trigger('chosen:updated');
-
-        let result = Meteor.users.update(Meteor.userId(), {
-            $set: {
-                "profile.primaryStation":       $('#primaryStation').val(),
-                "profile.proximityStations":    $('#proximityStations').val(),
-                "profile.dataDuration":         $('#dataDuration').val(),
-                "profile.refreshInterval":      $('#refreshInterval').val(),
-                // "profile.temperatureUnit":   $(element).val(),
-                "profile.infoTickerText":       $('#infoTickerText').val(),
-                "profile.timeZone":             $('#timezoneSelect').val(),
-                'profile.topPlotDataParameter': $('#topPlotDataParameter').val(),
-                'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val()
-            }
-        }, {multi: true});
-
-        if (result === 1) {
-            swal({
-                title: 'Saved!',
-                text: 'Your settings have been saved, go to the Data Fountain?',
-                type: 'success',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, please!',
-                cancelButtonText: 'No thanks.',
-                closeOnConfirm: true
-            }, () => {
-                Router.go('/');
-            });
-        }
-    }
-});
-

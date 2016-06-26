@@ -14,11 +14,34 @@
                             <label class="col-md-2 control-label">
                                 Primary Station
                             </label>
-                            <div class="col-md-10">
-                                <select class="category-select form-control" id="primaryStation">
-                                    <option value="{{primaryStation}}" selected>{{primaryStation}}</option>
-                                    {{#each stations}}
-                                    <option value="{{this}}">{{this}}</option>
+                            <div class="col-md-4">
+                                <select class="category-select form-control js-select-primary" id="primaryStation">
+                                    {{#each primaryStationOptions}}
+                                        <option value="{{this}}">{{this}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Line Plot (top)
+                            </label>
+                            <div class="col-md-4">
+                                <select class="category-select form-control" id="topPlotDataParameter">
+                                    {{#each dataParams}}
+                                        <option value="{{this}}">{{this}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Bar Plot (bottom)
+                            </label>
+                            <div class="col-md-4">
+                                <select class="category-select form-control js-select-bottom-parameter" id="bottomPlotDataParameter">
+                                    {{#each dataParams}}
+                                        <option value="{{this}}">{{this}}</option>
                                     {{/each}}
                                 </select>
                             </div>
@@ -27,9 +50,9 @@
                             <label class="col-md-2 control-label">
                                 Proximity Stations
                             </label>
-                            <div class="col-md-10">
+                            <div class="col-md-4">
                                 <select class="chosen-select input-md form-control" id="proximityStations"  multiple="multiple">
-                                    {{#each stations}}
+                                    {{#each proximityStationOptions}}
                                         <option value="{{this}}">{{this}}</option>
                                     {{/each}}
                                 </select>
@@ -49,32 +72,6 @@
                             </label>
                             <div class="col-md-10">
                                 <input type="text" class="form-control form-control-rounded" id="refreshInterval" value={{refreshInterval}} />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">
-                                Line Plot (top)
-                            </label>
-                            <div class="col-md-10">
-                                <select class="category-select form-control" id="topPlotDataParameter">
-                                    <option value="{{topPlotDataParameter}}" selected>{{topPlotDataParameter}}</option>
-                                    {{#each dataParams}}
-                                    <option value="{{this}}">{{this}}</option>
-                                    {{/each}}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">
-                                Bar Plot (bottom)
-                            </label>
-                            <div class="col-md-10">
-                                <select class="category-select form-control" id="bottomPlotDataParameter">
-                                    <option value="{{bottomPlotDataParameter}}" selected>{{bottomPlotDataParameter}}</option>
-                                    {{#each dataParams}}
-                                    <option value="{{this}}">{{this}}</option>
-                                    {{/each}}
-                                </select>
                             </div>
                         </div>
                         <!-- <div class="form&#45;row"> -->

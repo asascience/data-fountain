@@ -171,9 +171,6 @@ export default class StationWebService {
                                     }
                                 });
                             }
-                        } else {
-                            Stations.remove({id: station.id});
-
                         }
                     }
                 });
@@ -210,7 +207,7 @@ export default class StationWebService {
 
                 // In case all the stations are invalid, lets not create an infinite loop.
                 // Also, if that's the case, kill the server.
-                if (i === killLoop) process.exit(1);
+                //if (i === killLoop) process.exit(1);
 
             } while(!timeSet);
 

@@ -9,7 +9,10 @@ import StationWebService from '../../api/StationWebService';
 const stationWebService = new StationWebService();
 
 Meteor.startup(() => {
-    stationWebService.fetchStations();
+    let stations = Stations.find({}).fetch();
+    if (stations.length === 0) {
+        stationWebService.fetchStations();
+    }
     stationWebService.fetchStationsData();
     stationWebService.fetchWeatherForecast();
 });

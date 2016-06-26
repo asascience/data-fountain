@@ -8,7 +8,11 @@ SyncedCron.add({
         return parser.text(Meteor.settings.refreshTheData);
     },
     job() {
-        stationWebService.fetchStations();
+        let stations = Stations.find({}).fetch();
+        if (stations.length === 0) {
+            stationWebService.fetchStations();
+        }
+
         stationWebService.fetchStationsData();
     }
 });
