@@ -61,29 +61,30 @@ Template.BuoyMap.onRendered(() => {
                     }),
                     zIndexOffset: 1000
                 }).addTo(map);
+            } else {
+                let row = legend.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                cell1.innerHTML = "<div id='orangecircle' style='height: 20px; width: 20px;'></div>";
+                cell2.innerHTML = `<span style="font-size: 26px">${primaryStation.title}</span>`;
+                L.circle([primaryStation.lat, primaryStation.lon], 4500, {
+                    color: 'orange',
+                    fillColor: 'orange',
+                    fillOpacity: 1
+                }).addTo(map);
+
+
+                let textLatLng = [primaryStation.lat, primaryStation.lon+0.2];
+                let myTextLabel = L.marker(textLatLng, {
+                    icon: L.divIcon({
+                        className: 'text-labels',
+                        html: '<table class=tbl><tr><td>'+primaryStation.title+'</td></tr></table>'
+                    }),
+                    zIndexOffset: 1000
+                }).addTo(map);
             }
         }
 
-        let row = legend.insertRow();
-        let cell1 = row.insertCell(0);
-        let cell2 = row.insertCell(1);
-        cell1.innerHTML = "<div id='orangecircle' style='height: 20px; width: 20px;'></div>";
-        cell2.innerHTML = `<span style="font-size: 26px">${primaryStation.title}</span>`;
-        L.circle([primaryStation.lat, primaryStation.lon], 4500, {
-            color: 'orange',
-            fillColor: 'orange',
-            fillOpacity: 1
-        }).addTo(map);
-
-
-        let textLatLng = [primaryStation.lat, primaryStation.lon+0.2];
-        let myTextLabel = L.marker(textLatLng, {
-            icon: L.divIcon({
-                className: 'text-labels',
-                html: '<table class=tbl><tr><td>'+primaryStation.title+'</td></tr></table>'
-            }),
-            zIndexOffset: 1000
-        }).addTo(map);
 
     } catch(exception) {
         console.log(exception);

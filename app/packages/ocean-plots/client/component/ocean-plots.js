@@ -118,9 +118,19 @@ Template.OceanPlots.helpers({
                     times = primaryStationData.data.times,
                     units = primaryStationData.data[bottomPlotDataParameter].units;
 
+
+                for (let i=0; i<proximityStations.length-1;i++) {
+                    dataSet.push(undefined);
+                    axisLabels.push(undefined);
+                }
+
+                console.log(proximityStations);
                 proximityStationsData.forEach((item, index) => {
-                    dataSet.push(item.data[bottomPlotDataParameter].values);
-                    axisLabels.push(item.title);
+                    let originalIndex = proximityStations.indexOf(item.title);
+                    dataSet[originalIndex] = item.data[bottomPlotDataParameter].values;
+                    axisLabels[originalIndex] = item.title;
+                    console.log(originalIndex, item.title);
+                    console.log(axisLabels);
                 });
 
                 let flattenArray = [].concat(...dataSet);
