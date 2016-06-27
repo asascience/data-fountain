@@ -17,7 +17,7 @@ Template.Home.helpers({
 Template.Home.onCreated(() => {
     let _this = Template.instance();
     let DURATION = _this.data.duration;
-    let TIMER_DELAY = _this.data.timerDelay;
+    let TIMER_DELAY = Meteor.user().profile.refreshInterval * 1000;
     let REFERENCE_STATION = _this.data.referenceStation;
     let dataTimes = Data.findOne({id: REFERENCE_STATION}, {fields: {'data.times': 1}});
     dataTimes = dataTimes.data.times;
