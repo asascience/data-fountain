@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "buoyjs": "^1.3.6",
+    "buoyjs": "^1.3.11",
     "humps": "^1.1.0",
     "select2-bootstrap-theme": "0.1.0-beta.7",
     "sweetalert": "^1.1.3"

@@ -27,26 +27,26 @@
 
 .met-icons i.wi {
     font-size: 4vw;
-    color: #4994D0;
+    color: white;
 }
 
 .met-icons span.wi-data {
     font-size: 2vw;
     font-weight:bold;
-    color: #4994D0;
+    color: white;
 }
 
 .met-icons .wi-units, .met-icons .wi-fahrenheit.wi-units,
 .met-icons .wi-data > small.wi-units {
     font-size: 2vw;
     font-weight: bold;
-    color: #4994D0;
+    color: white;
 }
 
 .met-icons .wi-caption {
     font-weight:bold;
     font-size: 1.5vw;
-    color: #F58220;
+    color: white;
 }
 
 .met-icons span.wi-cardinal {
@@ -58,5 +58,5 @@
     padding-left: .75vw;
     bottom: 4.8vw;
     font-family: 'pirate';
-    color: #4994d0;
+    color: white;
 }

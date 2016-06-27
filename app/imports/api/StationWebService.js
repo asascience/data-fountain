@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { moment } from 'meteor/mrt:moment';
 import Buoy from 'buoyjs';
-
 import humps from 'humps';
 
 const Future = Npm.require('fibers/future');
@@ -94,13 +93,38 @@ export default class StationWebService {
                 let data = {};
                 let headers;
 
-                // create the URL
+                /***************
+                 *  OceansMap
+                 ***************/
                 let compiledUrl = `${Meteor.settings.dataFountainUrl}${station.dataUrl}?time=${startDate}/${endDate}`;
                 data.data = {};
                 data.id = station.id;
                 data.title = station.title;
                 data.stationId = station.stationId;
 
+                // make the call to get the scientific data, and block with future.
+                HTTP.call('GET', compiledUrl, (error, response) => {
+                    if (error || response.error) {
+                        console.log(error);
+                    } else {
+                        let responseData = Humps.camelizeKeys(response.data);
+                        let gageHeight = responseData.data.gageHeight;
+                        if (gageHeight) {
+                            let waterLevel = {
+                                type: gageHeight.type,
+                                units: gageHeight.units[0],
+                                values: gageHeight.values[0]
+                            }
+
+                            data.data.waterLevel = waterLevel;
+                            Data.upsert({id: data.id}, data);
+                        }
+                    }
+                });
+
+                /***************
+                 *  BuoyJS
+                 ***************/
                 let ndbcRootUrl = `http://www.ndbc.noaa.gov/data/realtime2/`;
                 HTTP.get(`${ndbcRootUrl}${data.stationId}.ocean`, (error, response) => {
                     if (!error) {
@@ -109,7 +133,8 @@ export default class StationWebService {
                             oceanTempValues = [],
                             clconValues = [],
                             o2ppmValues = [],
-                            turbidityValues = [];
+                            turbidityValues = [],
+                            salinityValues = [];
 
                         currentBuoyData.forEach((datum) => {
                             times.push(moment(datum.date).seconds(0).milliseconds(0).toISOString());
@@ -117,8 +142,8 @@ export default class StationWebService {
                             clconValues.push(datum.chlorophyllConcentration);
                             o2ppmValues.push(datum.oxygenPartsPerMil);
                             turbidityValues.push(datum.turbidity);
+                            salinityValues.push(datum.waterSalinity);
                         });
-
                         times.sort((a,b) => {
                             return new Date(a) - new Date(b);
                         });
@@ -131,9 +156,9 @@ export default class StationWebService {
                             type: 'timeSeries'
                         };
 
-                        let chloriohyllCon = {
+                        let chlorophyllCon = {
                             values: clconValues,
-                            units: 'ug/1',
+                            units: '\u03BCg/L',
                             type: 'timeSeries'
                         };
 
@@ -145,19 +170,29 @@ export default class StationWebService {
 
                         let turbidity = {
                             values: turbidityValues,
-                            units: 'ftu',
+                            units: 'FTU',
+                            type: 'timeSeries'
+                        };
+
+                        let waterSalinity = {
+                            values: salinityValues,
+                            units: 'PSU',
                             type: 'timeSeries'
                         };
 
                         data.data.oceanTemp = oceanTemp;
-                        data.data.chloriohyllCon = chloriohyllCon;
+                        data.data.chlorophyll = chlorophyllCon;
                         data.data.dissolvedOxygen = oxygenPartsPerMil;
                         data.data.turbidity = turbidity;
+                        data.data.salinity = waterSalinity;
                         data.data.times = times;
                         Data.upsert({id: data.id}, data);
                     }
                 });
 
+                /***************
+                 *  BuoyJS
+                 ***************/
                 HTTP.get(`${ndbcRootUrl}${data.stationId}.txt`, (error, response) => {
                     if (!error) {
                         let currentBuoyData = Buoy.Buoy.realTime(response.content),
@@ -190,11 +225,10 @@ export default class StationWebService {
                             units: 'ft',
                             type: 'timeSeries'
                         };
-
                         // data.data.windDirection = windDirection;
                         // data.data.windSpeed = windSpeed;
-                        data.data.waveHeight = waveHeight;
-                        Data.upsert({id: data.id}, data);
+                        // data.data.waveHeight = waveHeight;
+                        // Data.upsert({id: data.id}, data);
                     }
                 });
             }
@@ -211,6 +245,10 @@ export default class StationWebService {
 
     fetchWeatherForecast() {
         try {
+
+            /***************
+             *  Forecast.io
+             ***************/
             // These are server settings, and should be configured via the user profile.
             const FORECAST_API = process.env.FORECAST_API || Meteor.settings.forecastIoApi;
             const DURATION = Meteor.settings.defaultDuration;
@@ -239,7 +277,8 @@ export default class StationWebService {
                         for (let i=0; i < removeCount; i++) {
                             let recentTimeIndex = timeSet.length - i,
                                 timeRequest = timeSet[recentTimeIndex -1];
-                            let url = `https://api.forecast.io/forecast/${FORECAST_API}/${COORD[0]},${COORD[1]},${timeRequest}`;
+                            let unixTime = moment(timeRequest).unix();
+                            let url = `https://api.forecast.io/forecast/${FORECAST_API}/${referenceStation.lat},${referenceStation.lon},${unixTime}`;
                             HTTP.get(url, (error, response) => {
                                 if (error) {
                                     console.log(`fetchWeatherForecast ${error}`);

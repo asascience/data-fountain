@@ -12,6 +12,13 @@
     height: 5%;
 }
 
+.home .df-top > div > div {
+    background-color: #4994D0;
+}
+.home .df-top > div > div {
+    background-color: #4994D0;
+}
+
 .home .df-top div:first-child {
     position: relative;
     padding: 0;

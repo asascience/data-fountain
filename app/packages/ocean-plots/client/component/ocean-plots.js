@@ -123,6 +123,16 @@ Template.OceanPlots.helpers({
                     axisLabels.push(item.title);
                 });
 
+                // get the min and max values from a multidimensional array
+                let maxValue = dataSet.reduce((max, array) => {
+                    return max >= array[0] ? max : array[0];
+                }, -Infinity);
+
+                let minValue = dataSet.reduce((min, array) => {
+                    return min <= array[0] ? min : array[0];
+                });
+
+                // transpose the multidimensional array
                 let plotData = dataSet[0].map((datum, index) => {
                     return dataSet.map((row) => {
                         return row[index];
@@ -196,7 +206,9 @@ Template.OceanPlots.helpers({
                                         fontFamily: 'Verdana, sans-serif',
                                         fontWeight: 'bold'
                                     }
-                                }
+                                },
+                                min: minValue,
+                                max: maxValue + ((maxValue - minValue) * 0.2)
                             }
                         });
                     } catch(exception) {
@@ -266,11 +278,12 @@ Template.OceanPlots.onRendered(() => {
                         }
                     });
                 } catch(exception) {
-                    console.log(exception);
+                    document.location.reload(true);
                 }
             }, 2000);
         });
     } catch(exception) {
         console.log(exception);
+        document.location.reload(true);
     }
 });
