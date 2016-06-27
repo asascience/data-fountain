@@ -39,27 +39,29 @@ Template.BuoyMap.onRendered(() => {
             let lat=Number(stations[i].lat);//latitude
             let long=Number(stations[i].lon);//longitude
             let stationName = stations[i].title;
-            //Adding a point
-            let row = legend.insertRow();
-            let cell1 = row.insertCell(0);
-            let cell2 = row.insertCell(1);
-            cell1.innerHTML = "<div id='blackcircle' style='height: 20px; width: 20px;'></div>";
-            cell2.innerHTML = `<span style="font-size: 26px">${stationName}</span>`;
-            L.circle([lat, long], 4500, {
-                color: 'black',
-                fillColor: 'black',
-                fillOpacity: 1
-            }).addTo(map);
+            if (stationName !== primaryStation.title) {
+                //Adding a point
+                let row = legend.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                cell1.innerHTML = "<div id='blackcircle' style='height: 20px; width: 20px;'></div>";
+                cell2.innerHTML = `<span style="font-size: 26px">${stationName}</span>`;
+                L.circle([lat, long], 4500, {
+                    color: 'black',
+                    fillColor: 'black',
+                    fillOpacity: 1
+                }).addTo(map);
 
-            //ADding a Label
-            let textLatLng = [lat, long+0.2];
-            let myTextLabel = L.marker(textLatLng, {
-                icon: L.divIcon({
-                    className: 'text-labels',
-                    html: '<table class=tbl><tr><td>'+stationName+'</td></tr></table>'
-                }),
-                zIndexOffset: 1000
-            }).addTo(map);
+                //ADding a Label
+                let textLatLng = [lat, long+0.2];
+                let myTextLabel = L.marker(textLatLng, {
+                    icon: L.divIcon({
+                        className: 'text-labels',
+                        html: '<table class=tbl><tr><td>'+stationName+'</td></tr></table>'
+                    }),
+                    zIndexOffset: 1000
+                }).addTo(map);
+            }
         }
 
         let row = legend.insertRow();
