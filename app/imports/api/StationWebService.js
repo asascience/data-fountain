@@ -259,35 +259,17 @@ export default class StationWebService {
                 let timeSet = referenceStationData.data.times;
                 let weather = Weather.find({}).fetch();
 
-                let removeCount = Weather.remove({'currently.time': {$lte: moment().subtract(DURATION, 'hours').unix()}});
-                if (weather.length === 0 && removeCount === 0) {
-                    for (let i=0; i < timeSet.length -1; i++) {
-                        let unixTime = moment(timeSet[i]).unix();
-                        let url = `https://api.forecast.io/forecast/${FORECAST_API}/${referenceStation.lat},${referenceStation.lon},${unixTime}`;
-                        HTTP.get(url, (error, response) => {
-                            if (error) {
-                                console.log(`fetchWeatherForecast ${error}`);
-                            } else {
-                                Weather.insert(response.data);
-                            }
-                        });
-                    }
-                } else {
-                    if (removeCount !== 0) {
-                        for (let i=0; i < removeCount; i++) {
-                            let recentTimeIndex = timeSet.length - i,
-                                timeRequest = timeSet[recentTimeIndex -1];
-                            let unixTime = moment(timeRequest).unix();
-                            let url = `https://api.forecast.io/forecast/${FORECAST_API}/${referenceStation.lat},${referenceStation.lon},${unixTime}`;
-                            HTTP.get(url, (error, response) => {
-                                if (error) {
-                                    console.log(`fetchWeatherForecast ${error}`);
-                                } else {
-                                    Weather.insert(response.data);
-                                }
-                            });
+                let removeCount = Weather.remove({});
+                for (let i=0; i < timeSet.length -1; i++) {
+                    let unixTime = moment(timeSet[i]).unix();
+                    let url = `https://api.forecast.io/forecast/${FORECAST_API}/${referenceStation.lat},${referenceStation.lon},${unixTime}`;
+                    HTTP.get(url, (error, response) => {
+                        if (error) {
+                            console.log(`fetchWeatherForecast ${error}`);
+                        } else {
+                            Weather.insert(response.data);
                         }
-                    }
+                    });
                 }
             }
         } catch (exception) {
