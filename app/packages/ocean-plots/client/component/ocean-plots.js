@@ -123,13 +123,14 @@ Template.OceanPlots.helpers({
                     axisLabels.push(item.title);
                 });
 
+                let flattenArray = [].concat(...dataSet);
                 // get the min and max values from a multidimensional array
-                let maxValue = dataSet.reduce((max, array) => {
-                    return max >= array[0] ? max : array[0];
+                let maxValue = flattenArray.reduce((max, array) => {
+                    return max >= array ? max : array;
                 }, -Infinity);
 
-                let minValue = dataSet.reduce((min, array) => {
-                    return min <= array[0] ? min : array[0];
+                let minValue = flattenArray.reduce((min, array) => {
+                    return min <= array ? min : array;
                 });
 
                 // transpose the multidimensional array
