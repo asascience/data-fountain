@@ -78,7 +78,7 @@ Template.OceanPlots.helpers({
                             }
                         },
                         plotOptions: {
-                            spline: {
+                            line: {
                                 lineWidth: 6,
                                 stats: {
                                     hover: {
