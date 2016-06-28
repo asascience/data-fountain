@@ -84,7 +84,7 @@ export default class StationWebService {
             startDate.setHours(startDate.getHours() - DURATION);
             startDate = startDate.toISOString();
 
-            let stations = Stations.find({}, {fields: {dataUrl: 1, id: 1, title: 1, stationId: 1}}).fetch();
+            let stations = Stations.find({}, {fields: {dataUrl: 1, id: 1, title: 1, stationId: 1, usgs: 1}}).fetch();
 
             // create a place to store the results
             let dataSet = [];
@@ -93,34 +93,35 @@ export default class StationWebService {
                 let data = {};
                 let headers;
 
-                /***************
-                 *  OceansMap
-                 ***************/
                 let compiledUrl = `${Meteor.settings.dataFountainUrl}${station.dataUrl}?time=${startDate}/${endDate}`;
                 data.data = {};
                 data.id = station.id;
                 data.title = station.title;
                 data.stationId = station.stationId;
+                data.usgsSite = station.usgs.split(':')[1];
 
-                // make the call to get the scientific data, and block with future.
-                HTTP.call('GET', compiledUrl, (error, response) => {
-                    if (error || response.error) {
-                        console.log(error);
-                    } else {
-                        let responseData = Humps.camelizeKeys(response.data);
-                        let gageHeight = responseData.data.gageHeight;
-                        if (gageHeight) {
-                            let waterLevel = {
-                                type: gageHeight.type,
-                                units: gageHeight.units[0],
-                                values: gageHeight.values[0]
-                            }
-
-                            data.data.waterLevel = waterLevel;
-                            Data.upsert({id: data.id}, data);
-                        }
-                    }
-                });
+                /***************
+                 *  OceansMap
+                 ***************/
+                // // make the call to get the scientific data, and block with future.
+                // HTTP.call('GET', compiledUrl, (error, response) => {
+                //     if (error || response.error) {
+                //         console.log(error);
+                //     } else {
+                //         let responseData = Humps.camelizeKeys(response.data);
+                //         let gageHeight = responseData.data.gageHeight;
+                //         if (gageHeight) {
+                //             let waterLevel = {
+                //                 type: gageHeight.type,
+                //                 units: gageHeight.units[0],
+                //                 values: gageHeight.values[0]
+                //             }
+                //
+                //             data.data.waterLevel = waterLevel;
+                //             Data.upsert({id: data.id}, data);
+                //         }
+                //     }
+                // });
 
                 /***************
                  *  BuoyJS
@@ -231,8 +232,40 @@ export default class StationWebService {
                         // Data.upsert({id: data.id}, data);
                     }
                 });
-            }
 
+                /*************
+                 * USGS
+                 * **********/
+                let usgsPortalUrl = 'http://usgs-portal.herokuapp.com/';
+
+                HTTP.get(`${usgsPortalUrl}${data.usgsSite}?startDT=${startDate}&endDT=${endDate}`, (error, response) => {
+                    try {
+                        let usgsBuoyData = JSON.parse(response.content),
+                            gageHeight = [];
+
+                        usgsBuoyData.data.forEach((datum) => {
+                            if (moment(datum.utc).minute() === 0) {
+                                if (datum['01_00065']) {
+                                    gageHeight.push(parseFloat(datum['01_00065']));
+                                }
+                            }
+                        });
+
+                        let waterLevel = {
+                            type: 'timeSeries',
+                            units: 'ft',
+                            values: gageHeight
+                        }
+
+                        if (gageHeight.length > 0) {
+                            data.data.waterLevel = waterLevel;
+                            Data.upsert({id: data.id}, data);
+                        }
+                    } catch(exception) {
+                        console.log(exception);
+                    }
+                });
+            }
             console.log(`[+] Station Data compilations complete.`);
             return;
             // when the future is ready, return the data.

@@ -92,7 +92,7 @@ Template.OceanPlots.helpers({
                         },
                         series: [{
                             data: dataSet,
-                            type: 'spline',
+                            type: 'line',
                         }]
                     });
                 } catch(exception) {
@@ -282,16 +282,22 @@ Template.OceanPlots.onRendered(() => {
                             let ticker = Session.get('globalTicker');
                             bottomPlot.series[0].setData( _this.plotData[ticker]);
                         } catch(exception) {
-                            document.location.reload(true);
+                            Meteor.setTimeout(() => {
+                                document.location.reload(true);
+                            }, 2000);
                         }
                     });
                 } catch(exception) {
-                    document.location.reload(true);
+                    Meteor.setTimeout(() => {
+                        document.location.reload(true);
+                    }, 2000);
                 }
             }, 2000);
         });
     } catch(exception) {
         console.log(exception);
-        document.location.reload(true);
+        Meteor.setTimeout(() => {
+            document.location.reload(true);
+        }, 2000);
     }
 });
