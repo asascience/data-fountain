@@ -143,8 +143,8 @@ Template.Admin.onRendered(() => {
     $('#proximityStations').val(userProfile.proximityStations).change();
     $('#dataDuration').val(userProfile.dataDuration);
     $('#refreshInterval').val(userProfile.refreshInterval);
-    $('#topPlotDataParam').val(userProfile.topPlotDataParameter);
-    $('#bottomPlotDataParam').val(userProfile.bottomPlotDataParameter);
+    $('#topPlotDataParameter').val(userProfile.topPlotDataParameter);
+    $('#bottomPlotDataParameter').val(userProfile.bottomPlotDataParameter);
 
 });
 

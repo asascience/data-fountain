@@ -57,7 +57,7 @@ Template.OceanPlots.helpers({
                             title: {
                                 text: `${plotDisplayName} (${units})`,
                                 style: {
-                                    fontSize: '20px',
+                                    fontSize: '16px',
                                     fontFamily: 'Verdana, sans-serif',
                                     fontWeight: 'bold'
                                 }
@@ -124,13 +124,10 @@ Template.OceanPlots.helpers({
                     axisLabels.push(undefined);
                 }
 
-                console.log(proximityStations);
                 proximityStationsData.forEach((item, index) => {
                     let originalIndex = proximityStations.indexOf(item.title);
                     dataSet[originalIndex] = item.data[bottomPlotDataParameter].values;
                     axisLabels[originalIndex] = item.title;
-                    console.log(originalIndex, item.title);
-                    console.log(axisLabels);
                 });
 
                 let flattenArray = [].concat(...dataSet);
@@ -190,7 +187,7 @@ Template.OceanPlots.helpers({
                                     y: -2, // 10 pixels down from the top
                                     x: 2,
                                     style: {
-                                        fontSize: '20px',
+                                        fontSize: '16px',
                                         fontFamily: 'Verdana, sans-serif',
                                         border: 'none',
                                         textShadow: false,
@@ -201,7 +198,7 @@ Template.OceanPlots.helpers({
                                 categories: axisLabels,
                                 labels: {
                                     style: {
-                                        fontSize: '20px',
+                                        fontSize: '16px',
                                         fontFamily: 'Verdana, sans-serif',
                                         border: 'none',
                                         textShadow: false,
@@ -213,7 +210,7 @@ Template.OceanPlots.helpers({
                                 title: {
                                     text: `${plotDisplayName} (${units})`,
                                     style: {
-                                        fontSize: '20px',
+                                        fontSize: '16px',
                                         fontFamily: 'Verdana, sans-serif',
                                         fontWeight: 'bold'
                                     }
