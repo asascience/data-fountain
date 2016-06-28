@@ -16,7 +16,7 @@ Template.Login.events({
                 return;
             } else {
                 if (Router.current().route.name === 'login') {
-                    Router.render('/admin');
+                    Router.go('admin');
                 }
             }
             // setTimeout(function() {

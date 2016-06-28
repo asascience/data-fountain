@@ -131,20 +131,22 @@ Template.Admin.onCreated(() => {
 });
 
 Template.Admin.onRendered(() => {
-    if ( $.fn.select2 ) {
-        $('#proximityStations').select2({
-            theme: 'bootstrap'
-        });
-    }
+    Meteor.setTimeout(() => {
+        if ( $.fn.select2 ) {
+            $('#proximityStations').select2({
+                theme: 'bootstrap'
+            });
+        }
 
-    let userProfile = Meteor.user().profile;
+        let userProfile = Meteor.user().profile;
 
-    $('#primaryStation').val(userProfile.primaryStation);
-    $('#proximityStations').val(userProfile.proximityStations).change();
-    $('#dataDuration').val(userProfile.dataDuration);
-    $('#refreshInterval').val(userProfile.refreshInterval);
-    $('#topPlotDataParameter').val(userProfile.topPlotDataParameter);
-    $('#bottomPlotDataParameter').val(userProfile.bottomPlotDataParameter);
+        $('#primaryStation').val(userProfile.primaryStation);
+        $('#proximityStations').val(userProfile.proximityStations).change();
+        $('#dataDuration').val(userProfile.dataDuration);
+        $('#refreshInterval').val(userProfile.refreshInterval);
+        $('#topPlotDataParameter').val(userProfile.topPlotDataParameter);
+        $('#bottomPlotDataParameter').val(userProfile.bottomPlotDataParameter);
+    }, 500);
 
 });
 
