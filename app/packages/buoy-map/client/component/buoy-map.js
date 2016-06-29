@@ -23,7 +23,7 @@ Template.BuoyMap.onRendered(() => {
             primaryStation = Stations.findOne({title: Meteor.user().profile.primaryStation});
 
         //Map Initialization
-        let map = L.map('map').setView([37.9,-76.2574], 7);
+        let map = L.map('map').setView([38.2,-76.2574], 8);
         // map.createPane('labels');
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
             maxZoom: 13,

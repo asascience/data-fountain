@@ -1,7 +1,21 @@
+import screenfull from 'screenfull';
 /*****************************************************************************/
 /* Home: Event Handlers */
 /*****************************************************************************/
 Template.Home.events({
+    'click .full-screen'(event, template) {
+        let target = $(event).target;
+        if (screenfull.enabled) {
+            screenfull.toggle(target);
+
+            if(screenfull.isFullscreen) {
+                $('em').removeClass('fa-expand').addClass('fa-compress');
+            } else {
+                $('em').removeClass('fa-compress').addClass('fa-expand');
+            }
+
+        }
+    }
 });
 
 /*****************************************************************************/
@@ -42,6 +56,9 @@ Template.Home.onCreated(() => {
         Session.set('globalTimer', time);
         Session.set('globalTicker', currIndex);
     }, TIMER_DELAY);
+
+
+
 });
 
 Template.Home.onRendered(() => {

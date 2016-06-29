@@ -9,7 +9,6 @@
 
 .home .df-top {
     padding: relative;
-    height: 5%;
 }
 
 .home .df-top > div > div {
@@ -34,6 +33,7 @@
     margin: 0;
     bottom: 0;
     position: absolute;
+    height: 10vh;
 }
 .home .df-bottom .panel {
     border: none;
@@ -45,6 +45,18 @@
     position: fixed;
     bottom: 0;
     width: 100%;
+    height: 6vh;
+}
+
+.home a.full-screen {
+    color: white;
+    background-color: #4994D0;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    z-index: 10000;
 }
 .home {
 }

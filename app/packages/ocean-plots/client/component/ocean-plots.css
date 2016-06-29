@@ -14,14 +14,15 @@
 .ocean-plots .plot-banner {
     margin: 0;
     padding: 0;
+    background-color: white;
+    padding: 0 5px 0 5px;
 }
 .ocean-plots .plot-banner h3 {
     margin: 0;
     padding: 0 0px 2px 0px;
     display: inline-block;
     color: #f06d1a;
-    font-size: 30px;
-    border-bottom: 2px solid #f06d1a;
+    font-size: 32px;
 }
 
 .ocean-plots .plot {

@@ -12,7 +12,7 @@ Template.InfoTicker.helpers({
     getInfoText() {
         try {
             let weather = Weather.find({}).fetch();
-            weather = Meteor.user().profile.infoTickerText || `${weather[0].currently.summary}. ${weather[0].hourly.summary}`;
+            weather = Meteor.user().profile.infoTickerText;
 
             return weather;
 
