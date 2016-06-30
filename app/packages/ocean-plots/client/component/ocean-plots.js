@@ -37,10 +37,8 @@ Template.OceanPlots.helpers({
                 units = primaryStationData.data[topPlotDataParameter].units
 
             let dataSet = times.map((data, index) => {
-                console.log(typeof(plotData[index]) === 'undefined');
                 return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN' || typeof(plotData[index]) === 'undefined') ? null : plotData[index]];
             });
-            console.log(dataSet);
 
             Meteor.defer(() => {
                 try {
@@ -80,7 +78,7 @@ Template.OceanPlots.helpers({
                             }
                         },
                         plotOptions: {
-                            line: {
+                            spline: {
                                 lineWidth: 6,
                                 stats: {
                                     hover: {
@@ -94,7 +92,7 @@ Template.OceanPlots.helpers({
                         },
                         series: [{
                             data: dataSet,
-                            type: 'line',
+                            type: 'spline',
                         }]
                     });
                 } catch(exception) {
