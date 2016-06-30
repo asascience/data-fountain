@@ -40,7 +40,7 @@ Template.Home.onCreated(() => {
     var time;
 
     function* indexGen() {
-        let index = 1;
+        let index = 0;
         while(true) {
             if (index === dataTimes.length -1) {
                 index = 0;

@@ -46,6 +46,18 @@ Template.Admin.events({
                 "profile.primaryStation": $('#primaryStation').val(),
             }
         });
+
+        $('.js-top-plot-param').trigger('change');
+    },
+
+    'change .js-top-plot-param'(event, template) {
+        Meteor.setTimeout(() => {
+            Meteor.users.update(Meteor.userId(), {
+                $set: {
+                    "profile.topPlotDataParameter": $('#topPlotDataParameter').val(),
+                }
+            });
+        }, 500);
     },
 
     'change .js-select-bottom-parameter'(event, template) {
@@ -116,7 +128,7 @@ Template.Admin.helpers({
         return Meteor.user().profile.dataDuration;
     },
     refreshInterval() {
-        return Meteor.user().profile.refreshInterval;
+        return Meteor.user().profile.refreshInterval || 2;
     },
     infoTickerText() {
         return Meteor.user().profile.infoTickerText;

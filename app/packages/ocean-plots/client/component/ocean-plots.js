@@ -86,7 +86,7 @@ Template.OceanPlots.helpers({
                                     }
                                 },
                                 marker: {
-                                    enabled: true
+                                    enabled: false
                                 }
                             }
                         },

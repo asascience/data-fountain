@@ -138,16 +138,60 @@ export default class StationWebService {
                             salinityValues = [];
 
                         currentBuoyData.forEach((datum) => {
-                            times.push(moment(datum.date).seconds(0).milliseconds(0).toISOString());
-                            oceanTempValues.push(_this._convertCtoF(datum.oceanTemp));
-                            clconValues.push(datum.chlorophyllConcentration);
-                            o2ppmValues.push(datum.oxygenPartsPerMil);
-                            turbidityValues.push(datum.turbidity);
-                            salinityValues.push(datum.waterSalinity);
+                            let time = moment(datum.date).seconds(0).milliseconds(0).toISOString();
+                            times.push(time);
+                            oceanTempValues.push([time, _this._convertCtoF(datum.oceanTemp)]);
+                            clconValues.push([time, datum.chlorophyllConcentration]);
+                            o2ppmValues.push([time, datum.oxygenPartsPerMil]);
+                            turbidityValues.push([time, datum.turbidity]);
+                            salinityValues.push([time, datum.waterSalinity]);
                         });
+
+                        // Make sure all the data is in the correct order.
                         times.sort((a,b) => {
                             return new Date(a) - new Date(b);
                         });
+                        oceanTempValues.sort((a,b) => {
+                            return new Date(a[0]) - new Date(b[0]);
+                        });
+                        clconValues.sort((a,b) => {
+                            return new Date(a[0]) - new Date(b[0]);
+                        });
+                        o2ppmValues.sort((a,b) => {
+                            return new Date(a[0]) - new Date(b[0]);
+                        });
+                        turbidityValues.sort((a,b) => {
+                            return new Date(a[0]) - new Date(b[0]);
+                        });
+                        salinityValues.sort((a,b) => {
+                            return new Date(a[0]) - new Date(b[0]);
+                        });
+
+                        // remove the timestamps now
+                        oceanTempValues = oceanTempValues.map((item, index) => {
+                            return item[1];
+                        });
+                        clconValues = clconValues.map((item, index) => {
+                            return item[1];
+                        });
+                        o2ppmValues = o2ppmValues.map((item, index) => {
+                            return item[1];
+                        });
+                        turbidityValues = turbidityValues.map((item, index) => {
+                            return item[1];
+                        });
+                        salinityValues = salinityValues.map((item, index) => {
+                            return item[1];
+                        });
+
+                        // only get the last 48 hours
+
+                        times = times.splice(times.length - DURATION-1, times.length -1);
+                        clconValues = clconValues.splice(clconValues.length - DURATION -1, clconValues.length -1);
+                        oceanTempValues = oceanTempValues.splice(oceanTempValues.length - DURATION -1, oceanTempValues.length -1);
+                        o2ppmValues = o2ppmValues.splice(o2ppmValues.length - DURATION -1, o2ppmValues.length -1);
+                        turbidityValues = turbidityValues.splice(turbidityValues.length - DURATION -1, turbidityValues.length -1);
+                        salinityValues = salinityValues.splice(salinityValues.length - DURATION -1, salinityValues.length -1);
 
                         // values have to be put into another array to stay consistent
                         // with OceansMap.  For some reason they are a multi array.
@@ -197,15 +241,49 @@ export default class StationWebService {
                 HTTP.get(`${ndbcRootUrl}${data.stationId}.txt`, (error, response) => {
                     if (!error) {
                         let currentBuoyData = Buoy.Buoy.realTime(response.content),
+                            times = [];
                             wdir = [],
                             wspd = [],
-                            wvht = [];
+                            atmp = [];
 
                         currentBuoyData.forEach((datum) => {
-                            wdir.push(datum.windDirection);
-                            wspd.push(datum.windSpeed * KNOTS_TO_MPH);
-                            wvht.push(datum.waveHeight * METER_TO_FT);
+                            if (moment(datum.date).minute() === 0) {
+                                let time = moment(datum.date).seconds(0).milliseconds(0).toISOString();
+                                times.push(time);
+                                wdir.push([time, datum.windDirection]);
+                                wspd.push([time, datum.windSpeed * KNOTS_TO_MPH]);
+                                atmp.push([time, _this._convertCtoF(datum.airTemp)]);
+                            }
                         });
+
+                        // Make sure all the data is in the correct order.
+                        times.sort((a,b) => {
+                            return new Date(a) - new Date(b);
+                        });
+                        wdir.sort((a,b) => {
+                            return new Date(a[0]) - new Date(b[0]);
+                        });
+                        wspd.sort((a,b) => {
+                            return new Date(a[0]) - new Date(b[0]);
+                        });
+                        atmp.sort((a,b) => {
+                            return new Date(a[0]) - new Date(b[0]);
+                        });
+
+                        // remove the timestamps now
+                        wdir = wdir.map((item, index) => {
+                            return item[1];
+                        });
+                        wspd = wspd.map((item, index) => {
+                            return item[1];
+                        });
+                        atmp = atmp.map((item, index) => {
+                            return item[1];
+                        });
+
+                        wdir = wdir.splice(wdir.length - DURATION-1, wdir.length -1);
+                        wspd = wspd.splice(wspd.length - DURATION-1, wspd.length -1);
+                        atmp = atmp.splice(atmp.length - DURATION-1, atmp.length -1);
 
                         // values have to be put into another array to stay consistent
                         // with OceansMap.  For some reason they are a multi array.
@@ -221,15 +299,15 @@ export default class StationWebService {
                             type: 'timeSeries'
                         };
 
-                        let waveHeight = {
-                            values: wvht,
-                            units: 'ft',
+                        let airTemp = {
+                            values: atmp,
+                            units: 'F',
                             type: 'timeSeries'
                         };
-                        // data.data.windDirection = windDirection;
-                        // data.data.windSpeed = windSpeed;
-                        // data.data.waveHeight = waveHeight;
-                        // Data.upsert({id: data.id}, data);
+                        data.data.windDirection = windDirection;
+                        data.data.windSpeed = windSpeed;
+                        data.data.airTemp = airTemp;
+                        Data.upsert({id: data.id}, data);
                     }
                 });
 
@@ -278,7 +356,6 @@ export default class StationWebService {
 
     fetchWeatherForecast() {
         try {
-
             /***************
              *  Forecast.io
              ***************/
@@ -293,7 +370,7 @@ export default class StationWebService {
                 let weather = Weather.find({}).fetch();
 
                 let removeCount = Weather.remove({});
-                for (let i=0; i < timeSet.length -1; i++) {
+                for (let i=0; i < timeSet.length; i++) {
                     let unixTime = moment(timeSet[i]).unix();
                     let url = `https://api.forecast.io/forecast/${FORECAST_API}/${referenceStation.lat},${referenceStation.lon},${unixTime}`;
                     HTTP.get(url, (error, response) => {

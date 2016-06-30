@@ -13,8 +13,8 @@ Template.MetIcons.helpers({
     weatherIcon() {
         try {
             let weather = Template.instance().weather(),
-                time = moment(weather.currently.time * 1000).format(),
-                icon = getWeatherIcon(weather.currently.icon, time, weather.latitude, weather.longitude);
+                time = moment(weather.forecastIo.currently.time * 1000).format(),
+                icon = getWeatherIcon(weather.forecastIo.currently.icon, time, weather.forecastIo.latitude, weather.forecastIo.longitude);
 
             return icon;
         } catch (exception) {
@@ -25,7 +25,7 @@ Template.MetIcons.helpers({
     lunarIcon() {
         try {
             let weather = Template.instance().weather(),
-                time = moment(weather.currently.time * 1000).format(),
+                time = moment(weather.forecastIo.currently.time * 1000).format(),
                 lunr = getLunarPhaseIcon(time);
 
             return lunr;
@@ -37,7 +37,7 @@ Template.MetIcons.helpers({
     tempIcon() {
         try {
             let weather = Template.instance().weather(),
-                temp = Math.round(weather.currently.temperature);
+                temp = Math.round(weather.ndbc.airTemp);
 
             return temp;
         } catch (exception) {
@@ -48,9 +48,9 @@ Template.MetIcons.helpers({
     windBearing() {
         try {
             let weather = Template.instance().weather(),
-                windBearing = weather.currently.windBearing;
+                windDirection = weather.ndbc.windDirection;
 
-            return windBearing;
+            return windDirection;
         } catch (exception) {
             if (!!exception instanceof TypeError)
                 console.log(exception);
@@ -59,7 +59,7 @@ Template.MetIcons.helpers({
     windSpeed() {
         try {
             let weather = Template.instance().weather(),
-                windSpeed = Math.round(weather.currently.windSpeed);
+                windSpeed = Math.round(weather.ndbc.windSpeed);
 
             return windSpeed;
         } catch (exception) {
@@ -86,19 +86,32 @@ Template.MetIcons.helpers({
 /*****************************************************************************/
 Template.MetIcons.onCreated(() => {
     const weatherDep = new Tracker.Dependency;
+    let primaryStation = Meteor.user().profile.primaryStation;
 
     let weatherCollection = Weather.find({}).fetch(),
+        dataCollection = Data.findOne({title: primaryStation}, {fields: {'title': 1, 'data.windSpeed': 1, 'data.airTemp': 1, 'data.windDirection': 1, 'data.times': 1}}),
         weather = {};
+
+    weather.ndbc = {};
 
     Template.instance().weather = (() => {
         weatherDep.depend();
-        return weather[0];
+        return {
+            forecastIo: weather.forecastIo[0],
+            ndbc: weather.ndbc
+        }
     });
 
     Tracker.autorun(() => {
-        weather = weatherCollection.filter((obj) => {
+        weather.forecastIo = weatherCollection.filter((obj) => {
             return obj.currently.time === moment(Session.get('globalTimer')).unix();
         });
+
+        Object.keys(dataCollection.data).forEach((item, index) => {
+            let ticker = Session.get('globalTicker');
+            weather.ndbc[item] = dataCollection.data[item].values[ticker];
+        });
+
         weatherDep.changed();
     });
 });
