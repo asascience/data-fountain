@@ -139,3 +139,4 @@ velocity:html-reporter@0.10.1
 velocity:reports@1.0.0
 webapp@1.2.9_1
 webapp-hashing@1.0.9
+zimme:active-route@2.3.2

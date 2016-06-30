@@ -1,0 +1,29 @@
+<template name="Header">
+    <nav role="navigation" class="navbar topnavbar header">
+       <div class="navbar-header">
+          <a href="#/" class="navbar-brand">
+             <div class="brand-logo">
+                <img src="logo.png" alt="App Logo" class="img-responsive" />
+             </div>
+             <div class="brand-logo-collapsed">
+                <img src="img/logo-single.png" alt="App Logo" class="img-responsive" />
+             </div>
+          </a>
+       </div>
+       <div class="navbar-header">
+           <ul class="nav navbar-nav">
+               <li class="{{isActiveRoute regex='home'}}">
+                   <a href="{{pathFor 'Home'}}">Data Fountain Home</a>
+               </li>
+           </ul>
+       </div>
+
+       <!-- START Nav wrapper-->
+       <div class="navbar-collapse collapse">
+          <!-- START Left navbar-->
+          <ul class="nav navbar-nav navbar-right">
+              {{> loginButtons }}
+          </ul>
+       </div>
+    </nav>
+</template>

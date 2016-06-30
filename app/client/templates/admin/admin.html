@@ -1,9 +1,7 @@
 <template name="Admin">
     <div class="admin">
+        {{> Header }}
         <div class="panel panel-default">
-            <div class="panel-heading">
-                <h1>User Settings <small>{{> loginButtons }}</small></h1>
-            </div>
             <div class="panel-body">
                 <!-- You only need this form and the form-basic.css -->
                 <form class="form-horizontal" method="post" action="#">
@@ -115,7 +113,7 @@
                         <div class="row">
                             <div class="col-md-6">
 
-                                <button class="pull-right" type="submit">Save Settings</button>
+                                <button class="pull-right btn btn-primary" type="submit">Save Settings</button>
                             </div>
                         </div>
                     </fieldset>

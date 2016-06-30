@@ -273,7 +273,9 @@ Template.OceanPlots.onRendered(() => {
                             });
                             plotB.render();
                         } catch(exception) {
-                            document.location.reload(true);
+                            Meteor.setTimeout(() => {
+                                document.location.reload(true);
+                            }, 2000);
                         }
                     });
 
@@ -288,16 +290,16 @@ Template.OceanPlots.onRendered(() => {
                         }
                     });
                 } catch(exception) {
-                    Meteor.setTimeout(() => {
-                        document.location.reload(true);
-                    }, 2000);
+                    // Meteor.setTimeout(() => {
+                    //     document.location.reload(true);
+                    // }, 2000);
                 }
             }, 2000);
         });
     } catch(exception) {
         console.log(exception);
-        Meteor.setTimeout(() => {
-            document.location.reload(true);
-        }, 2000);
+        // Meteor.setTimeout(() => {
+        //     document.location.reload(true);
+        // }, 2000);
     }
 });

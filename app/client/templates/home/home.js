@@ -32,8 +32,8 @@ Template.Home.onCreated(() => {
     let _this = Template.instance();
     let DURATION = _this.data.duration;
     let TIMER_DELAY = Meteor.user().profile.refreshInterval * 1000;
-    let REFERENCE_STATION = _this.data.referenceStation;
-    let dataTimes = Data.findOne({id: REFERENCE_STATION}, {fields: {'data.times': 1}});
+    let REFERENCE_STATION = Meteor.user().profile.primaryStation;
+    let dataTimes = Data.findOne({title: REFERENCE_STATION}, {fields: {'data.times': 1}});
     dataTimes = dataTimes.data.times;
 
     // using var explicitly
@@ -55,6 +55,21 @@ Template.Home.onCreated(() => {
         time = dataTimes[currIndex];
         Session.set('globalTimer', time);
         Session.set('globalTicker', currIndex);
+
+        // if (currIndex === DURATION-1) {
+        //     let rotationIndex = Meteor.user().profile.proximityStations.indexOf(REFERENCE_STATION),
+        //         proximityStations = Meteor.user().profile.proximityStations;
+        //
+        //     if (rotationIndex === proximityStations.length-1) {
+        //         rotationIndex = -1;
+        //     }
+        //     Meteor.users.update(Meteor.userId(), {
+        //         $set: {
+        //             "profile.primaryStation": proximityStations[rotationIndex+1]
+        //         }
+        //     });
+        //
+        // }
     }, TIMER_DELAY);
 
 
