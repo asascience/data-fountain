@@ -37,8 +37,10 @@ Template.OceanPlots.helpers({
                 units = primaryStationData.data[topPlotDataParameter].units
 
             let dataSet = times.map((data, index) => {
-                return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN') ? null : plotData[index]];
+                console.log(typeof(plotData[index]) === 'undefined');
+                return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN' || typeof(plotData[index]) === 'undefined') ? null : plotData[index]];
             });
+            console.log(dataSet);
 
             Meteor.defer(() => {
                 try {
@@ -86,7 +88,7 @@ Template.OceanPlots.helpers({
                                     }
                                 },
                                 marker: {
-                                    enabled: false
+                                    enabled: true
                                 }
                             }
                         },
