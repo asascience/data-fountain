@@ -45,7 +45,7 @@ Template.BuoyMap.onRendered(() => {
                 let cell1 = row.insertCell(0);
                 let cell2 = row.insertCell(1);
                 cell1.innerHTML = "<div id='blackcircle' style='height: 20px; width: 20px;'></div>";
-                cell2.innerHTML = `<span style="font-size: 26px">${stationName}</span>`;
+                cell2.innerHTML = `<span style="font-size: 30px">${stationName}</span>`;
                 L.circle([lat, long], 4500, {
                     color: 'black',
                     fillColor: 'black',
@@ -66,7 +66,7 @@ Template.BuoyMap.onRendered(() => {
                 let cell1 = row.insertCell(0);
                 let cell2 = row.insertCell(1);
                 cell1.innerHTML = "<div id='orangecircle' style='height: 20px; width: 20px;'></div>";
-                cell2.innerHTML = `<span style="font-size: 26px">${primaryStation.title}</span>`;
+                cell2.innerHTML = `<span style="font-size: 30px">${primaryStation.title}</span>`;
                 L.circle([primaryStation.lat, primaryStation.lon], 4500, {
                     color: 'orange',
                     fillColor: 'orange',
