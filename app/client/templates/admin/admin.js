@@ -28,7 +28,7 @@ Template.Admin.events({
         if (result === 1) {
             swal({
                 title: 'Saved!',
-                text: 'Your settings have been saved, go to the Data Fountain?',
+                text: 'Your settings have been saved, go to the Data Fountain? To get back here, press Ctrl-D.',
                 type: 'success',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, please!',

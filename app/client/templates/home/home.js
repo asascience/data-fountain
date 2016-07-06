@@ -50,12 +50,13 @@ Template.Home.onCreated(() => {
     }
 
     let index = indexGen();
-    Meteor.setInterval(() => {
+    this.runTimer = Meteor.setInterval(() => {
         let currIndex = index.next().value;
         time = dataTimes[currIndex];
         Session.set('globalTimer', time);
         Session.set('globalTicker', currIndex);
 
+        console.log('test');
         // if (currIndex === DURATION-1) {
         //     let rotationIndex = Meteor.user().profile.proximityStations.indexOf(REFERENCE_STATION),
         //         proximityStations = Meteor.user().profile.proximityStations;
@@ -77,8 +78,15 @@ Template.Home.onCreated(() => {
 });
 
 Template.Home.onRendered(() => {
+    function KeyPress(e) {
+        var evtobj = window.event? event : e
+        if (evtobj.keyCode == 68 && evtobj.ctrlKey) Router.go('/admin');
+    }
+
+    document.onkeydown = KeyPress;
 
 });
 
 Template.Home.onDestroyed(() => {
+    clearInterval(this.runTimer);
 });
