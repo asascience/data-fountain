@@ -225,7 +225,11 @@ Template.OceanPlots.helpers({
                                         color: 'red'
                                     }, {
                                         value: Meteor.user().profile.parameterAlerts.midAlert,
-                                        color: 'green'
+                                        color: 'yellow'
+                                    },
+                                    {
+                                        value: Meteor.user().profile.parameterAlerts.highAlert,
+                                        color: 'red'
                                     }],
                                 }
                             }
