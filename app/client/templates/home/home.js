@@ -56,7 +56,6 @@ Template.Home.onCreated(() => {
         Session.set('globalTimer', time);
         Session.set('globalTicker', currIndex);
 
-        console.log('test');
         // if (currIndex === DURATION-1) {
         //     let rotationIndex = Meteor.user().profile.proximityStations.indexOf(REFERENCE_STATION),
         //         proximityStations = Meteor.user().profile.proximityStations;

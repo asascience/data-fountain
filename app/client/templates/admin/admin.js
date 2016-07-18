@@ -11,6 +11,12 @@ Template.Admin.events({
         let proximityStations = [];
         $('#proximityStations').trigger('chosen:updated');
 
+        let parameterAlerts = {
+            lowAlert: $('#lowAlert').val(),
+            midAlert: $('#midAlert').val(),
+            highAlert: $('#highAlert').val()
+        };
+
         let result = Meteor.users.update(Meteor.userId(), {
             $set: {
                 "profile.primaryStation":       $('#primaryStation').val(),
@@ -21,7 +27,8 @@ Template.Admin.events({
                 "profile.infoTickerText":       $('#infoTickerText').val(),
                 "profile.timeZone":             $('#timezoneSelect').val(),
                 'profile.topPlotDataParameter': $('#topPlotDataParameter').val(),
-                'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val()
+                'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
+                'profile.parameterAlerts': parameterAlerts
             }
         }, {multi: true});
 
@@ -61,9 +68,15 @@ Template.Admin.events({
     },
 
     'change .js-select-bottom-parameter'(event, template) {
+        let parameter = $('#bottomPlotDataParameter').val();
+        let dataSet = Data.findOne({title: Meteor.user().profile.primaryStation}, {fields: {data: 1}});
+        let unit = dataSet.data[parameter].units;
+        $('#paramUnit').val(unit);
+
         Meteor.users.update(Meteor.userId(), {
             $set: {
-                'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val()
+                'profile.bottomPlotDataParameter': parameter,
+                'profile.parameterAlerts.unit': unit
             }
         });
     }
@@ -158,6 +171,10 @@ Template.Admin.onRendered(() => {
         $('#refreshInterval').val(userProfile.refreshInterval);
         $('#topPlotDataParameter').val(userProfile.topPlotDataParameter);
         $('#bottomPlotDataParameter').val(userProfile.bottomPlotDataParameter);
+        $('#lowAlert').val(userProfile.parameterAlerts.lowAlert);
+        $('#midAlert').val(userProfile.parameterAlerts.midAlert);
+        $('#highAlert').val(userProfile.parameterAlerts.highAlert);
+        $('#paramUnit').val(userProfile.parameterAlerts.unit);
     }, 500);
 
 });

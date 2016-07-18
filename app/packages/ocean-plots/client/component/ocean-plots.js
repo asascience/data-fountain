@@ -217,6 +217,17 @@ Template.OceanPlots.helpers({
                                 },
                                 min: minValue,
                                 max: maxValue + ((maxValue - minValue) * 0.2)
+                            },
+                            plotOptions: {
+                                column: {
+                                    zones: [{
+                                        value: Meteor.user().profile.parameterAlerts.lowAlert,
+                                        color: 'red'
+                                    }, {
+                                        value: Meteor.user().profile.parameterAlerts.midAlert,
+                                        color: 'green'
+                                    }],
+                                }
                             }
                         });
                     } catch(exception) {

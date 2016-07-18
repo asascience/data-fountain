@@ -23,7 +23,8 @@ Template.Register.events({
                 infoTickerText: null,
                 timeZone: null,
                 topPlotDataParameter: null,
-                bottomPlotDataParameter: null
+                bottomPlotDataParameter: null,
+                parameterAlerts: null
             },
         }, (err) => {
             if (err) {
