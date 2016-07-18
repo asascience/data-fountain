@@ -1,6 +1,12 @@
 /*****************************************************************************/
 /* Home: Style */
 /*****************************************************************************/
+.home {
+    width: 2080px;
+    height: 1080px;
+}
+
+
 .home .container-fluid{
     position: absolute;
     height: 100%;
@@ -38,14 +44,15 @@
 .home .df-bottom .panel {
     border: none;
     margin: 0;
-    padding: 0;
+    padding: 0 0 60px 0;
     background-color: #4994D0;
     color: white;
     border-radius: 0;
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 6vh;
+    height: 7vh;
+    display: inline-block;
 }
 
 .home a.full-screen {
