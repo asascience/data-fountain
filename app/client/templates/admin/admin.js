@@ -17,22 +17,27 @@ Template.Admin.events({
             highAlert: $('#highAlert').val()
         };
 
+        let payload = {
+            "profile.primaryStation":       $('#primaryStation').val(),
+            "profile.proximityStations":    $('#proximityStations').val(),
+            "profile.dataDuration":         $('#dataDuration').val(),
+            "profile.refreshInterval":      $('#refreshInterval').val(),
+            // "profile.temperatureUnit":   $(element).val(),
+            "profile.infoTickerText":       $('#infoTickerText').val(),
+            "profile.timeZone":             $('#timezoneSelect').val(),
+            'profile.topPlotDataParameter': $('#topPlotDataParameter').val(),
+            'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
+            'profile.parameterAlerts': parameterAlerts
+        };
+
         let result = Meteor.users.update(Meteor.userId(), {
-            $set: {
-                "profile.primaryStation":       $('#primaryStation').val(),
-                "profile.proximityStations":    $('#proximityStations').val(),
-                "profile.dataDuration":         $('#dataDuration').val(),
-                "profile.refreshInterval":      $('#refreshInterval').val(),
-                // "profile.temperatureUnit":   $(element).val(),
-                "profile.infoTickerText":       $('#infoTickerText').val(),
-                "profile.timeZone":             $('#timezoneSelect').val(),
-                'profile.topPlotDataParameter': $('#topPlotDataParameter').val(),
-                'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
-                'profile.parameterAlerts': parameterAlerts
-            }
+            $set: payload
         }, {multi: true});
 
+
         if (result === 1) {
+            Meteor.call('server/addUserPreference', payload);
+
             swal({
                 title: 'Saved!',
                 text: 'Your settings have been saved, go to the Data Fountain? To get back here, press Ctrl-D.',
