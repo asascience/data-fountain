@@ -57,7 +57,7 @@ Template.OceanPlots.helpers({
                             title: {
                                 text: `${plotDisplayName} (${units})`,
                                 style: {
-                                    fontSize: '16px',
+                                    fontSize: '.9vw',
                                     fontFamily: 'Verdana, sans-serif',
                                     fontWeight: 'bold'
                                 }
@@ -68,7 +68,7 @@ Template.OceanPlots.helpers({
                             tickPixelInterval: 80,
                             labels: {
                                 style: {
-                                    fontSize: '16px',
+                                    fontSize: '.9vw',
                                     fontFamily: 'Verdana, sans-serif',
                                     fontWeight: 'bold'
                                 }
@@ -187,7 +187,7 @@ Template.OceanPlots.helpers({
                                     y: -2, // 10 pixels down from the top
                                     x: 2,
                                     style: {
-                                        fontSize: '16px',
+                                        fontSize: '0.9vw',
                                         fontFamily: 'Verdana, sans-serif',
                                         border: 'none',
                                         textShadow: false,
@@ -198,7 +198,7 @@ Template.OceanPlots.helpers({
                                 categories: axisLabels,
                                 labels: {
                                     style: {
-                                        fontSize: '16px',
+                                        fontSize: '0.9vw',
                                         fontFamily: 'Verdana, sans-serif',
                                         border: 'none',
                                         textShadow: false,
@@ -210,7 +210,7 @@ Template.OceanPlots.helpers({
                                 title: {
                                     text: `${plotDisplayName} (${units})`,
                                     style: {
-                                        fontSize: '16px',
+                                        fontSize: '0.9vw',
                                         fontFamily: 'Verdana, sans-serif',
                                         fontWeight: 'bold'
                                     }
@@ -256,10 +256,10 @@ Template.OceanPlots.helpers({
 /*****************************************************************************/
 /* OceanPlots: Lifecycle Hooks */
 /*****************************************************************************/
-Template.OceanPlots.onCreated(() => {
+Template.OceanPlots.onCreated(function() {
 });
 
-Template.OceanPlots.onRendered(() => {
+Template.OceanPlots.onRendered(function() {
     try {
         let _this = Blaze.Template.instance();
 
