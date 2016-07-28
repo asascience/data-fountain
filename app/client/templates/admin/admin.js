@@ -131,7 +131,7 @@ Template.Admin.helpers({
             console.log(exception);
         }
     },
-    topPlotDataParamete() {
+    topPlotDataParameter() {
         return Meteor.user().profile.topPlotDataParameter;
     },
     bottomPlotDataParameter() {
