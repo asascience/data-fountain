@@ -17,7 +17,8 @@
                                     {{#each primaryStationOptions}}
                                         <option value="{{this}}">{{this}}</option>
                                     {{/each}}
-                                </select>
+                                 </select>
+                                <p class="control-explanation">Select a station.</p>       
                             </div>
                         </div>
                         <div class="form-group">
@@ -30,6 +31,7 @@
                                         <option value="{{this}}">{{this}}</option>
                                     {{/each}}
                                 </select>
+                                <p class="control-explanation">Select a data paramter.</p>
                             </div>
                         </div>
                         <div class="form-group">
@@ -42,6 +44,7 @@
                                         <option value="{{this}}">{{this}}</option>
                                     {{/each}}
                                 </select>
+                                <p class="control-explanation">Select a bar plot parameter.</p>
                             </div>
                         </div>
                         <div class="form-group">
@@ -71,6 +74,7 @@
                                         <option value="{{this}}">{{this}}</option>
                                     {{/each}}
                                 </select>
+                                <p class="control-explanation"></p>
                             </div>
                         </div>
                         <!-- <div class="form&#45;group"> -->
@@ -87,6 +91,7 @@
                             </label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control form-control-rounded" id="refreshInterval" value={{refreshInterval}} />
+                                <p class="control-explanation">Select a page refresh interval.</p>
                             </div>
                         </div>
                         <!-- <div class="form&#45;row"> -->
@@ -125,6 +130,7 @@
                             </label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}} />
+                                <p class="control-explanation">Select info ticker label.</p>
                             </div>
                         </div>
                         <div class="row">

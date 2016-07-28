@@ -11,3 +11,7 @@ html{
 .form-group {
     padding: 10px 0 10px 0;
 }
+
+.control-explanation{
+    color:#a9a9a9;
+}

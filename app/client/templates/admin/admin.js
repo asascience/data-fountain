@@ -28,6 +28,7 @@ Template.Admin.events({
             'profile.topPlotDataParameter': $('#topPlotDataParameter').val(),
             'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
             'profile.parameterAlerts': parameterAlerts
+            'profile.saveDate': new Date();
         };
 
         let result = Meteor.users.update(Meteor.userId(), {
