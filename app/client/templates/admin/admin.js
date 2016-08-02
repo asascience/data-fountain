@@ -27,8 +27,8 @@ Template.Admin.events({
             "profile.timeZone":             $('#timezoneSelect').val(),
             'profile.topPlotDataParameter': $('#topPlotDataParameter').val(),
             'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
-            'profile.parameterAlerts': parameterAlerts
-            'profile.saveDate': new Date();
+            'profile.parameterAlerts': parameterAlerts,
+            'profile.saveDate': new Date()
         };
 
         let result = Meteor.users.update(Meteor.userId(), {
@@ -53,6 +53,15 @@ Template.Admin.events({
         }
     },
 
+    // TODO: Finish the button, and work out the payload.
+    'click .js-save-prefs'(event, template) {
+        try {
+            Meteor.call('server/addUserPreference', payload);
+        } catch(e) {
+            console.log(e);
+        }
+    },
+
     'change .js-select-primary'(event, template) {
         Meteor.users.update(Meteor.userId(), {
             $set: {
@@ -65,11 +74,27 @@ Template.Admin.events({
 
     'change .js-top-plot-param'(event, template) {
         Meteor.setTimeout(() => {
-            Meteor.users.update(Meteor.userId(), {
-                $set: {
-                    "profile.topPlotDataParameter": $('#topPlotDataParameter').val(),
-                }
-            });
+            try {
+                let primaryStation = $('#primaryStation').val();
+                let topPlotDataParameter = $('#topPlotDataParameter').val();
+                Meteor.users.update(Meteor.userId(), {
+                    $set: {
+                        "profile.topPlotDataParameter": topPlotDataParameter,
+                    }
+                });
+
+                let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
+                let data = { timeRange: {min: timeRange.data.times[0], max: timeRange.data.times[timeRange.data.times.length-1]}};
+
+                let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
+                slider.update({
+                    min: moment(timeRange.data[topPlotDataParameter].times[0]).format('X'),
+                    max: moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X'),
+                });
+
+            } catch(e) {
+                console.log(e);
+            }
         }, 500);
     },
 
@@ -104,29 +129,33 @@ Template.Admin.helpers({
     },
     proximityStationOptions: function(){
         try {
-            let filterByParameter = HUMPS.decamelize(Meteor.user().profile.bottomPlotDataParameter);
+            if (Meteor.user().profile.bottomPlotDataParameter) {
+                let filterByParameter = HUMPS.decamelize(Meteor.user().profile.bottomPlotDataParameter);
 
-            let listOfStations = Stations.find({}).fetch(),
-                stationNames = [];
+                let listOfStations = Stations.find({}).fetch(),
+                    stationNames = [];
 
-            _.each(listOfStations, (obj) => {
-                stationNames.push(obj.title);
-            });
+                _.each(listOfStations, (obj) => {
+                    stationNames.push(obj.title);
+                });
 
-            return stationNames;
+                return stationNames;
+            }
         } catch(e) {
             console.log(e);
         }
     },
     dataParams() {
         try {
-            let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation}),
-                dataParams = Object.keys(dataSource.data);
+            if (Meteor.user() && Meteor.user().profile.primaryStation) {
+                let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation}),
+                    dataParams = Object.keys(dataSource.data);
 
-            let timesIndex = dataParams.indexOf('times');
-            if (timesIndex > -1) dataParams.splice(timesIndex, 1);
+                let timesIndex = dataParams.indexOf('times');
+                if (timesIndex > -1) dataParams.splice(timesIndex, 1);
 
-            return dataParams;
+                return dataParams;
+            }
         } catch (exception) {
             console.log(exception);
         }
@@ -147,7 +176,9 @@ Template.Admin.helpers({
         return Meteor.user().profile.dataDuration;
     },
     refreshInterval() {
-        return Meteor.user().profile.refreshInterval || 2;
+        if (!Meteor.user().profile.refreshInterval)
+            return 2;
+        return Meteor.user().profile.refreshInterval;
     },
     infoTickerText() {
         return Meteor.user().profile.infoTickerText;
@@ -157,12 +188,41 @@ Template.Admin.helpers({
 /*****************************************************************************/
 /* Admin: Lifecycle Hooks */
 /*****************************************************************************/
-Template.Admin.onCreated(() => {
-
+Template.Admin.onCreated(function() {
+    let data = {};
+    data.timeRange = {
+        min: +moment().subtract(1, "years").format("X"),
+        max: +moment().format("X")
+    };
+    Session.set('data', data);
 });
 
-Template.Admin.onRendered(() => {
+Template.Admin.onRendered(function() {
+    let data = Session.get('data');
+    let $slider = $('input[type="rangeslide"]');
+
+    let saveTimeRange = ((data) => {
+        Meteor.users.update(Meteor.userId(), {
+            $set: {
+                'profile.dataStart': data.fromNumber,
+                'profile.dataEnd': data.toNumber
+
+            }
+        });
+    });
+
     Meteor.setTimeout(() => {
+        $slider.ionRangeSlider({
+            type: 'datetime',
+            min: data.timeRange.min,
+            max: data.timeRange.max,
+            prettify: function (num) {
+                return moment(num, "X").format("LL");
+            },
+            onFinish: saveTimeRange
+
+        });
+
         if ( $.fn.select2 ) {
             $('#proximityStations').select2({
                 theme: 'bootstrap'

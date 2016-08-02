@@ -30,11 +30,13 @@ Template.Home.helpers({
 /*****************************************************************************/
 Template.Home.onCreated(() => {
     let _this = Template.instance();
-    let DURATION = _this.data.duration;
+    let DURATION = Meteor.user().profile.dataDuration;
     let TIMER_DELAY = Meteor.user().profile.refreshInterval * 1000;
     let REFERENCE_STATION = Meteor.user().profile.primaryStation;
     let dataTimes = Data.findOne({title: REFERENCE_STATION}, {fields: {'data.times': 1}});
     dataTimes = dataTimes.data.times;
+    dataTimes = dataTimes.splice(dataTimes.length - Meteor.user().profile.dataDuration -1, dataTimes.length);
+
 
     // using var explicitly
     var time;
@@ -42,7 +44,7 @@ Template.Home.onCreated(() => {
     function* indexGen() {
         let index = 0;
         while(true) {
-            if (index === dataTimes.length -1) {
+            if (index > DURATION) {
                 index = 0;
             }
             yield index++;

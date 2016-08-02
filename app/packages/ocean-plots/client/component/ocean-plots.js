@@ -34,7 +34,10 @@ Template.OceanPlots.helpers({
 
             let times = primaryStationData.data.times,
                 plotData = primaryStationData.data[topPlotDataParameter].values,
-                units = primaryStationData.data[topPlotDataParameter].units
+                units = primaryStationData.data[topPlotDataParameter].units;
+
+            // normalize the range so we're only using available times for the requested duratiobn.,
+            times = times.splice(times.length - Meteor.user().profile.dataDuration -1, times.length);
 
             let dataSet = times.map((data, index) => {
                 return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN' || typeof(plotData[index]) === 'undefined') ? null : plotData[index]];

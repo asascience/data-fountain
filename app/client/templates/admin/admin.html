@@ -18,7 +18,7 @@
                                         <option value="{{this}}">{{this}}</option>
                                     {{/each}}
                                  </select>
-                                <p class="control-explanation">Select a station.</p>       
+                                <p class="control-explanation">The primary station that will be highlighted on the map.  The top plot and met icons will use this station.</p>
                             </div>
                         </div>
                         <div class="form-group">
@@ -31,7 +31,7 @@
                                         <option value="{{this}}">{{this}}</option>
                                     {{/each}}
                                 </select>
-                                <p class="control-explanation">Select a data paramter.</p>
+                                <p class="control-explanation">The line plot data parameter available from the Primary Station selected above.</p>
                             </div>
                         </div>
                         <div class="form-group">
@@ -44,7 +44,7 @@
                                         <option value="{{this}}">{{this}}</option>
                                     {{/each}}
                                 </select>
-                                <p class="control-explanation">Select a bar plot parameter.</p>
+                                <p class="control-explanation">The bottom plot may display parameters that are available to the primary station.</p>
                             </div>
                         </div>
                         <div class="form-group">
@@ -53,15 +53,19 @@
                             </label>
                             <div class="col-md-1">
                                 <input id="lowAlert" type="text" class="form-control form-control-rounded" placeholder="Low"/>
+                                <p class="control-explanation">Low : Red</p>
                             </div>
                             <div class="col-md-1">
                                 <input id="midAlert" type="text" class="form-control form-control-rounded" placeholder="Mid"/>
+                                <p class="control-explanation">Mid : Yellow</p>
                             </div>
                             <div class="col-md-1">
                                 <input id="highAlert" type="text" class="form-control form-control-rounded" placeholder="High"/>
+                                <p class="control-explanation">High : Green</p>
                             </div>
                             <div class="col-md-1">
                                 <input id="paramUnit" type="text" class="form-control form-control-rounded" disabled/>
+                                <p class="control-explanation">Units</p>
                             </div>
                         </div>
                         <div class="form-group">
@@ -77,21 +81,23 @@
                                 <p class="control-explanation"></p>
                             </div>
                         </div>
-                        <!-- <div class="form&#45;group"> -->
-                        <!--     <label class="col&#45;md&#45;2 control&#45;label"> -->
-                        <!--         Time (max 48 hours) -->
-                        <!--     </label> -->
-                        <!--     <div class="col&#45;md&#45;10"> -->
-                        <!--         <input type="text" class="form&#45;control form&#45;control&#45;rounded" id="dataDuration" value={{dataDuration}} /> -->
-                        <!--     </div> -->
-                        <!-- </div> -->
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Data Duration (hours
+                            </label>
+                            <div class="col-md-4">
+                                <input type="rangeslide"/>
+                                <input type="text" class="form-control form-control-rounded" id="dataDuration" value={{dataDuration}} />
+                                <p class="control-explanation">Set the duration of data until now.  Default is 48 hours, max time is limited by data availability.</p>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="col-md-2 control-label">
                                 Page Refresh Interval (seconds)
                             </label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control form-control-rounded" id="refreshInterval" value={{refreshInterval}} />
-                                <p class="control-explanation">Select a page refresh interval.</p>
+                                <p class="control-explanation">Select a page refresh interval. The default is 2 seconds.</p>
                             </div>
                         </div>
                         <!-- <div class="form&#45;row"> -->
@@ -130,12 +136,11 @@
                             </label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}} />
-                                <p class="control-explanation">Select info ticker label.</p>
+                                <p class="control-explanation">Enter any text that you'd like to have scroll across the bottom of the screen.  Leave blank for none.</p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-
                                 <button class="pull-right btn btn-primary" type="submit">Save Settings</button>
                             </div>
                         </div>

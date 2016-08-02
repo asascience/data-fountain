@@ -107,6 +107,7 @@ observe-sequence@1.0.12
 ocean-plots@0.0.1
 ordered-dict@1.0.8
 percolate:synced-cron@1.3.2
+postrednik:meteor-rangeslider@0.1.0
 promise@0.7.2_1
 random@1.0.10
 rate-limit@1.0.5
