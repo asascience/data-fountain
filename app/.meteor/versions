@@ -65,8 +65,6 @@ met-icons@0.0.1
 meteor@1.1.15_1
 meteor-base@1.0.4
 meteorhacks:kadira@2.28.7
-meteorhacks:kadira-binary-deps@1.4.0
-meteorhacks:kadira-profiler@1.2.1
 meteorhacks:meteorx@1.4.1
 meteortoys:allthings@3.0.0
 meteortoys:authenticate@3.0.0
