@@ -245,6 +245,134 @@ Template.OceanPlots.helpers({
             console.log(exception);
         }
     },
+    singleBottomPlot(){
+        let stationName = Meteor.user().profile.primaryStation;
+        let stationParameters = Meteor.user().profile.singleStationParameters;
+
+        let stationData = Data.find({'title':stationName}).fetch()[0].data;
+        
+        for(var i = 0; i < stationParameters.length; i++){
+            let currentData = stationData[stationParameters[i]].values;
+            let max = Math.max.apply(Math, currentData);
+            let min = Math.min.apply(Math, currentData);
+            let dif = (max-min);
+            
+            let remappedData = currentData.map(function(val){
+                return (val - min)/dif * (100);
+            });
+            stationData[stationParameters[i]].values = remappedData;
+        }
+
+        //This will be a multidimensional array. Each index will contain an array that contains the timeseries for each station parameter.
+        let plotData = [];
+        
+        //Populate the array so that the nth element is an array of the nth elements of the stationData arrays.
+        for(var i = 0; i < stationData[stationParameters[0]].values.length; i++){
+            let subPlotData = [];
+            for(var j = 0; j < stationParameters.length; j++){
+                subPlotData.push(stationData[stationParameters[j]].values[i]);    
+            }
+            plotData.push(subPlotData);
+        }
+        
+        let ticker;
+        Tracker.nonreactive(() => {
+            ticker = Session.get('globalTicker');
+        });
+        
+        Template.instance().plotData = plotData;
+        
+        Meteor.defer(() => {
+            try {
+                Highcharts.chart('bottomPlot', {
+                    chart: {
+                        type: 'column',
+                        animation: Highcharts.svg, // don't animate in old IE
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    exporting: {
+                        enabled: false
+                    },
+                    title: {
+                        text: null
+                    },
+                    credits:{
+                        enabled: false
+                    },
+                    series: [{
+                        name: 'Random data',
+                        data: plotData[ticker],
+                        animation: {
+                            duration: 1000
+                        },
+                        dataLabels: {
+                            enabled: true,
+                            color: '#F58220',
+                            align: 'center',
+                            format: '{point.y:.1f}', // one decimal
+                            y: -2, // 10 pixels down from the top
+                            x: 2,
+                            style: {
+                                fontSize: '0.9vw',
+                                fontFamily: 'Verdana, sans-serif',
+                                border: 'none',
+                                textShadow: false,
+                            }
+                        },
+                    }],
+                    xAxis: {
+                        categories: stationParameters,
+                        labels: {
+                            style: {
+                                fontSize: '0.9vw',
+                                fontFamily: 'Verdana, sans-serif',
+                                border: 'none',
+                                textShadow: false,
+                                fontWeight: 'bold'
+                            }
+                        },
+                    },
+                    yAxis: {
+                        title: {
+                            //text: `${plotDisplayName} (${units})`,
+                            style: {
+                                fontSize: '0.9vw',
+                                fontFamily: 'Verdana, sans-serif',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        min: 0,
+                        max: 100
+                    },
+                    plotOptions: {
+                        column: {
+                            zones: [{
+                                value: Meteor.user().profile.parameterAlerts.lowAlert,
+                                color: 'red'
+                            }, {
+                                value: Meteor.user().profile.parameterAlerts.midAlert,
+                                color: 'yellow'
+                            },
+                            {
+                                value: Meteor.user().profile.parameterAlerts.highAlert,
+                                color: 'green'
+                            },
+                            {
+                                color: 'green'
+                            }],
+                        }
+                    }
+                });
+            } catch(exception) {
+                console.log(exception);
+            }
+        });
+    },
+    singleStationMode(){
+        return Meteor.user().profile.stationViewMode === "single";
+    },
     primaryStation() {
         return Meteor.user().profile.primaryStation;
     },
@@ -291,9 +419,9 @@ Template.OceanPlots.onRendered(function() {
                             });
                             plotB.render();
                         } catch(exception) {
-                            Meteor.setTimeout(() => {
+                            /*Meteor.setTimeout(() => {
                                 document.location.reload(true);
-                            }, 2000);
+                            }, 2000);*/
                         }
                     });
 
@@ -302,9 +430,9 @@ Template.OceanPlots.onRendered(function() {
                             let ticker = Session.get('globalTicker');
                             bottomPlot.series[0].setData( _this.plotData[ticker]);
                         } catch(exception) {
-                            Meteor.setTimeout(() => {
-                                document.location.reload(true);
-                            }, 2000);
+                           // Meteor.setTimeout(() => {
+                             //   document.location.reload(true);
+                            //}, 2000);
                         }
                     });
                 } catch(exception) {

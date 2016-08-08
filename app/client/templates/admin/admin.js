@@ -16,8 +16,10 @@ Template.Admin.events({
             midAlert: $('#midAlert').val(),
             highAlert: $('#highAlert').val()
         };
-
+        let viewMode = $('.singleStation').hasClass('active') ? 'single' : 'multiple'; 
         let payload = {
+            "profile.stationViewMode":      viewMode, 
+            "profile.singleStationParameters": $('#stationParameters').val(),
             "profile.primaryStation":       $('#primaryStation').val(),
             "profile.proximityStations":    $('#proximityStations').val(),
             "profile.dataDuration":         $('#dataDuration').val(),
@@ -27,8 +29,8 @@ Template.Admin.events({
             "profile.timeZone":             $('#timezoneSelect').val(),
             'profile.topPlotDataParameter': $('#topPlotDataParameter').val(),
             'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
-            'profile.parameterAlerts': parameterAlerts
-            'profile.saveDate': new Date();
+            'profile.parameterAlerts': parameterAlerts,
+            'profile.saveDate': new Date()
         };
 
         let result = Meteor.users.update(Meteor.userId(), {
@@ -50,6 +52,25 @@ Template.Admin.events({
             }, () => {
                 Router.go('/');
             });
+        }
+    },
+    
+    'click .stationDataViewOption'(event, template){
+        
+        //Change which button is active
+        $('.stationDataViewOption').removeClass("active");
+        $(event.target).addClass('active');
+    
+        //Update the inputs
+        if($(event.target).hasClass("singleStation")){
+            //Get rid of the Proximity Stations, Bar Plot and Line Plot Inputs
+            $('.js-select-bottom-parameter').parent().parent().hide();
+            $('#proximityStations').parent().parent().hide();
+            $('#stationParameters').parent().parent().show();
+        }else{
+            $('#stationParameters').parent().parent().hide();
+            $('.js-select-bottom-parameter').parent().parent().show();
+            $('#proximityStations').parent().parent().show();
         }
     },
 
@@ -151,6 +172,15 @@ Template.Admin.helpers({
     },
     infoTickerText() {
         return Meteor.user().profile.infoTickerText;
+    },
+    singleStationParameters(){
+        let userPrimaryStation = Meteor.user().profile.primaryStation;
+        let keys = Object.keys(Data.findOne({title:userPrimaryStation}).data);
+
+        //Remove 'times' from the keys array.
+        var index = keys.indexOf("times");
+        if (index !== -1)keys.splice(index, 1);
+        return keys;
     }
 });
 
@@ -158,7 +188,6 @@ Template.Admin.helpers({
 /* Admin: Lifecycle Hooks */
 /*****************************************************************************/
 Template.Admin.onCreated(() => {
-
 });
 
 Template.Admin.onRendered(() => {
@@ -167,12 +196,17 @@ Template.Admin.onRendered(() => {
             $('#proximityStations').select2({
                 theme: 'bootstrap'
             });
+            $('#stationParameters').select2({
+                theme:'bootstrap'
+            });
         }
 
         let userProfile = Meteor.user().profile;
 
+        //Update inputs with the user's saved selections.
         $('#primaryStation').val(userProfile.primaryStation);
         $('#proximityStations').val(userProfile.proximityStations).change();
+        $('#stationParameters').val(userProfile.singleStationParameters).change();
         $('#dataDuration').val(userProfile.dataDuration);
         $('#refreshInterval').val(userProfile.refreshInterval);
         $('#topPlotDataParameter').val(userProfile.topPlotDataParameter);
@@ -181,6 +215,13 @@ Template.Admin.onRendered(() => {
         $('#midAlert').val(userProfile.parameterAlerts.midAlert);
         $('#highAlert').val(userProfile.parameterAlerts.highAlert);
         $('#paramUnit').val(userProfile.parameterAlerts.unit);
+
+        //Hide inputs for single station view.
+        $('#stationParameters').parent().parent().hide();
+
+        //If the user has been in single view mode, go to the input view for that mode.
+        $('.singleStation').trigger('click');
+
     }, 500);
 
 });

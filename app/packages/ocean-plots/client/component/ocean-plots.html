@@ -12,7 +12,13 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-body">
-                <div id="bottomPlot" style="height: 15.3vw;">{{bottomPlot}}</div>
+                <div id="bottomPlot" style="height: 15.3vw;">
+                    {{#if singleStationMode}}
+                        {{singleBottomPlot}}
+                    {{else}}
+                        {{bottomPlot}}
+                    {{/if}}
+                </div>
             </div>
         </div>
     </div>
