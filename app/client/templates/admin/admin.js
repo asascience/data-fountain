@@ -8,7 +8,6 @@ Template.Admin.events({
     'submit form': function(event,tmpl){
         event.preventDefault();
 
-        let proximityStations = [];
         $('#proximityStations').trigger('chosen:updated');
 
         let parameterAlerts = {
@@ -17,11 +16,22 @@ Template.Admin.events({
             highAlert: $('#highAlert').val()
         };
         let viewMode = $('.singleStation').hasClass('active') ? 'single' : 'multiple'; 
+
+
+        //Make sure that the proximity stations contains the primary station.
+        let primaryStation = $('#primaryStation').val();
+        let proximityStations = $('#proximityStations').val();
+        if(proximityStations === null){
+            proximityStations = primaryStation;
+        }else if(proximityStations.indexOf(primaryStation) === -1){
+            proximityStations.push(primaryStation);
+        }
+        
         let payload = {
             "profile.stationViewMode":      viewMode, 
             "profile.singleStationParameters": $('#stationParameters').val(),
-            "profile.primaryStation":       $('#primaryStation').val(),
-            "profile.proximityStations":    $('#proximityStations').val(),
+            "profile.primaryStation":       primaryStation,
+            "profile.proximityStations":    proximityStations,
             "profile.dataDuration":         $('#dataDuration').val(),
             "profile.refreshInterval":      $('#refreshInterval').val(),
             // "profile.temperatureUnit":   $(element).val(),
@@ -80,6 +90,14 @@ Template.Admin.events({
                 "profile.primaryStation": $('#primaryStation').val(),
             }
         });
+        
+        //Add the primary station to the proximity stations as well.
+        let proximityValues = $('#proximityStations').val();
+        let primaryStationValue = $('#primaryStation').val();
+        if(proximityValues.indexOf(primaryStationValue) === -1) proximityValues.push(primaryStationValue);
+        
+        $('#proximityStations').val(proximityValues).trigger('change');
+
 
         $('.js-top-plot-param').trigger('change');
     },
@@ -93,7 +111,27 @@ Template.Admin.events({
             });
         }, 500);
     },
+    'change #proximityStations'(event, template){
+        let proximity = $('#proximityStations');
+        let primary = $('#primaryStation');
+        if(proximity.val() === null){
+            console.log('null');
+            //If there is no proximity stations, set one to be the primary station.
+            proximity.val(primary.val()).trigger('change');    
+            swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
+        }
 
+        //If the user removed the primary station from the proximity stations re-add it.
+        if(proximity.val().indexOf(primary.val()) === -1){
+            console.log(proximity.val());
+            console.log(primary.val());                
+            console.log('index');
+            let proximityStationsVal = proximity.val();
+            proximityStationsVal.push(primary.val());
+            proximity.val(proximityStationsVal).trigger('change');
+            swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
+        }
+    },
     'change .js-select-bottom-parameter'(event, template) {
         let parameter = $('#bottomPlotDataParameter').val();
         let dataSet = Data.findOne({title: Meteor.user().profile.primaryStation}, {fields: {data: 1}});
@@ -220,7 +258,7 @@ Template.Admin.onRendered(() => {
         $('#stationParameters').parent().parent().hide();
 
         //If the user has been in single view mode, go to the input view for that mode.
-        $('.singleStation').trigger('click');
+        if(userProfile.stationViewMode==='single')$('.singleStation').trigger('click');
 
     }, 500);
 

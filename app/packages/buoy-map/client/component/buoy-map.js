@@ -21,6 +21,7 @@ Template.BuoyMap.onRendered(() => {
         let proximityStations = Meteor.user().profile.proximityStations;
         let stations = Stations.find({'title': {$in: proximityStations}}).fetch(),
             primaryStation = Stations.findOne({title: Meteor.user().profile.primaryStation});
+            console.log(primaryStation);
 
         //Map Initialization
         let map = L.map('map').setView([38.2,-76.2574], 8);
@@ -31,7 +32,7 @@ Template.BuoyMap.onRendered(() => {
             id: 'mapbox.streets'
         }).addTo(map);
 
-        //Ading Stations and legend
+        //Adding Stations and legend
 
         let legend=document.getElementById('legendTable');
         for(i=0;i<stations.length;i++)
@@ -52,7 +53,7 @@ Template.BuoyMap.onRendered(() => {
                     fillOpacity: 1
                 }).addTo(map);
 
-                //ADding a Label
+                //Adding a Label
                 let textLatLng = [lat, long+0.2];
                 let myTextLabel = L.marker(textLatLng, {
                     icon: L.divIcon({
