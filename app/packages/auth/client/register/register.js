@@ -17,14 +17,21 @@ Template.Register.events({
                 name,
                 primaryStation: null,
                 proximityStations: [],
-                dataDuration: null,
-                refreshInterval: null,
+                dataDuration: 48,
+                refreshInterval: 2,
                 temperatureUnit: null,
                 infoTickerText: null,
                 timeZone: null,
                 topPlotDataParameter: null,
                 bottomPlotDataParameter: null,
-                parameterAlerts: null
+                dataStart: null,
+                dataEnd: null,
+                parameterAlerts: {
+                    lowAlert: null,
+                    midAlert: null,
+                    highAlert: null,
+                    unit: null
+                }
             },
         }, (err) => {
             if (err) {

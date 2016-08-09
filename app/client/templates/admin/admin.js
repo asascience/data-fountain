@@ -5,13 +5,13 @@ import HUMPS from 'humps';
 
 //Checks the fields and generates an object represenatative of the user's choices.
 function getSubmitPayload(){
-    
+
     let parameterAlerts = {
         lowAlert: $('#lowAlert').val(),
         midAlert: $('#midAlert').val(),
         highAlert: $('#highAlert').val()
     };
-    let viewMode = $('.singleStation').hasClass('active') ? 'single' : 'multiple'; 
+    let viewMode = $('.singleStation').hasClass('active') ? 'single' : 'multiple';
 
 
     //Make sure that the proximity stations contains the primary station.
@@ -22,9 +22,9 @@ function getSubmitPayload(){
     }else if(proximityStations.indexOf(primaryStation) === -1){
         proximityStations.push(primaryStation);
     }
-    
+
     let payload = {
-        "profile.stationViewMode":      viewMode, 
+        "profile.stationViewMode":      viewMode,
         "profile.singleStationParameters": $('#stationParameters').val(),
         "profile.primaryStation":       primaryStation,
         "profile.proximityStations":    proximityStations,
@@ -42,7 +42,7 @@ function getSubmitPayload(){
 }
 
 
-function updateInputsWithProfile(userProfile){    
+function updateInputsWithProfile(userProfile){
     //Update inputs with the user's saved selections.
     $('#primaryStation').val(userProfile.primaryStation);
     $('#proximityStations').val(userProfile.proximityStations).change();
@@ -68,7 +68,7 @@ function updateInputsWithProfile(userProfile){
 
 function fetchUserPreferences(){
     //fetch the user preferences from the server for use in the template.
-    Meteor.call('server/getUserPreferences', function(error, res){        
+    Meteor.call('server/getUserPreferences', function(error, res){
         if(error){
             console.log(error);
         }else{
@@ -86,7 +86,7 @@ Template.Admin.events({
 
         $('#proximityStations').trigger('chosen:updated');
 
-        let payload = getSubmitPayload();        
+        let payload = getSubmitPayload();
 
         Meteor.users.update(Meteor.userId(), {
             $set: payload
@@ -94,7 +94,7 @@ Template.Admin.events({
             if(err){
                 console.log(err);
             }else{
-                //Show a success Message. 
+                //Show a success Message.
                 swal({
                     title: 'Saved!',
                     text: 'Your settings have been saved, go to the Data Fountain? To get back here, press Ctrl-D.',
@@ -109,13 +109,13 @@ Template.Admin.events({
             }
         });
     },
-    
+
     'click .stationDataViewOption'(event, template){
-        
+
         //Change which button is active
         $('.stationDataViewOption').removeClass("active");
         $(event.target).addClass('active');
-    
+
         //Update the inputs
         if($(event.target).hasClass("singleStation")){
             //Get rid of the Proximity Stations, Bar Plot and Line Plot Inputs
@@ -134,8 +134,8 @@ Template.Admin.events({
         let clickedPreference;
         Session.get("DataPreferences").forEach(function(obj){
             if(obj._id === preferenceId){
-                clickedPreference = obj;    
-            }    
+                clickedPreference = obj;
+            }
         });
         if(clickedPreference !== null){
             //Update the current selected preference session variable to use in the ui.
@@ -148,9 +148,9 @@ Template.Admin.events({
             console.log("Could not load preference");
         }
     },
-        
-    'click #savePreferenceButton'(event, template){ 
-        
+
+    'click #savePreferenceButton'(event, template){
+
         let preferenceName = $('#savePreferenceInput').val();
 
         //Make sure that the name is not a duplicate.
@@ -164,14 +164,14 @@ Template.Admin.events({
                 }
             }
         }
-        
+
         if(duplicateName === true){
             //Show a warning for duplicate name.
             swal('Warning', 'The preference name provided has already been used.');
         }else if(preferenceName === null || preferenceName === ""){
             swal('Warning', 'You must provide a name for the saved preferences.', 'warning');
         }else{
-            
+
             //Add the name of the preferences to the payload.
             let payload = getSubmitPayload();
 
@@ -218,7 +218,7 @@ Template.Admin.events({
         }
         //If no button was selected, tell the user that they need to select one.
         if(selectedButton === undefined){
-            swal('Warning', 'Please select a preference to delete.', 'warning');    
+            swal('Warning', 'Please select a preference to delete.', 'warning');
         }else{
             //Use the id attribute of the button to delete the preference from the db.
             console.log(selectedButton.data('preference-id'));
@@ -228,7 +228,7 @@ Template.Admin.events({
                 }else{
                     //Hide the modal
                     $('#preferencesDeletionModal').modal('hide');
-                    
+
                     //Update the user preferences
                     fetchUserPreferences();
 
@@ -251,12 +251,12 @@ Template.Admin.events({
                 "profile.primaryStation": $('#primaryStation').val(),
             }
         });
-        
+
         //Add the primary station to the proximity stations as well.
         let proximityValues = $('#proximityStations').val();
         let primaryStationValue = $('#primaryStation').val();
         if(proximityValues.indexOf(primaryStationValue) === -1) proximityValues.push(primaryStationValue);
-        
+
         $('#proximityStations').val(proximityValues).trigger('change');
 
 
@@ -265,11 +265,27 @@ Template.Admin.events({
 
     'change .js-top-plot-param'(event, template) {
         Meteor.setTimeout(() => {
-            Meteor.users.update(Meteor.userId(), {
-                $set: {
-                    "profile.topPlotDataParameter": $('#topPlotDataParameter').val(),
-                }
-            });
+            try {
+                let primaryStation = $('#primaryStation').val();
+                let topPlotDataParameter = $('#topPlotDataParameter').val();
+                Meteor.users.update(Meteor.userId(), {
+                    $set: {
+                        "profile.topPlotDataParameter": topPlotDataParameter,
+                    }
+                });
+
+                let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
+                let data = { timeRange: {min: timeRange.data.times[0], max: timeRange.data.times[timeRange.data.times.length-1]}};
+
+                let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
+                slider.update({
+                    min: moment(timeRange.data[topPlotDataParameter].times[0]).format('X'),
+                    max: moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X'),
+                });
+
+            } catch(e) {
+                console.log(e);
+            }
         }, 500);
     },
     'change #proximityStations'(event, template){
@@ -277,7 +293,7 @@ Template.Admin.events({
         let primary = $('#primaryStation');
         if(proximity.val() === null){
             //If there is no proximity stations, set one to be the primary station.
-            proximity.val(primary.val()).trigger('change');    
+            proximity.val(primary.val()).trigger('change');
             swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
         }
 
@@ -322,29 +338,33 @@ Template.Admin.helpers({
     },
     proximityStationOptions: function(){
         try {
-            let filterByParameter = HUMPS.decamelize(Meteor.user().profile.bottomPlotDataParameter);
+            if (Meteor.user().profile.bottomPlotDataParameter) {
+                let filterByParameter = HUMPS.decamelize(Meteor.user().profile.bottomPlotDataParameter);
 
-            let listOfStations = Stations.find({}).fetch(),
-                stationNames = [];
+                let listOfStations = Stations.find({}).fetch(),
+                    stationNames = [];
 
-            _.each(listOfStations, (obj) => {
-                stationNames.push(obj.title);
-            });
+                _.each(listOfStations, (obj) => {
+                    stationNames.push(obj.title);
+                });
 
-            return stationNames;
+                return stationNames;
+            }
         } catch(e) {
             console.log(e);
         }
     },
     dataParams() {
         try {
-            let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation}),
-                dataParams = Object.keys(dataSource.data);
+            if (Meteor.user() && Meteor.user().profile.primaryStation) {
+                let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation}),
+                    dataParams = Object.keys(dataSource.data);
 
-            let timesIndex = dataParams.indexOf('times');
-            if (timesIndex > -1) dataParams.splice(timesIndex, 1);
+                let timesIndex = dataParams.indexOf('times');
+                if (timesIndex > -1) dataParams.splice(timesIndex, 1);
 
-            return dataParams;
+                return dataParams;
+            }
         } catch (exception) {
             console.log(exception);
         }
@@ -371,7 +391,9 @@ Template.Admin.helpers({
         return Meteor.user().profile.dataDuration;
     },
     refreshInterval() {
-        return Meteor.user().profile.refreshInterval || 2;
+        if (!Meteor.user().profile.refreshInterval)
+            return 2;
+        return Meteor.user().profile.refreshInterval;
     },
     infoTickerText() {
         return Meteor.user().profile.infoTickerText;
@@ -390,12 +412,42 @@ Template.Admin.helpers({
 /*****************************************************************************/
 /* Admin: Lifecycle Hooks */
 /*****************************************************************************/
-Template.Admin.onCreated(() => {
+Template.Admin.onCreated(function() {
+    let data = {};
+    data.timeRange = {
+        min: +moment().subtract(1, "years").format("X"),
+        max: +moment().format("X")
+    };
+    Session.set('data', data);
     fetchUserPreferences();
 });
 
-Template.Admin.onRendered(() => {
+Template.Admin.onRendered(function() {
+    let data = Session.get('data');
+    let $slider = $('input[type="rangeslide"]');
+
+    let saveTimeRange = ((data) => {
+        Meteor.users.update(Meteor.userId(), {
+            $set: {
+                'profile.dataStart': data.fromNumber,
+                'profile.dataEnd': data.toNumber
+
+            }
+        });
+    });
+
     Meteor.setTimeout(() => {
+        $slider.ionRangeSlider({
+            type: 'datetime',
+            min: data.timeRange.min,
+            max: data.timeRange.max,
+            prettify: function (num) {
+                return moment(num, "X").format("LL");
+            },
+            onFinish: saveTimeRange
+
+        });
+
         if ( $.fn.select2 ) {
             $('#proximityStations').select2({
                 theme: 'bootstrap'
@@ -418,7 +470,7 @@ Template.Admin.onRendered(() => {
 
 Template.Admin.onDestroyed(() => {
     //Get rid of helper functions
-    getSubmitPayload = undefined;
-    updateInputsWithProfile = undefined;
-    fetchUserPreference = undefined;
+    // getSubmitPayload = undefined;
+    // updateInputsWithProfile = undefined;
+    // fetchUserPreference = undefined;
 });

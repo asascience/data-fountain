@@ -10,7 +10,6 @@ AdminController = RouteController.extend({
     subscriptions: function() {
         this.subscribe('Stations').wait();
         this.subscribe('Data').wait();
-        this.subscribe('users');
         this.subscribe('UserPreferences').wait();
     },
 

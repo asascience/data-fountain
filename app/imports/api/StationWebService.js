@@ -186,12 +186,12 @@ export default class StationWebService {
 
                         // only get the last 48 hours
 
-                        times = times.splice(times.length - DURATION-1, times.length -1);
-                        clconValues = clconValues.splice(clconValues.length - DURATION -1, clconValues.length -1);
-                        oceanTempValues = oceanTempValues.splice(oceanTempValues.length - DURATION -1, oceanTempValues.length -1);
-                        o2ppmValues = o2ppmValues.splice(o2ppmValues.length - DURATION -1, o2ppmValues.length -1);
-                        turbidityValues = turbidityValues.splice(turbidityValues.length - DURATION -1, turbidityValues.length -1);
-                        salinityValues = salinityValues.splice(salinityValues.length - DURATION -1, salinityValues.length -1);
+                        // times = times.splice(times.length - DURATION-1, times.length -1);
+                        // clconValues = clconValues.splice(clconValues.length - DURATION -1, clconValues.length -1);
+                        // oceanTempValues = oceanTempValues.splice(oceanTempValues.length - DURATION -1, oceanTempValues.length -1);
+                        // o2ppmValues = o2ppmValues.splice(o2ppmValues.length - DURATION -1, o2ppmValues.length -1);
+                        // turbidityValues = turbidityValues.splice(turbidityValues.length - DURATION -1, turbidityValues.length -1);
+                        // salinityValues = salinityValues.splice(salinityValues.length - DURATION -1, salinityValues.length -1);
 
                         // values have to be put into another array to stay consistent
                         // with OceansMap.  For some reason they are a multi array.
@@ -231,6 +231,12 @@ export default class StationWebService {
                         data.data.turbidity = turbidity;
                         data.data.salinity = waterSalinity;
                         data.data.times = times;
+
+                        data.data.oceanTemp.times = times;
+                        data.data.chlorophyll.times = times;
+                        data.data.dissolvedOxygen.times = times;
+                        data.data.turbidity.times = times;
+                        data.data.salinity.times = times;
                         Data.upsert({id: data.id}, data);
                     }
                 });
@@ -281,9 +287,9 @@ export default class StationWebService {
                             return item[1];
                         });
 
-                        wdir = wdir.splice(wdir.length - DURATION-1, wdir.length -1);
-                        wspd = wspd.splice(wspd.length - DURATION-1, wspd.length -1);
-                        atmp = atmp.splice(atmp.length - DURATION-1, atmp.length -1);
+                        // wdir = wdir.splice(wdir.length - DURATION-1, wdir.length -1);
+                        // wspd = wspd.splice(wspd.length - DURATION-1, wspd.length -1);
+                        // atmp = atmp.splice(atmp.length - DURATION-1, atmp.length -1);
 
                         // values have to be put into another array to stay consistent
                         // with OceansMap.  For some reason they are a multi array.
@@ -307,6 +313,9 @@ export default class StationWebService {
                         data.data.windDirection = windDirection;
                         data.data.windSpeed = windSpeed;
                         data.data.airTemp = airTemp;
+                        data.data.windDirection.times = times;
+                        data.data.windSpeed.times = times;
+                        data.data.airTemp.times = times;
                         Data.upsert({id: data.id}, data);
                     }
                 });
@@ -319,14 +328,20 @@ export default class StationWebService {
                 HTTP.get(`${usgsPortalUrl}${data.usgsSite}?startDT=${startDate}&endDT=${endDate}`, (error, response) => {
                     try {
                         let usgsBuoyData = JSON.parse(response.content),
-                            gageHeight = [];
+                            gageHeight = [],
+                            times = [];
 
                         usgsBuoyData.data.forEach((datum) => {
                             if (moment(datum.utc).minute() === 0) {
                                 if (datum['01_00065']) {
                                     gageHeight.push(parseFloat(datum['01_00065']));
+                                    times.push(datum['utc']);
                                 }
                             }
+                        });
+
+                        times.sort((a,b) => {
+                            return new Date(a) - new Date(b);
                         });
 
                         let waterLevel = {
@@ -337,6 +352,7 @@ export default class StationWebService {
 
                         if (gageHeight.length > 0) {
                             data.data.waterLevel = waterLevel;
+                            data.data.waterLevel.times = times;
                             Data.upsert({id: data.id}, data);
                         }
                     } catch(exception) {
@@ -362,7 +378,7 @@ export default class StationWebService {
             // These are server settings, and should be configured via the user profile.
             const FORECAST_API = process.env.FORECAST_API || Meteor.settings.forecastIoApi;
             const DURATION = Meteor.settings.defaultDuration;
-            const COORD = [process.env.FORECAST_COORD_LAT, process.env.FORECAST_COORD_LON] || Meteor.settings.forecastIoApi;
+            const COORD = [process.env.FORECAST_COORD_LAT, process.env.FORECAST_COORD_LON] || [Meteor.settings.forecastIoCoord[0], Meteor.settings.forecastIoCoord[1]];
             let referenceStation = Stations.findOne({isPrimary: true}, {fields: {'title': 1, 'lon': 1, 'lat': 1, 'stationId': 1}});
             if (referenceStation) {
                 let referenceStationData = Data.findOne({stationId: referenceStation.stationId}, {fields: {'data.times': 1}});
@@ -370,8 +386,10 @@ export default class StationWebService {
                 let weather = Weather.find({}).fetch();
 
                 let removeCount = Weather.remove({});
-                for (let i=0; i < timeSet.length; i++) {
-                    let unixTime = moment(timeSet[i]).unix();
+                console.log(timeSet.length - 49);
+                let TEMPTimeSet = timeSet.splice(timeSet.length - 49, timeSet.length - 1);
+                for (let i=0; i < TEMPTimeSet.length -1; i++) {
+                    let unixTime = moment(TEMPTimeSet[i]).unix();
                     let url = `https://api.forecast.io/forecast/${FORECAST_API}/${referenceStation.lat},${referenceStation.lon},${unixTime}`;
                     HTTP.get(url, (error, response) => {
                         if (error) {
