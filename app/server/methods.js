@@ -9,8 +9,11 @@ Meteor.methods({
         return UserPreferences.update(docId, {$set: doc});
     },
     'server/removeUserPreference': function(docId) {
-        if (typeof(docId) === String) {
+        if (typeof(docId) === 'string') {
             return UserPreferences.remove(docId);
         };
+    },
+    'server/getUserPreferences': function(){
+        return UserPreferences.find({owner: this.userId}).fetch();
     }
 });

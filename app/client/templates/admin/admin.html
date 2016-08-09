@@ -1,167 +1,244 @@
 <template name="Admin">
-    <div class="admin">
-        {{> Header }}
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <!-- You only need this form and the form-basic.css -->
-                <form class="form-horizontal" method="post" action="#">
-                    <fieldset>
-                        <div class="form-title-row">
+<div class="admin">
+    {{> Header }}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <!-- You only need this form and the form-basic.css -->
+            <form class="form-horizontal" method="post" action="#">
+                <fieldset>
+                    <div class="form-title-row">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Current Preference</label>
+                        <h4 class="col-md-2"><b>{{currentPreferenceName}}</b></h4>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Region</label>
+                        <div class="col-md-4">
+                            <select class="category-select form-control js-select-primary">
+                                <option value="Chesapeake Bay">Chesapeake Bay</option>
+                            </select>
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Station Data View</label>
-                            <div class="col-md-4">
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-default stationDataViewOption multipleStation active">Multiple Station</button>
-                                    <button type="button" class="btn btn-default stationDataViewOption singleStation">Single Station</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">
-                                Primary Station
-                            </label>
-                            <div class="col-md-4">
-                                <select class="category-select form-control js-select-primary" id="primaryStation">
-                                    {{#each primaryStationOptions}}
-                                        <option value="{{this}}">{{this}}</option>
-                                    {{/each}}
-                                 </select>
-                                <p class="control-explanation">Select a station.</p>       
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Station Data View</label>
+                        <div class="col-md-4">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default stationDataViewOption multipleStation active">Multiple Station</button>
+                                <button type="button" class="btn btn-default stationDataViewOption singleStation">Single Station</button>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">
-                                Line Plot (top)
-                            </label>
-                            <div class="col-md-4">
-                                <select class="category-select form-control js-top-plot-param" id="topPlotDataParameter">
-                                    {{#each dataParams}}
-                                        <option value="{{this}}">{{this}}</option>
-                                    {{/each}}
-                                </select>
-                                <p class="control-explanation">Select a data paramter.</p>
-                            </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">
+                            Primary Station
+                        </label>
+                        <div class="col-md-4">
+                            <select class="category-select form-control js-select-primary" id="primaryStation">
+                                {{#each primaryStationOptions}}
+                                <option value="{{this}}">{{this}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="control-explanation">Select a station.</p>       
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">
-                                Bar Plot (bottom)
-                            </label>
-                            <div class="col-md-4">
-                                <select class="category-select form-control js-select-bottom-parameter" id="bottomPlotDataParameter">
-                                    {{#each dataParams}}
-                                        <option value="{{this}}">{{this}}</option>
-                                    {{/each}}
-                                </select>
-                                <p class="control-explanation">Select a bar plot parameter.</p>
-                            </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">
+                            Line Plot (top)
+                        </label>
+                        <div class="col-md-4">
+                            <select class="category-select form-control js-top-plot-param" id="topPlotDataParameter">
+                                {{#each dataParams}}
+                                <option value="{{this}}">{{this}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="control-explanation">Select a data paramter.</p>
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label" for="paramAlerts">
-                                Parameter Alerts
-                            </label>
-                            <div class="col-md-1">
-                                <input id="lowAlert" type="text" class="form-control form-control-rounded" placeholder="Low"/>
-                            </div>
-                            <div class="col-md-1">
-                                <input id="midAlert" type="text" class="form-control form-control-rounded" placeholder="Mid"/>
-                            </div>
-                            <div class="col-md-1">
-                                <input id="highAlert" type="text" class="form-control form-control-rounded" placeholder="High"/>
-                            </div>
-                            <div class="col-md-1">
-                                <input id="paramUnit" type="text" class="form-control form-control-rounded" disabled/>
-                            </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">
+                            Bar Plot (bottom)
+                        </label>
+                        <div class="col-md-4">
+                            <select class="category-select form-control js-select-bottom-parameter" id="bottomPlotDataParameter">
+                                {{#each dataParams}}
+                                <option value="{{this}}">{{this}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="control-explanation">Select a bar plot parameter.</p>
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Station Parameters</label>
-                            <div class="col-md-4">
-                                <select class="chosen-select input-md form-control" id="stationParameters" multiple="multiple">
-                                    {{#each singleStationParameters}}
-                                        <option value="{{this}}">{{this}}</option>
-                                    {{/each}}
-                                </select>
-                                <p class="control-explanation">Select parameters to graph for a single station.</p>
-                            </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="paramAlerts">
+                            Parameter Alerts
+                        </label>
+                        <div class="col-md-1">
+                            <input id="lowAlert" type="text" class="form-control form-control-rounded" placeholder="Low"/>
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">
-                                Proximity Stations
-                            </label>
-                            <div class="col-md-4">
-                                <select class="chosen-select input-md form-control" id="proximityStations"  multiple="multiple">
-                                    {{#each proximityStationOptions}}
-                                        <option value="{{this}}">{{this}}</option>
-                                    {{/each}}
-                                </select>
-                                <p class="control-explanation"></p>
-                            </div>
+                        <div class="col-md-1">
+                            <input id="midAlert" type="text" class="form-control form-control-rounded" placeholder="Mid"/>
                         </div>
-                        <!-- <div class="form&#45;group"> -->
+                        <div class="col-md-1">
+                            <input id="highAlert" type="text" class="form-control form-control-rounded" placeholder="High"/>
+                        </div>
+                        <div class="col-md-1">
+                            <input id="paramUnit" type="text" class="form-control form-control-rounded" disabled/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Station Parameters</label>
+                        <div class="col-md-4">
+                            <select class="chosen-select input-md form-control" id="stationParameters" multiple="multiple">
+                                {{#each singleStationParameters}}
+                                <option value="{{this}}">{{this}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="control-explanation">Select parameters to graph for a single station.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">
+                            Proximity Stations
+                        </label>
+                        <div class="col-md-4">
+                            <select class="chosen-select input-md form-control" id="proximityStations"  multiple="multiple">
+                                {{#each proximityStationOptions}}
+                                <option value="{{this}}">{{this}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="control-explanation"></p>
+                        </div>
+                    </div>
+                    <!-- <div class="form&#45;group"> -->
                         <!--     <label class="col&#45;md&#45;2 control&#45;label"> -->
-                        <!--         Time (max 48 hours) -->
-                        <!--     </label> -->
+                            <!--         Time (max 48 hours) -->
+                            <!--     </label> -->
                         <!--     <div class="col&#45;md&#45;10"> -->
-                        <!--         <input type="text" class="form&#45;control form&#45;control&#45;rounded" id="dataDuration" value={{dataDuration}} /> -->
-                        <!--     </div> -->
+                            <!--         <input type="text" class="form&#45;control form&#45;control&#45;rounded" id="dataDuration" value={{dataDuration}} /> -->
+                            <!--     </div> -->
                         <!-- </div> -->
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">
-                                Page Refresh Interval (seconds)
-                            </label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control form-control-rounded" id="refreshInterval" value={{refreshInterval}} />
-                                <p class="control-explanation">Select a page refresh interval.</p>
-                            </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">
+                            Page Refresh Interval (seconds)
+                        </label>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control form-control-rounded" id="refreshInterval" value={{refreshInterval}} />
+                            <p class="control-explanation">Select a page refresh interval.</p>
                         </div>
-                        <!-- <div class="form&#45;row"> -->
+                    </div>
+                    <!-- <div class="form&#45;row"> -->
                         <!--     <label>Temperature</label> -->
                         <!--     <div class="form&#45;radio&#45;buttons"> -->
-                        <!--  -->
-                        <!--         <div> -->
-                        <!--             <label> -->
-                        <!--                 <input type="radio" name="radio" value="Celsius"> -->
-                        <!--                 Celsius -->
-                        <!--             </label> -->
-                        <!--         </div> -->
-                        <!--  -->
-                        <!--         <div> -->
-                        <!--             <label> -->
-                        <!--                 <input type="radio" name="radio" value="Fahrenheit"> -->
-                        <!--                 Fahrenheit -->
-                        <!--             </label> -->
-                        <!--         </div> -->
-                        <!--     </div> -->
+                            <!--  -->
+                            <!--         <div> -->
+                                <!--             <label> -->
+                                    <!--                 <input type="radio" name="radio" value="Celsius"> -->
+                                    <!--                 Celsius -->
+                                    <!--             </label> -->
+                                <!--         </div> -->
+                            <!--  -->
+                            <!--         <div> -->
+                                <!--             <label> -->
+                                    <!--                 <input type="radio" name="radio" value="Fahrenheit"> -->
+                                    <!--                 Fahrenheit -->
+                                    <!--             </label> -->
+                                <!--         </div> -->
+                            <!--     </div> -->
                         <!-- </div> -->
-                        <!-- <div class="form&#45;row"> -->
+                    <!-- <div class="form&#45;row"> -->
                         <!--     <label> -->
-                        <!--         Time Zone -->
-                        <!--         <select class="timezone&#45;select" id="timezone&#45;select"> -->
-                        <!--             <option value="EST">Eastern Standard Time (EST).</option> -->
-                        <!--             <option value="CST">Central Standard Time (CST).</option> -->
-                        <!--             <option value="MST">Mountain Standard Time (MST).</option> -->
-                        <!--             <option value="PST">Pacific Standard Time (PST).</option> -->
-                        <!--         </select> -->
-                        <!--     </label> -->
+                            <!--         Time Zone -->
+                            <!--         <select class="timezone&#45;select" id="timezone&#45;select"> -->
+                                <!--             <option value="EST">Eastern Standard Time (EST).</option> -->
+                                <!--             <option value="CST">Central Standard Time (CST).</option> -->
+                                <!--             <option value="MST">Mountain Standard Time (MST).</option> -->
+                                <!--             <option value="PST">Pacific Standard Time (PST).</option> -->
+                                <!--         </select> -->
+                            <!--     </label> -->
                         <!-- </div> -->
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">
-                                Ticker Marquee
-                            </label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}} />
-                                <p class="control-explanation">Select info ticker label.</p>
-                            </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">
+                            Ticker Marquee
+                        </label>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}} />
+                            <p class="control-explanation">Select info ticker label.</p>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-
-                                <button class="pull-right btn btn-primary" type="submit">Save Settings</button>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#preferencesModal">Load Preferences</button>
+                            <div class="modal fade" id="preferencesModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="myModalLabel">Select Preferences</h4>
+                                        </div>
+                                        <div class="modal-body">    
+                                            {{#each dataPreferences}}
+                                            <button type="button" class="btn btn-default preferenceSelectionButton" data-preference-id="{{this._id}}">{{this.profile.preferenceName}}</button>
+                                            {{/each}}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
                         </div>
-                    </fieldset>
-                </form>
-            </div>
+                        <div class="col-md-2 text-center">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#savePreferenceModal">Save Preferences</button>
+                            <div class="modal fade" id="savePreferenceModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="myModalLabel">Save Preferences</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <label>Preference Name:</label><input type="text" class="form-control form-control-rounded" id="savePreferenceInput"/>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary" id="savePreferenceButton">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="col-md-2">
+                            <button class="pull-right btn btn-primary" type="submit">Save Settings</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#preferencesDeletionModal">Delete Preferences</button>
+                            <div class="modal fade" id="preferencesDeletionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="myModalLabel">Select Preferences</h4>
+                                        </div>
+                                        <div class="modal-body">    
+                                            {{#each dataPreferences}}
+                                            <button type="button" class="btn btn-default preferenceDeletionButton" data-preference-id="{{this._id}}">{{this.profile.preferenceName}}</button>
+                                            {{/each}}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary" id="preferencesDeleteButton">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>       
+                </fieldset>
+            </form>
         </div>
     </div>
+</div>
 </template>
