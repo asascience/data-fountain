@@ -23,8 +23,9 @@ Template.OceanPlots.helpers({
     },
     topPlot() {
         try {
-            let primaryStation = Meteor.user().profile.primaryStation,
-                topPlotDataParameter = Meteor.user().profile.topPlotDataParameter,
+            let userProfile = Meteor.user().profile
+            let primaryStation = userProfile.primaryStation,
+                topPlotDataParameter = userProfile.topPlotDataParameter,
                 primaryStationData = Data.findOne({title: primaryStation},
                                                   {fields: {data: 1, title: 1}}),
                 plotDisplayName = camelToRegular(topPlotDataParameter);
@@ -32,17 +33,22 @@ Template.OceanPlots.helpers({
             if (!primaryStationData.data) throw `No Data available for ${primaryStation}`;
             if (!primaryStationData.data.times) throw `No Time for ${primaryStation}`;
 
-            let times = primaryStationData.data.times,
+            let times = primaryStationData.data[topPlotDataParameter].times,
                 plotData = primaryStationData.data[topPlotDataParameter].values,
                 units = primaryStationData.data[topPlotDataParameter].units;
 
-            // normalize the range so we're only using available times for the requested duratiobn.,
-            times = times.splice(times.length - Meteor.user().profile.dataDuration -1, times.length);
 
+            // Update the times to only include the range between the to and from time selected with the date slider.
+            //times = times.splice(times.length - Meteor.user().profile.dataDuration -1, times.length);
+            times = times.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex);
             let dataSet = times.map((data, index) => {
-                return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN' || typeof(plotData[index]) === 'undefined') ? null : plotData[index]];
-            });
+                //Adjust the index so that only values from the date range selected are included.
+                let adjustedIndex = index + userProfile.fromTimeIndex;
 
+
+                return [moment(times[index]).unix()*1000, (plotData[adjustedIndex] === 'NaN' || typeof(plotData[adjustedIndex]) === 'undefined') ? null : plotData[adjustedIndex]];
+                //return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN' || typeof(plotData[index]) === 'undefined') ? null : plotData[index]];
+            });
             Meteor.defer(() => {
                 try {
                     Highcharts.chart('topPlot', {
@@ -108,13 +114,18 @@ Template.OceanPlots.helpers({
     },
     bottomPlot() {
         try {
-            let proximityStations = Meteor.user().profile.proximityStations,
-                primaryStation =  Meteor.user().profile.primaryStation;
+            let userProfile = Meteor.user().profile;
+            let proximityStations = userProfile.proximityStations,
+                primaryStation =  userProfile.primaryStation;
                 proximityStationsData = Data.find({'title': {$in: proximityStations}}, {fields: {data: 1, title: 1}}).fetch(),
-                bottomPlotDataParameter = Meteor.user().profile.bottomPlotDataParameter,
+                bottomPlotDataParameter = userProfile.bottomPlotDataParameter,
                 primaryStationData = Data.findOne({title: primaryStation},
                                                   {fields: {title: 1, data: 1}}),
                 plotDisplayName = camelToRegular(bottomPlotDataParameter);
+
+                //Get the first date to display data for.
+                let firstTime = primaryStationData.data[userProfile.topPlotDataParameter].times[userProfile.fromTimeIndex];
+
 
                 let dataSet = [],
                     axisLabels = [],
@@ -129,7 +140,13 @@ Template.OceanPlots.helpers({
 
                 proximityStationsData.forEach((item, index) => {
                     let originalIndex = proximityStations.indexOf(item.title);
-                    dataSet[originalIndex] = item.data[bottomPlotDataParameter].values;
+                    
+                    //Trim the data to the data available from the primaryStation.
+                    let itemData = item.data[bottomPlotDataParameter];
+                    let startIndex = item.data[bottomPlotDataParameter].times.indexOf(firstTime);
+                    itemData = itemData.values.slice(startIndex, startIndex + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
+
+                    dataSet[originalIndex] = itemData;
                     axisLabels[originalIndex] = item.title;
                 });
 
@@ -149,15 +166,20 @@ Template.OceanPlots.helpers({
                         return row[index];
                     });
                 });
-
+                console.log(axisLabels);
+                console.log(plotData);
                 let ticker;
                 Tracker.nonreactive(() => {
                     ticker = Session.get('globalTicker');
                 });
 
+                //I wasted a stupid amount of time debugging after removing this. 
+                //This line allows the chart to reference the plotData while animating.
+                //Don't remove it.
                 Template.instance().plotData = plotData;
 
                 Meteor.defer(() => {
+                    console.log(plotData[ticker]);
                     try {
                         Highcharts.chart('bottomPlot', {
                             chart: {
@@ -249,11 +271,24 @@ Template.OceanPlots.helpers({
         }
     },
     singleBottomPlot(){
-        let stationName = Meteor.user().profile.primaryStation;
-        let stationParameters = Meteor.user().profile.singleStationParameters;
+        let userProfile = Meteor.user().profile;
+        let stationName = userProfile.primaryStation;
+        let stationParameters = userProfile.singleStationParameters;
 
-        let stationData = Data.find({'title':stationName}).fetch()[0].data;
-        
+        let dataLength = userProfile.toTimeIndex - userProfile.fromTimeIndex;
+
+        let stationData = Data.findOne({'title':stationName}).data;
+        let firstTime = stationData[userProfile.topPlotDataParameter].times[userProfile.fromTimeIndex];
+
+        //Make sure that the data starts at the same time.
+        stationParameters.forEach(function(parameter){
+            let currentData = stationData[parameter];
+            let indexOfFirstTime = currentData.times.indexOf(firstTime);
+            stationData[parameter].values = currentData.values.slice(indexOfFirstTime, indexOfFirstTime + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
+            
+        })
+
+        //This expresses the data as a percentage of the max value.
         for(var i = 0; i < stationParameters.length; i++){
             let currentData = stationData[stationParameters[i]].values;
             let max = Math.max.apply(Math, currentData);
@@ -284,7 +319,7 @@ Template.OceanPlots.helpers({
         });
         
         Template.instance().plotData = plotData;
-        
+
         Meteor.defer(() => {
             try {
                 Highcharts.chart('bottomPlot', {

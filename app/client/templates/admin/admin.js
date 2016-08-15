@@ -1,8 +1,6 @@
 import swal from 'sweetalert';
 import HUMPS from 'humps';
 
-//
-
 //Checks the fields and generates an object represenatative of the user's choices.
 function getSubmitPayload(){
 
@@ -13,7 +11,6 @@ function getSubmitPayload(){
     };
     let viewMode = $('.singleStation').hasClass('active') ? 'single' : 'multiple';
 
-
     //Make sure that the proximity stations contains the primary station.
     let primaryStation = $('#primaryStation').val();
     let proximityStations = $('#proximityStations').val();
@@ -22,21 +19,31 @@ function getSubmitPayload(){
     }else if(proximityStations.indexOf(primaryStation) === -1){
         proximityStations.push(primaryStation);
     }
+    
+    
+    //Get data collected from the date slider and process it.
+    let sliderData = Session.get('sliderData');
+    let stationData = Data.findOne({title: primaryStation});
+    let dateIndexes = findDateIndexes(moment(sliderData.from, 'X') , moment(sliderData.to, 'X'),  stationData.data[$('#topPlotDataParameter').val()].times);
+    console.log(dateIndexes);
 
     let payload = {
-        "profile.stationViewMode":      viewMode,
-        "profile.singleStationParameters": $('#stationParameters').val(),
-        "profile.primaryStation":       primaryStation,
-        "profile.proximityStations":    proximityStations,
-        "profile.dataDuration":         $('#dataDuration').val(),
-        "profile.refreshInterval":      $('#refreshInterval').val(),
-        // "profile.temperatureUnit":   $(element).val(),
-        "profile.infoTickerText":       $('#infoTickerText').val(),
-        "profile.timeZone":             $('#timezoneSelect').val(),
-        'profile.topPlotDataParameter': $('#topPlotDataParameter').val(),
-        'profile.bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
-        'profile.parameterAlerts': parameterAlerts,
-        'profile.saveDate': new Date()
+        "profile":{
+            "stationViewMode": viewMode,
+            "singleStationParameters": $('#stationParameters').val(),
+            "primaryStation": primaryStation,
+            "proximityStations": proximityStations,
+            "dataDuration": $('#dataDuration').val(),
+            "refreshInterval": $('#refreshInterval').val(),
+            "infoTickerText": $('#infoTickerText').val(),
+            "timeZone": $('#timezoneSelect').val(),
+            'topPlotDataParameter': $('#topPlotDataParameter').val(),
+            'bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
+            'parameterAlerts': parameterAlerts,
+            "fromTimeIndex": dateIndexes[0],
+            "toTimeIndex": dateIndexes[1],
+            'saveDate': new Date()
+        }
     };
     return payload;
 }
@@ -44,6 +51,7 @@ function getSubmitPayload(){
 
 function updateInputsWithProfile(userProfile){
     //Update inputs with the user's saved selections.
+    console.log(userProfile);
     $('#primaryStation').val(userProfile.primaryStation);
     $('#proximityStations').val(userProfile.proximityStations).change();
     $('#stationParameters').val(userProfile.singleStationParameters).change();
@@ -72,9 +80,38 @@ function fetchUserPreferences(){
         if(error){
             console.log(error);
         }else{
-            Session.set('DataPreferences', res);
+            Session.set('DataPreferences', res || []);
         }
     });
+}
+
+function updateDateSelectorRange(){ 
+    let topPlotDataParameter = $('#topPlotDataParameter').val();
+    let primaryStation = $('#primaryStation').val();
+    let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
+    let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
+    slider.update({
+        min: moment(timeRange.data[topPlotDataParameter].times[0]).format('X'),
+        max: moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X'),
+    });
+}
+
+//Find the index of the startDate and end date in the date array (if not possible the closest indexes will be returned)
+//Start and End dates must be moment objects.
+function findDateIndexes(startDate, endDate, dateArray){
+    let startIndex, endIndex;
+    for(let i = 0; i < dateArray.length; i++){
+        let currentArrayDate = moment(dateArray[i]);
+        
+        if(startDate.isSame(currentArrayDate) || startDate.isAfter(currentArrayDate)){
+            startIndex = i; 
+        }
+        if(endDate.isSame(currentArrayDate) || endDate.isBefore(currentArrayDate)){
+            endIndex = i;
+            break;
+        } 
+    }
+    return [startIndex, endIndex];
 }
 
 /*****************************************************************************/
@@ -115,7 +152,6 @@ Template.Admin.events({
         //Change which button is active
         $('.stationDataViewOption').removeClass("active");
         $(event.target).addClass('active');
-
         //Update the inputs
         if($(event.target).hasClass("singleStation")){
             //Get rid of the Proximity Stations, Bar Plot and Line Plot Inputs
@@ -124,7 +160,7 @@ Template.Admin.events({
             $('#stationParameters').parent().parent().show();
         }else{
             $('#stationParameters').parent().parent().hide();
-            $('.js-select-bottom-parameter').parent().parent().show();
+            //$('.js-select-bottom-parameter').parent().parent().show();
             $('#proximityStations').parent().parent().show();
         }
     },
@@ -175,12 +211,24 @@ Template.Admin.events({
             //Add the name of the preferences to the payload.
             let payload = getSubmitPayload();
 
-            payload['profile.preferenceName'] = preferenceName
+            payload.profile['preferenceName'] = preferenceName
 
             Meteor.call('server/addUserPreference', payload, function(err, res){
                 if(err){
-                    console.log("Error encountered while attempting to call server/addUserPreference");
+                    console.log("Error encountered while attempting to call server/addUserPreference. Error: " +err);
                 }else{
+
+                    //Update the Session
+                    let dataPrefs = Session.get('DataPreferences');
+                    dataPrefs.push(payload);
+                    Session.set('DataPreferences', dataPrefs);
+
+                    //Update the user.
+                    Meteor.users.update(Meteor.userId(), {
+                        $set:payload
+                    }, function(err, res){
+                    });
+
                     //Hide the modal
                     $('#savePreferenceModal').modal('hide');
                     //Remove the last preference name from the input.
@@ -193,9 +241,9 @@ Template.Admin.events({
                         confirmButtonText: 'OK',
                         closeOnConfirm: true
                     });
-
                     //Update the preferences so that the new option apears on the load preferences modal.
-                    fetchUserPreferences();
+                    Session.set("CurrentPreference", payload);
+                    //fetchUserPreferences();
                 }
             });
         }
@@ -253,7 +301,8 @@ Template.Admin.events({
         });
 
         //Add the primary station to the proximity stations as well.
-        let proximityValues = $('#proximityStations').val();
+        //If proximity values is undefined/null initialize a new array.
+        let proximityValues = $('#proximityStations').val() || [];
         let primaryStationValue = $('#primaryStation').val();
         if(proximityValues.indexOf(primaryStationValue) === -1) proximityValues.push(primaryStationValue);
 
@@ -266,23 +315,13 @@ Template.Admin.events({
     'change .js-top-plot-param'(event, template) {
         Meteor.setTimeout(() => {
             try {
-                let primaryStation = $('#primaryStation').val();
                 let topPlotDataParameter = $('#topPlotDataParameter').val();
                 Meteor.users.update(Meteor.userId(), {
                     $set: {
                         "profile.topPlotDataParameter": topPlotDataParameter,
                     }
                 });
-
-                let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
-                let data = { timeRange: {min: timeRange.data.times[0], max: timeRange.data.times[timeRange.data.times.length-1]}};
-
-                let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
-                slider.update({
-                    min: moment(timeRange.data[topPlotDataParameter].times[0]).format('X'),
-                    max: moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X'),
-                });
-
+                updateDateSelectorRange();
             } catch(e) {
                 console.log(e);
             }
@@ -291,20 +330,23 @@ Template.Admin.events({
     'change #proximityStations'(event, template){
         let proximity = $('#proximityStations');
         let primary = $('#primaryStation');
-        if(proximity.val() === null){
-            //If there is no proximity stations, set one to be the primary station.
-            proximity.val(primary.val()).trigger('change');
-            swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
-        }
 
-        //If the user removed the primary station from the proximity stations re-add it.
-        if(proximity.val().indexOf(primary.val()) === -1){
-            console.log(proximity.val());
-            console.log(primary.val());
-            let proximityStationsVal = proximity.val();
-            proximityStationsVal.push(primary.val());
-            proximity.val(proximityStationsVal).trigger('change');
-            swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
+        //Make sure that the proximity and primary values are not null
+        if(primary.val() !== null){
+            if(proximity.val() === null){
+                console.log('null');
+                //If there is no proximity stations, set one to be the primary station.
+                proximity.val([primary.val()]);
+                proximity.trigger('change');
+                swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
+
+            //If the user removed the primary station from the proximity stations re-add it.
+            }else if(proximity !==null && primary !== null && proximity.val().indexOf(primary.val()) === -1){
+                let proximityStationsVal = proximity.val();
+                proximityStationsVal.push(primary.val());
+                proximity.val(proximityStationsVal).trigger('change');
+                swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
+            }
         }
     },
     'change .js-select-bottom-parameter'(event, template) {
@@ -338,18 +380,15 @@ Template.Admin.helpers({
     },
     proximityStationOptions: function(){
         try {
-            if (Meteor.user().profile.bottomPlotDataParameter) {
-                let filterByParameter = HUMPS.decamelize(Meteor.user().profile.bottomPlotDataParameter);
 
-                let listOfStations = Stations.find({}).fetch(),
-                    stationNames = [];
+            let listOfStations = Stations.find({}).fetch(),
+                stationNames = [];
 
-                _.each(listOfStations, (obj) => {
-                    stationNames.push(obj.title);
-                });
+            _.each(listOfStations, (obj) => {
+                stationNames.push(obj.title);
+            });
 
-                return stationNames;
-            }
+            return stationNames;
         } catch(e) {
             console.log(e);
         }
@@ -370,7 +409,11 @@ Template.Admin.helpers({
         }
     },
     currentPreferenceName(){
-        return Meteor.user().profile.preferenceName || Session.get('CurrentPreference').profile.preferenceName;
+        try{
+            return Meteor.user().profile.preferenceName || Session.get('CurrentPreference').profile.preferenceName;
+        }catch(err){
+            return undefined;
+        }
     },
     dataPreferences(){
         return Session.get('DataPreferences');
@@ -400,6 +443,10 @@ Template.Admin.helpers({
     },
     singleStationParameters(){
         let userPrimaryStation = Meteor.user().profile.primaryStation;
+        if(userPrimaryStation === null || userPrimaryStation === ""){
+            return [];
+        }
+
         let keys = Object.keys(Data.findOne({title:userPrimaryStation}).data);
 
         //Remove 'times' from the keys array.
@@ -413,34 +460,25 @@ Template.Admin.helpers({
 /* Admin: Lifecycle Hooks */
 /*****************************************************************************/
 Template.Admin.onCreated(function() {
-    let data = {};
-    data.timeRange = {
-        min: +moment().subtract(1, "years").format("X"),
-        max: +moment().format("X")
-    };
-    Session.set('data', data);
     fetchUserPreferences();
 });
 
 Template.Admin.onRendered(function() {
-    let data = Session.get('data');
     let $slider = $('input[type="rangeslide"]');
 
-    let saveTimeRange = ((data) => {
-        Meteor.users.update(Meteor.userId(), {
-            $set: {
-                'profile.dataStart': data.fromNumber,
-                'profile.dataEnd': data.toNumber
-
-            }
+    let saveTimeRange = ((sliderData) => {
+        //Update the session with the slider data. We will save it on submit.
+        Session.set('sliderData', {
+            'from' : sliderData.from,
+            'to' : sliderData.to
         });
     });
 
     Meteor.setTimeout(() => {
         $slider.ionRangeSlider({
             type: 'datetime',
-            min: data.timeRange.min,
-            max: data.timeRange.max,
+            min: +moment().subtract(1, "years").format("X"),
+            max: +moment().format("X"),
             prettify: function (num) {
                 return moment(num, "X").format("LL");
             },
@@ -448,22 +486,32 @@ Template.Admin.onRendered(function() {
 
         });
 
+        //Make sure that the date range represents the available data
+        updateDateSelectorRange();
+
         if ( $.fn.select2 ) {
             $('#proximityStations').select2({
-                theme: 'bootstrap'
+                theme: 'bootstrap',
+                "language": {
+                    "noResults": function(){
+                        return "Set the primary station first.";
+                    }
+                }
             });
             $('#stationParameters').select2({
-                theme:'bootstrap'
+                theme:'bootstrap',
+                "language": {
+                    "noResults": function(){
+                        return "Set the primary station first.";
+                   }
+                }
             });
         }
-
-        updateInputsWithProfile(Meteor.user().profile);
-
+        
 
         //Hide inputs for single station view.
         $('#stationParameters').parent().parent().hide();
-
-
+        updateInputsWithProfile(Meteor.user().profile);
     }, 500);
 
 });
