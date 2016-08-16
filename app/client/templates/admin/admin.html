@@ -85,27 +85,23 @@
                                 <input id="paramUnit" type="text" class="form-control form-control-rounded" disabled/>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="singleStationParameters">
                             <label class="col-md-2 control-label">Station Parameters</label>
                             <div class="col-md-4">
-                                <select class="chosen-select input-md form-control" id="stationParameters" multiple="multiple">
-                                    {{#each singleStationParameters}}
-                                        <option value="{{this}}">{{this}}</option>
-                                    {{/each}}
-                                </select>
+                                {{#each singleStationParameters}}
+                                <label><input type="checkbox" class="stationParameterCheckbox" id="{{this}}">{{this}}</label>
+                                {{/each}}
                                 <p class="control-explanation">Select parameters to graph for a single station.</p>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="proximityStations">
                             <label class="col-md-2 control-label">
                                 Proximity Stations
                             </label>
                             <div class="col-md-4">
-                                <select class="chosen-select input-md form-control" id="proximityStations"  multiple="multiple">
-                                    {{#each proximityStationOptions}}
-                                    <option value="{{this}}">{{this}}</option>
-                                    {{/each}}
-                                </select>
+                                {{#each proximityStationOptions}}
+                                <label><input type="checkbox" class="proximityStationCheckbox" id="{{this}}">{{this}}</label>
+                                {{/each}}
                                 <p class="control-explanation">Nearby stations to display on the bottom bar plot.</p>
                             </div>
                         </div>

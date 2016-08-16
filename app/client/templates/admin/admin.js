@@ -13,13 +13,18 @@ function getSubmitPayload(){
 
     //Make sure that the proximity stations contains the primary station.
     let primaryStation = $('#primaryStation').val();
-    let proximityStations = $('#proximityStations').val();
-    if(proximityStations === null){
-        proximityStations = primaryStation;
-    }else if(proximityStations.indexOf(primaryStation) === -1){
-        proximityStations.push(primaryStation);
-    }
-    
+    let proximityStations = [];
+    $('.proximityStationCheckbox').each(function(obj){
+        if($(this).prop('checked') === true)proximityStations.push($(this).prop('id')); 
+    });
+
+    if(proximityStations.indexOf(primaryStation) === -1)proximityStations.push(primaryStation);
+   
+    //Get the stationParameters
+    let stationParameters = [];
+    $('.stationParameterCheckbox').each(function(){
+        if($(this).prop('checked') === true)stationParameters.push($(this).prop('id'));
+    });
     
     //Get data collected from the date slider and process it.
     let sliderData = Session.get('sliderData');
@@ -28,7 +33,7 @@ function getSubmitPayload(){
     let payload = {
         "profile":{
             "stationViewMode": viewMode,
-            "singleStationParameters": $('#stationParameters').val(),
+            "singleStationParameters": stationParameters,
             "primaryStation": primaryStation,
             "proximityStations": proximityStations,
             "refreshInterval": $('#refreshInterval').val(),
@@ -53,7 +58,6 @@ function getSubmitPayload(){
 function updateInputsWithProfile(userProfile){
     //Update inputs with the user's saved selections.
     $('#primaryStation').val(userProfile.primaryStation);
-    $('#proximityStations').val(userProfile.proximityStations).change();
     $('#stationParameters').val(userProfile.singleStationParameters).change();
     $('#refreshInterval').val(userProfile.refreshInterval);
     $('#topPlotDataParameter').val(userProfile.topPlotDataParameter);
@@ -63,6 +67,18 @@ function updateInputsWithProfile(userProfile){
     $('#highAlert').val(userProfile.parameterAlerts.highAlert);
     $('#paramUnit').val(userProfile.parameterAlerts.unit);
     
+    //update proximityStations:
+    $('.proximityStationCheckbox').prop('checked', false);
+    userProfile.proximityStations.forEach(function(obj){
+        $('.proximityStationCheckbox[id=\''+ obj +'\']').prop('checked', true);    
+    });
+    
+    //Update stationParameters
+    $('.stationParameterCheckbox').prop('checked', false);
+    userProfile.singleStationParameters.forEach(function(obj){
+        $('.stationParameterCheckbox[id=\'' + obj + '\']').prop('checked', true);    
+    });
+
     //Update the date slider
     updateDateSelectorRange();
     if(userProfile.dateSliderData !== undefined){
@@ -170,12 +186,12 @@ Template.Admin.events({
         if($(event.target).hasClass("singleStation")){
             //Get rid of the Proximity Stations, Bar Plot and Line Plot Inputs
             $('.js-select-bottom-parameter').parent().parent().hide();
-            $('#proximityStations').parent().parent().hide();
-            $('#stationParameters').parent().parent().show();
+            $('#proximityStations').hide();
+            $('#singleStationParameters').show();
         }else{
-            $('#stationParameters').parent().parent().hide();
-            //$('.js-select-bottom-parameter').parent().parent().show();
-            $('#proximityStations').parent().parent().show();
+            $('#singleStationParameters').hide();
+            $('.js-select-bottom-parameter').parent().parent().show();
+            $('#proximityStations').show();
         }
     },
 
@@ -314,17 +330,19 @@ Template.Admin.events({
         });
 
         //Add the primary station to the proximity stations as well.
-        //If proximity values is undefined/null initialize a new array.
-        let proximityValues = $('#proximityStations').val() || [];
         let primaryStationValue = $('#primaryStation').val();
-        if(proximityValues.indexOf(primaryStationValue) === -1) proximityValues.push(primaryStationValue);
-
-        $('#proximityStations').val(proximityValues).trigger('change');
-
-
+        console.log(primaryStationValue);
+        $('.proximityStationCheckbox[id=\'' + primaryStationValue + '\']').attr('checked', true); 
+        
         $('.js-top-plot-param').trigger('change');
     },
-
+    'click .proximityStationCheckbox'(event, template){
+        //Don't allow the user to remove the primary station from the proximity stations.
+        if($(event.target).attr('id') === $('#primaryStation').val()){
+            $(event.target).prop('checked', true);
+            swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
+        }
+    },
     'change .js-top-plot-param'(event, template) {
         Meteor.setTimeout(() => {
             try {
@@ -339,27 +357,6 @@ Template.Admin.events({
                 console.log(e);
             }
         }, 500);
-    },
-    'change #proximityStations'(event, template){
-        let proximity = $('#proximityStations');
-        let primary = $('#primaryStation');
-
-        //Make sure that the proximity and primary values are not null
-        if(primary.val() !== null){
-            if(proximity.val() === null){
-                //If there is no proximity stations, set one to be the primary station.
-                proximity.val([primary.val()]);
-                proximity.trigger('change');
-                swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
-
-            //If the user removed the primary station from the proximity stations re-add it.
-            }else if(proximity !==null && primary !== null && proximity.val().indexOf(primary.val()) === -1){
-                let proximityStationsVal = proximity.val();
-                proximityStationsVal.push(primary.val());
-                proximity.val(proximityStationsVal).trigger('change');
-                swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
-            }
-        }
     },
     'change .js-select-bottom-parameter'(event, template) {
         let parameter = $('#bottomPlotDataParameter').val();
@@ -500,29 +497,10 @@ Template.Admin.onRendered(function() {
         });
         updateDateSelectorRange();
 
-        if ( $.fn.select2 ) {
-            $('#proximityStations').select2({
-                theme: 'bootstrap',
-                "language": {
-                    "noResults": function(){
-                        return "Set the primary station first.";
-                    }
-                }
-            });
-            $('#stationParameters').select2({
-                theme:'bootstrap',
-                "language": {
-                    "noResults": function(){
-                        return "Set the primary station first.";
-                   }
-                }
-            });
-        }
         //Hide inputs for single station view.
-        $('#stationParameters').parent().parent().hide();
+        $('#singleStationParameters').hide();
         updateInputsWithProfile(Meteor.user().profile);
     }, 500);
-
 });
 
 Template.Admin.onDestroyed(() => {
