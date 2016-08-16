@@ -25,21 +25,22 @@ function getSubmitPayload(){
     let sliderData = Session.get('sliderData');
     let stationData = Data.findOne({title: primaryStation});
     let dateIndexes = findDateIndexes(moment(sliderData.from, 'X') , moment(sliderData.to, 'X'),  stationData.data[$('#topPlotDataParameter').val()].times);
-    console.log(dateIndexes);
-
     let payload = {
         "profile":{
             "stationViewMode": viewMode,
             "singleStationParameters": $('#stationParameters').val(),
             "primaryStation": primaryStation,
             "proximityStations": proximityStations,
-            "dataDuration": $('#dataDuration').val(),
             "refreshInterval": $('#refreshInterval').val(),
             "infoTickerText": $('#infoTickerText').val(),
             "timeZone": $('#timezoneSelect').val(),
             'topPlotDataParameter': $('#topPlotDataParameter').val(),
             'bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
             'parameterAlerts': parameterAlerts,
+            "dateSliderData":{
+                from: sliderData.from,
+                to:sliderData.to
+            },
             "fromTimeIndex": dateIndexes[0],
             "toTimeIndex": dateIndexes[1],
             'saveDate': new Date()
@@ -51,11 +52,9 @@ function getSubmitPayload(){
 
 function updateInputsWithProfile(userProfile){
     //Update inputs with the user's saved selections.
-    console.log(userProfile);
     $('#primaryStation').val(userProfile.primaryStation);
     $('#proximityStations').val(userProfile.proximityStations).change();
     $('#stationParameters').val(userProfile.singleStationParameters).change();
-    $('#dataDuration').val(userProfile.dataDuration);
     $('#refreshInterval').val(userProfile.refreshInterval);
     $('#topPlotDataParameter').val(userProfile.topPlotDataParameter);
     $('#bottomPlotDataParameter').val(userProfile.bottomPlotDataParameter);
@@ -63,8 +62,16 @@ function updateInputsWithProfile(userProfile){
     $('#midAlert').val(userProfile.parameterAlerts.midAlert);
     $('#highAlert').val(userProfile.parameterAlerts.highAlert);
     $('#paramUnit').val(userProfile.parameterAlerts.unit);
-
-
+    
+    //Update the date slider
+    updateDateSelectorRange();
+    if(userProfile.dateSliderData !== undefined){
+        let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
+        slider.update({
+            from: userProfile.dateSliderData.from,
+            to: userProfile.dateSliderData.to
+        });
+    }
     //If the user has been in single view mode, go to the input view for that mode.
     if(userProfile.stationViewMode==='single'){
         $('.singleStation').trigger('click');
@@ -90,10 +97,17 @@ function updateDateSelectorRange(){
     let primaryStation = $('#primaryStation').val();
     let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
     let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
-    slider.update({
+    if(topPlotDataParameter !== null){
+        slider.update({
         min: moment(timeRange.data[topPlotDataParameter].times[0]).format('X'),
-        max: moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X'),
-    });
+        max: moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X')
+        });
+    }else{
+        slider.update({
+            min: moment().subtract(7, 'days').format('X'),
+            max: moment().format('X')
+        })
+    }
 }
 
 //Find the index of the startDate and end date in the date array (if not possible the closest indexes will be returned)
@@ -269,7 +283,6 @@ Template.Admin.events({
             swal('Warning', 'Please select a preference to delete.', 'warning');
         }else{
             //Use the id attribute of the button to delete the preference from the db.
-            console.log(selectedButton.data('preference-id'));
             Meteor.call('server/removeUserPreference', selectedButton.data('preference-id'), function(err, res){
                 if(err){
                     console.log(err);
@@ -334,7 +347,6 @@ Template.Admin.events({
         //Make sure that the proximity and primary values are not null
         if(primary.val() !== null){
             if(proximity.val() === null){
-                console.log('null');
                 //If there is no proximity stations, set one to be the primary station.
                 proximity.val([primary.val()]);
                 proximity.trigger('change');
@@ -475,18 +487,17 @@ Template.Admin.onRendered(function() {
     });
 
     Meteor.setTimeout(() => {
+        //Make sure that the date range represents the available data
         $slider.ionRangeSlider({
             type: 'datetime',
-            min: +moment().subtract(1, "years").format("X"),
-            max: +moment().format("X"),
             prettify: function (num) {
                 return moment(num, "X").format("LL");
             },
+            onStart: saveTimeRange,
+            onUpdate: saveTimeRange,
             onFinish: saveTimeRange
 
         });
-
-        //Make sure that the date range represents the available data
         updateDateSelectorRange();
 
         if ( $.fn.select2 ) {
@@ -507,8 +518,6 @@ Template.Admin.onRendered(function() {
                 }
             });
         }
-        
-
         //Hide inputs for single station view.
         $('#stationParameters').parent().parent().hide();
         updateInputsWithProfile(Meteor.user().profile);

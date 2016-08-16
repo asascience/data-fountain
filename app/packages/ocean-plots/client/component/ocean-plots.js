@@ -166,8 +166,7 @@ Template.OceanPlots.helpers({
                         return row[index];
                     });
                 });
-                console.log(axisLabels);
-                console.log(plotData);
+
                 let ticker;
                 Tracker.nonreactive(() => {
                     ticker = Session.get('globalTicker');
@@ -288,6 +287,7 @@ Template.OceanPlots.helpers({
             
         })
 
+        let remappedStationData = [];
         //This expresses the data as a percentage of the max value.
         for(var i = 0; i < stationParameters.length; i++){
             let currentData = stationData[stationParameters[i]].values;
@@ -298,17 +298,33 @@ Template.OceanPlots.helpers({
             let remappedData = currentData.map(function(val){
                 return (val - min)/dif * (100);
             });
-            stationData[stationParameters[i]].values = remappedData;
+            remappedStationData[stationParameters[i]] = {};
+            remappedStationData[stationParameters[i]].values = remappedData;
         }
 
         //This will be a multidimensional array. Each index will contain an array that contains the timeseries for each station parameter.
         let plotData = [];
         
         //Populate the array so that the nth element is an array of the nth elements of the stationData arrays.
-        for(var i = 0; i < stationData[stationParameters[0]].values.length; i++){
+        for(var i = 0; i < remappedStationData[stationParameters[0]].values.length; i++){
             let subPlotData = [];
             for(var j = 0; j < stationParameters.length; j++){
-                subPlotData.push(stationData[stationParameters[j]].values[i]);    
+
+                //Set up a label to be displayed with the actual value
+                //(the bar will be the remapped form, the labels will be actual values) and units.
+                let sensorData = remappedStationData[stationParameters[j]];
+                let numericString
+                let currentValue = stationData[stationParameters[j]].values[i];
+                if(currentValue === undefined || currentValue === null){
+                    numericString = "NaN"
+                }else{                    
+                    numericString = (stationData[stationParameters[j]].values[i]).toFixed(1) + " " + stationData[stationParameters[j]].units
+                }
+                let dataPoint = {
+                    y:sensorData.values[i],
+                    name: numericString
+                }
+                subPlotData.push(dataPoint);    
             }
             plotData.push(subPlotData);
         }
@@ -317,7 +333,6 @@ Template.OceanPlots.helpers({
         Tracker.nonreactive(() => {
             ticker = Session.get('globalTicker');
         });
-        
         Template.instance().plotData = plotData;
 
         Meteor.defer(() => {
@@ -326,6 +341,7 @@ Template.OceanPlots.helpers({
                     chart: {
                         type: 'column',
                         animation: Highcharts.svg, // don't animate in old IE
+                        marginTop:30
                     },
                     legend: {
                         enabled: false
@@ -349,7 +365,10 @@ Template.OceanPlots.helpers({
                             enabled: true,
                             color: '#F58220',
                             align: 'center',
-                            format: '{point.y:.1f}', // one decimal
+                            format: '{point.name}', // one decimal
+                            inside: false,
+                            crop: false,
+                            overflow:'none',
                             y: -2, // 10 pixels down from the top
                             x: 2,
                             style: {
@@ -373,16 +392,11 @@ Template.OceanPlots.helpers({
                         },
                     },
                     yAxis: {
-                        title: {
-                            //text: `${plotDisplayName} (${units})`,
-                            style: {
-                                fontSize: '0.9vw',
-                                fontFamily: 'Verdana, sans-serif',
-                                fontWeight: 'bold'
-                            }
+                        labels:{
+                            enabled: false
                         },
-                        min: 0,
-                        max: 100
+                        min:0,
+                        max:100
                     },
                     plotOptions: {
                         column: {

@@ -106,7 +106,7 @@
                                     <option value="{{this}}">{{this}}</option>
                                     {{/each}}
                                 </select>
-                                <p class="control-explanation"></p>
+                                <p class="control-explanation">Nearby stations to display on the bottom bar plot.</p>
                             </div>
                         </div>
                         <!-- <div class="form&#45;group"> -->
@@ -128,12 +128,11 @@
                         </div>
                         <div class="form-group">
                             <label class="col-md-2 control-label">
-                                Data Duration (hours)
+                                Date Range
                             </label>
                             <div class="col-md-4">
                                 <input type="rangeslide"/>
-                                <input type="text" class="form-control form-control-rounded" id="dataDuration" value={{dataDuration}} />
-                                <p class="control-explanation">Set the duration of data until now.  Default is 48 hours, max time is limited by data availability.</p>
+                                <p class="control-explanation">Select a range of data to display. This parameter is limited by data availability</p>
                             </div>
                         </div>
                         <div class="form-group">
