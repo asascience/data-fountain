@@ -283,8 +283,22 @@ Template.OceanPlots.helpers({
         stationParameters.forEach(function(parameter){
             let currentData = stationData[parameter];
             let indexOfFirstTime = currentData.times.indexOf(firstTime);
+
+            if(indexOfFirstTime === -1){
+                //If the data doesnt have times as far back as the user selected.
+                //Find the index of the oldest time of the current data in the 
+                //time series selected and add empty values upto that point
+                let currentDataFirstTime = currentData.times[0];
+                let noDataCount = stationData[userProfile.topPlotDataParameter].times.indexOf(currentDataFirstTime)-userProfile.fromTimeIndex;
+                let emptyValues = []
+                for(let i=0; i < noDataCount; i++){
+                    //TODO: create an appropriate value for having no data.
+                    emptyValues.push("");
+                }
+                stationData[parameter].values = emptyValues.concat(currentData.values.slice(0, userProfile.toTimeIndex-noDataCount));
+            }else{
             stationData[parameter].values = currentData.values.slice(indexOfFirstTime, indexOfFirstTime + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
-            
+            }
         })
 
         let remappedStationData = [];
@@ -294,14 +308,12 @@ Template.OceanPlots.helpers({
             let max = Math.max.apply(Math, currentData);
             let min = Math.min.apply(Math, currentData);
             let dif = (max-min);
-            
             let remappedData = currentData.map(function(val){
                 return (val - min)/dif * (100);
             });
             remappedStationData[stationParameters[i]] = {};
             remappedStationData[stationParameters[i]].values = remappedData;
         }
-
         //This will be a multidimensional array. Each index will contain an array that contains the timeseries for each station parameter.
         let plotData = [];
         
@@ -315,7 +327,8 @@ Template.OceanPlots.helpers({
                 let sensorData = remappedStationData[stationParameters[j]];
                 let numericString
                 let currentValue = stationData[stationParameters[j]].values[i];
-                if(currentValue === undefined || currentValue === null){
+                if(currentValue === undefined || currentValue === null || typeof(currentValue) === 'string'){
+                    //TODO: create an appropriate value for having no data.
                     numericString = "NaN"
                 }else{                    
                     numericString = (stationData[stationParameters[j]].values[i]).toFixed(1) + " " + stationData[stationParameters[j]].units
