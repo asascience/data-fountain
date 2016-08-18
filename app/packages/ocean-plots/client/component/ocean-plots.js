@@ -126,7 +126,6 @@ Template.OceanPlots.helpers({
                 //Get the first date to display data for.
                 let firstTime = primaryStationData.data[userProfile.topPlotDataParameter].times[userProfile.fromTimeIndex];
 
-
                 let dataSet = [],
                     axisLabels = [],
                     times = primaryStationData.data.times,
@@ -144,8 +143,18 @@ Template.OceanPlots.helpers({
                     //Trim the data to the data available from the primaryStation.
                     let itemData = item.data[bottomPlotDataParameter];
                     let startIndex = item.data[bottomPlotDataParameter].times.indexOf(firstTime);
-                    itemData = itemData.values.slice(startIndex, startIndex + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
-
+                    if(startIndex === -1){
+                        let itemDataFirstTime = itemData.times[0];
+                        let noDataCount = primaryStationData.data[userProfile.topPlotDataParameter].times.indexOf(itemDataFirstTime)-userProfile.fromTimeIndex;
+                        let emptyValues = []
+                        for(let i=0; i < noDataCount; i++){
+                            //TODO: create an appropriate value for having no data.
+                            emptyValues.push("");
+                        }
+                        itemData = emptyValues.concat(itemData.values.slice(0, userProfile.toTimeIndex-noDataCount));
+                    }else{
+                        itemData = itemData.values.slice(startIndex, startIndex + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
+                    }
                     dataSet[originalIndex] = itemData;
                     axisLabels[originalIndex] = item.title;
                 });
@@ -159,26 +168,22 @@ Template.OceanPlots.helpers({
                 let minValue = flattenArray.reduce((min, array) => {
                     return min <= array ? min : array;
                 });
-
+                
                 // transpose the multidimensional array
                 let plotData = dataSet[0].map((datum, index) => {
                     return dataSet.map((row) => {
                         return row[index];
                     });
                 });
-
                 let ticker;
                 Tracker.nonreactive(() => {
                     ticker = Session.get('globalTicker');
                 });
-
                 //I wasted a stupid amount of time debugging after removing this. 
                 //This line allows the chart to reference the plotData while animating.
                 //Don't remove it.
                 Template.instance().plotData = plotData;
-
                 Meteor.defer(() => {
-                    console.log(plotData[ticker]);
                     try {
                         Highcharts.chart('bottomPlot', {
                             chart: {
@@ -278,7 +283,6 @@ Template.OceanPlots.helpers({
 
         let stationData = Data.findOne({'title':stationName}).data;
         let firstTime = stationData[userProfile.topPlotDataParameter].times[userProfile.fromTimeIndex];
-
         //Make sure that the data starts at the same time.
         stationParameters.forEach(function(parameter){
             let currentData = stationData[parameter];

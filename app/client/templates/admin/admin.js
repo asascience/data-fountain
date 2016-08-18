@@ -7,7 +7,8 @@ function getSubmitPayload(){
     let parameterAlerts = {
         lowAlert: $('#lowAlert').val(),
         midAlert: $('#midAlert').val(),
-        highAlert: $('#highAlert').val()
+        highAlert: $('#highAlert').val(),
+        unit: $('paramUnit').val()
     };
     let viewMode = $('.singleStation').hasClass('active') ? 'single' : 'multiple';
 
@@ -62,11 +63,15 @@ function updateInputsWithProfile(userProfile){
     $('#refreshInterval').val(userProfile.refreshInterval);
     $('#topPlotDataParameter').val(userProfile.topPlotDataParameter);
     $('#bottomPlotDataParameter').val(userProfile.bottomPlotDataParameter);
+    $('#infoTickerText').val(userProfile.infoTickerText);
     $('#lowAlert').val(userProfile.parameterAlerts.lowAlert);
     $('#midAlert').val(userProfile.parameterAlerts.midAlert);
     $('#highAlert').val(userProfile.parameterAlerts.highAlert);
-    $('#paramUnit').val(userProfile.parameterAlerts.unit);
-    
+    if(userProfile.parameterAlerts.unit === "" || userProfile.parameterAlerts.unit === undefined){
+        $('#paramUnit').val(Data.findOne({title:userProfile.primaryStation}).data[userProfile.topPlotDataParameter].units);
+    }else{
+        $('#paramUnit').val(userProfile.parameterAlerts.unit);
+    }
     //update proximityStations:
     $('.proximityStationCheckbox').prop('checked', false);
     userProfile.proximityStations.forEach(function(obj){
