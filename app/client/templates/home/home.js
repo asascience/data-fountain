@@ -29,13 +29,14 @@ Template.Home.helpers({
 /* Home: Lifecycle Hooks */
 /*****************************************************************************/
 Template.Home.onCreated(() => {
+    let userProfile = Meteor.user().profile;
     let _this = Template.instance();
-    let DURATION = Meteor.user().profile.dataDuration;
-    let TIMER_DELAY = Meteor.user().profile.refreshInterval * 1000;
-    let REFERENCE_STATION = Meteor.user().profile.primaryStation;
+    let DURATION = (userProfile.toTimeIndex - userProfile.fromTimeIndex) -1;
+    let TIMER_DELAY = userProfile.refreshInterval * 1000;
+    let REFERENCE_STATION = userProfile.primaryStation;
     let dataTimes = Data.findOne({title: REFERENCE_STATION}, {fields: {'data.times': 1}});
     dataTimes = dataTimes.data.times;
-    dataTimes = dataTimes.splice(dataTimes.length - Meteor.user().profile.dataDuration -1, dataTimes.length);
+    dataTimes = dataTimes.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex);
 
 
     // using var explicitly

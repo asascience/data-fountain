@@ -7,6 +7,6 @@
 # export ROOT_URL="http://localhost:3000"
 
 export DATA_FOUNTAIN_URL="http://dev.oceansmap.com/data-fountain"
-export FORECAST_API="ce5334236b325ad59cdf0d4ae4ed14cb"
+export FORECAST_API="30ff0831d323444ba01b79a9b94faa0e"
 export FORECAST_COORD_LAT=37.82
 export FORECAST_COORD_LON=-75.98

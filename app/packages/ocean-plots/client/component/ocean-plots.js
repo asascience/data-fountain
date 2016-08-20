@@ -23,8 +23,9 @@ Template.OceanPlots.helpers({
     },
     topPlot() {
         try {
-            let primaryStation = Meteor.user().profile.primaryStation,
-                topPlotDataParameter = Meteor.user().profile.topPlotDataParameter,
+            let userProfile = Meteor.user().profile
+            let primaryStation = userProfile.primaryStation,
+                topPlotDataParameter = userProfile.topPlotDataParameter,
                 primaryStationData = Data.findOne({title: primaryStation},
                                                   {fields: {data: 1, title: 1}}),
                 plotDisplayName = camelToRegular(topPlotDataParameter);
@@ -32,17 +33,22 @@ Template.OceanPlots.helpers({
             if (!primaryStationData.data) throw `No Data available for ${primaryStation}`;
             if (!primaryStationData.data.times) throw `No Time for ${primaryStation}`;
 
-            let times = primaryStationData.data.times,
+            let times = primaryStationData.data[topPlotDataParameter].times,
                 plotData = primaryStationData.data[topPlotDataParameter].values,
                 units = primaryStationData.data[topPlotDataParameter].units;
 
-            // normalize the range so we're only using available times for the requested duratiobn.,
-            times = times.splice(times.length - Meteor.user().profile.dataDuration -1, times.length);
 
+            // Update the times to only include the range between the to and from time selected with the date slider.
+            //times = times.splice(times.length - Meteor.user().profile.dataDuration -1, times.length);
+            times = times.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex);
             let dataSet = times.map((data, index) => {
-                return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN' || typeof(plotData[index]) === 'undefined') ? null : plotData[index]];
-            });
+                //Adjust the index so that only values from the date range selected are included.
+                let adjustedIndex = index + userProfile.fromTimeIndex;
 
+
+                return [moment(times[index]).unix()*1000, (plotData[adjustedIndex] === 'NaN' || typeof(plotData[adjustedIndex]) === 'undefined') ? null : plotData[adjustedIndex]];
+                //return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN' || typeof(plotData[index]) === 'undefined') ? null : plotData[index]];
+            });
             Meteor.defer(() => {
                 try {
                     Highcharts.chart('topPlot', {
@@ -108,13 +114,17 @@ Template.OceanPlots.helpers({
     },
     bottomPlot() {
         try {
-            let proximityStations = Meteor.user().profile.proximityStations,
-                primaryStation =  Meteor.user().profile.primaryStation;
+            let userProfile = Meteor.user().profile;
+            let proximityStations = userProfile.proximityStations,
+                primaryStation =  userProfile.primaryStation;
                 proximityStationsData = Data.find({'title': {$in: proximityStations}}, {fields: {data: 1, title: 1}}).fetch(),
-                bottomPlotDataParameter = Meteor.user().profile.bottomPlotDataParameter,
+                bottomPlotDataParameter = userProfile.bottomPlotDataParameter,
                 primaryStationData = Data.findOne({title: primaryStation},
                                                   {fields: {title: 1, data: 1}}),
                 plotDisplayName = camelToRegular(bottomPlotDataParameter);
+
+                //Get the first date to display data for.
+                let firstTime = primaryStationData.data[userProfile.topPlotDataParameter].times[userProfile.fromTimeIndex];
 
                 let dataSet = [],
                     axisLabels = [],
@@ -129,7 +139,23 @@ Template.OceanPlots.helpers({
 
                 proximityStationsData.forEach((item, index) => {
                     let originalIndex = proximityStations.indexOf(item.title);
-                    dataSet[originalIndex] = item.data[bottomPlotDataParameter].values;
+                    
+                    //Trim the data to the data available from the primaryStation.
+                    let itemData = item.data[bottomPlotDataParameter];
+                    let startIndex = item.data[bottomPlotDataParameter].times.indexOf(firstTime);
+                    if(startIndex === -1){
+                        let itemDataFirstTime = itemData.times[0];
+                        let noDataCount = primaryStationData.data[userProfile.topPlotDataParameter].times.indexOf(itemDataFirstTime)-userProfile.fromTimeIndex;
+                        let emptyValues = []
+                        for(let i=0; i < noDataCount; i++){
+                            //TODO: create an appropriate value for having no data.
+                            emptyValues.push("");
+                        }
+                        itemData = emptyValues.concat(itemData.values.slice(0, userProfile.toTimeIndex-noDataCount));
+                    }else{
+                        itemData = itemData.values.slice(startIndex, startIndex + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
+                    }
+                    dataSet[originalIndex] = itemData;
                     axisLabels[originalIndex] = item.title;
                 });
 
@@ -142,21 +168,21 @@ Template.OceanPlots.helpers({
                 let minValue = flattenArray.reduce((min, array) => {
                     return min <= array ? min : array;
                 });
-
+                
                 // transpose the multidimensional array
                 let plotData = dataSet[0].map((datum, index) => {
                     return dataSet.map((row) => {
                         return row[index];
                     });
                 });
-
                 let ticker;
                 Tracker.nonreactive(() => {
                     ticker = Session.get('globalTicker');
                 });
-
+                //I wasted a stupid amount of time debugging after removing this. 
+                //This line allows the chart to reference the plotData while animating.
+                //Don't remove it.
                 Template.instance().plotData = plotData;
-
                 Meteor.defer(() => {
                     try {
                         Highcharts.chart('bottomPlot', {
@@ -249,31 +275,73 @@ Template.OceanPlots.helpers({
         }
     },
     singleBottomPlot(){
-        let stationName = Meteor.user().profile.primaryStation;
-        let stationParameters = Meteor.user().profile.singleStationParameters;
+        let userProfile = Meteor.user().profile;
+        let stationName = userProfile.primaryStation;
+        let stationParameters = userProfile.singleStationParameters;
 
-        let stationData = Data.find({'title':stationName}).fetch()[0].data;
-        
+        let dataLength = userProfile.toTimeIndex - userProfile.fromTimeIndex;
+
+        let stationData = Data.findOne({'title':stationName}).data;
+        let firstTime = stationData[userProfile.topPlotDataParameter].times[userProfile.fromTimeIndex];
+        //Make sure that the data starts at the same time.
+        stationParameters.forEach(function(parameter){
+            let currentData = stationData[parameter];
+            let indexOfFirstTime = currentData.times.indexOf(firstTime);
+
+            if(indexOfFirstTime === -1){
+                //If the data doesnt have times as far back as the user selected.
+                //Find the index of the oldest time of the current data in the 
+                //time series selected and add empty values upto that point
+                let currentDataFirstTime = currentData.times[0];
+                let noDataCount = stationData[userProfile.topPlotDataParameter].times.indexOf(currentDataFirstTime)-userProfile.fromTimeIndex;
+                let emptyValues = []
+                for(let i=0; i < noDataCount; i++){
+                    //TODO: create an appropriate value for having no data.
+                    emptyValues.push("");
+                }
+                stationData[parameter].values = emptyValues.concat(currentData.values.slice(0, userProfile.toTimeIndex-noDataCount));
+            }else{
+            stationData[parameter].values = currentData.values.slice(indexOfFirstTime, indexOfFirstTime + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
+            }
+        })
+
+        let remappedStationData = [];
+        //This expresses the data as a percentage of the max value.
         for(var i = 0; i < stationParameters.length; i++){
             let currentData = stationData[stationParameters[i]].values;
             let max = Math.max.apply(Math, currentData);
             let min = Math.min.apply(Math, currentData);
             let dif = (max-min);
-            
             let remappedData = currentData.map(function(val){
                 return (val - min)/dif * (100);
             });
-            stationData[stationParameters[i]].values = remappedData;
+            remappedStationData[stationParameters[i]] = {};
+            remappedStationData[stationParameters[i]].values = remappedData;
         }
-
         //This will be a multidimensional array. Each index will contain an array that contains the timeseries for each station parameter.
         let plotData = [];
         
         //Populate the array so that the nth element is an array of the nth elements of the stationData arrays.
-        for(var i = 0; i < stationData[stationParameters[0]].values.length; i++){
+        for(var i = 0; i < remappedStationData[stationParameters[0]].values.length; i++){
             let subPlotData = [];
             for(var j = 0; j < stationParameters.length; j++){
-                subPlotData.push(stationData[stationParameters[j]].values[i]);    
+
+                //Set up a label to be displayed with the actual value
+                //(the bar will be the remapped form, the labels will be actual values) and units.
+                let sensorData = remappedStationData[stationParameters[j]];
+                let numericString
+                let currentValue = stationData[stationParameters[j]].values[i];
+                if(currentValue === undefined || currentValue === null || typeof(currentValue) === 'string'){
+                    //TODO: create an appropriate value for having no data.
+                    numericString = "NaN"
+                }else{                    
+                    numericString = (stationData[stationParameters[j]].values[i]).toFixed(1) + " " + stationData[stationParameters[j]].units
+                }
+                let dataPoint = {
+                    y:sensorData.values[i],
+                    name: numericString
+                }
+                subPlotData.push(dataPoint);    
             }
             plotData.push(subPlotData);
         }
@@ -282,15 +350,15 @@ Template.OceanPlots.helpers({
         Tracker.nonreactive(() => {
             ticker = Session.get('globalTicker');
         });
-        
         Template.instance().plotData = plotData;
-        
+
         Meteor.defer(() => {
             try {
                 Highcharts.chart('bottomPlot', {
                     chart: {
                         type: 'column',
                         animation: Highcharts.svg, // don't animate in old IE
+                        marginTop:30
                     },
                     legend: {
                         enabled: false
@@ -314,7 +382,10 @@ Template.OceanPlots.helpers({
                             enabled: true,
                             color: '#F58220',
                             align: 'center',
-                            format: '{point.y:.1f}', // one decimal
+                            format: '{point.name}', // one decimal
+                            inside: false,
+                            crop: false,
+                            overflow:'none',
                             y: -2, // 10 pixels down from the top
                             x: 2,
                             style: {
@@ -338,16 +409,11 @@ Template.OceanPlots.helpers({
                         },
                     },
                     yAxis: {
-                        title: {
-                            //text: `${plotDisplayName} (${units})`,
-                            style: {
-                                fontSize: '0.9vw',
-                                fontFamily: 'Verdana, sans-serif',
-                                fontWeight: 'bold'
-                            }
+                        labels:{
+                            enabled: false
                         },
-                        min: 0,
-                        max: 100
+                        min:0,
+                        max:100
                     },
                     plotOptions: {
                         column: {
