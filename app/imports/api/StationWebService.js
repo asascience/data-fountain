@@ -386,8 +386,7 @@ export default class StationWebService {
                 let weather = Weather.find({}).fetch();
 
                 let removeCount = Weather.remove({});
-                console.log(timeSet.length - 49);
-                let TEMPTimeSet = timeSet.splice(timeSet.length - 49, timeSet.length - 1);
+                let TEMPTimeSet = timeSet.splice(timeSet.length - 55, timeSet.length - 1);
                 for (let i=0; i < TEMPTimeSet.length -1; i++) {
                     let unixTime = moment(TEMPTimeSet[i]).unix();
                     let url = `https://api.forecast.io/forecast/${FORECAST_API}/${referenceStation.lat},${referenceStation.lon},${unixTime}`;
