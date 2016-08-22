@@ -89,7 +89,7 @@ Template.MetIcons.onCreated(() => {
     let primaryStation = Meteor.user().profile.primaryStation;
 
     let weatherCollection = Weather.find({}).fetch(),
-        dataCollection = Data.findOne({title: primaryStation}, {fields: {'title': 1, 'data.windSpeed': 1, 'data.airTemp': 1, 'data.windDirection': 1, 'data.times': 1}}),
+        dataCollection = Data.findOne({title: primaryStation}, {fields: {'title': 1, 'data.windSpeed': 1, 'data.airTemp': 1, 'data.windDirection': 1}}),
         weather = {};
 
     weather.ndbc = {};
@@ -108,8 +108,9 @@ Template.MetIcons.onCreated(() => {
         });
 
         Object.keys(dataCollection.data).forEach((item, index) => {
-            let ticker = Session.get('globalTicker');
-            weather.ndbc[item] = dataCollection.data[item].values[ticker];
+            let timer = Session.get('globalTimer');
+            let valueIndex = dataCollection.data[item].times.indexOf(timer);
+            weather.ndbc[item] = dataCollection.data[item].values[valueIndex];
         });
 
         weatherDep.changed();
