@@ -334,7 +334,6 @@ export default class StationWebService {
                         usgsBuoyData.data.forEach((datum) => {
                             if (moment(datum.utc).minute() === 0) {
                                 if (datum['69564_00065']) {
-                                    console.log(Object.keys(datum));
                                     gageHeight.push(parseFloat(datum['69564_00065']));
                                     times.push(datum['utc']);
                                 }
