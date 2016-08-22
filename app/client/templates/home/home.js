@@ -35,8 +35,6 @@ Template.Home.onCreated(() => {
     let TIMER_DELAY = userProfile.refreshInterval * 1000;
     let REFERENCE_STATION = userProfile.primaryStation;
     let dataTimes = Data.findOne({title: REFERENCE_STATION});
-    console.log(userProfile.topPlotDataParameter)
-    console.log(dataTimes.data);
     dataTimes = dataTimes.data[userProfile.topPlotDataParameter].times;
     dataTimes = dataTimes.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex);
 
