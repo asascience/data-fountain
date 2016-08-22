@@ -139,7 +139,7 @@ Template.OceanPlots.helpers({
 
                 proximityStationsData.forEach((item, index) => {
                     let originalIndex = proximityStations.indexOf(item.title);
-                    
+
                     //Trim the data to the data available from the primaryStation.
                     let itemData = item.data[bottomPlotDataParameter];
                     let startIndex = item.data[bottomPlotDataParameter].times.indexOf(firstTime);
@@ -168,7 +168,7 @@ Template.OceanPlots.helpers({
                 let minValue = flattenArray.reduce((min, array) => {
                     return min <= array ? min : array;
                 });
-                
+
                 // transpose the multidimensional array
                 let plotData = dataSet[0].map((datum, index) => {
                     return dataSet.map((row) => {
@@ -179,7 +179,7 @@ Template.OceanPlots.helpers({
                 Tracker.nonreactive(() => {
                     ticker = Session.get('globalTicker');
                 });
-                //I wasted a stupid amount of time debugging after removing this. 
+                //I wasted a stupid amount of time debugging after removing this.
                 //This line allows the chart to reference the plotData while animating.
                 //Don't remove it.
                 Template.instance().plotData = plotData;
@@ -290,7 +290,7 @@ Template.OceanPlots.helpers({
 
             if(indexOfFirstTime === -1){
                 //If the data doesnt have times as far back as the user selected.
-                //Find the index of the oldest time of the current data in the 
+                //Find the index of the oldest time of the current data in the
                 //time series selected and add empty values upto that point
                 let currentDataFirstTime = currentData.times[0];
                 let noDataCount = stationData[userProfile.topPlotDataParameter].times.indexOf(currentDataFirstTime)-userProfile.fromTimeIndex;
@@ -301,10 +301,13 @@ Template.OceanPlots.helpers({
                 }
                 stationData[parameter].values = emptyValues.concat(currentData.values.slice(0, userProfile.toTimeIndex-noDataCount));
             }else{
-            stationData[parameter].values = currentData.values.slice(indexOfFirstTime, indexOfFirstTime + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
+                stationData[parameter].values = currentData.values.slice(indexOfFirstTime, indexOfFirstTime + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
             }
         })
 
+        stationParamsDisplayName = stationParameters.map((item) => {
+            return camelToRegular(item);
+        });
         let remappedStationData = [];
         //This expresses the data as a percentage of the max value.
         for(var i = 0; i < stationParameters.length; i++){
@@ -320,7 +323,7 @@ Template.OceanPlots.helpers({
         }
         //This will be a multidimensional array. Each index will contain an array that contains the timeseries for each station parameter.
         let plotData = [];
-        
+
         //Populate the array so that the nth element is an array of the nth elements of the stationData arrays.
         for(var i = 0; i < remappedStationData[stationParameters[0]].values.length; i++){
             let subPlotData = [];
@@ -334,18 +337,18 @@ Template.OceanPlots.helpers({
                 if(currentValue === undefined || currentValue === null || typeof(currentValue) === 'string'){
                     //TODO: create an appropriate value for having no data.
                     numericString = "NaN"
-                }else{                    
+                }else{
                     numericString = (stationData[stationParameters[j]].values[i]).toFixed(1) + " " + stationData[stationParameters[j]].units
                 }
                 let dataPoint = {
                     y:sensorData.values[i],
                     name: numericString
                 }
-                subPlotData.push(dataPoint);    
+                subPlotData.push(dataPoint);
             }
             plotData.push(subPlotData);
         }
-        
+
         let ticker;
         Tracker.nonreactive(() => {
             ticker = Session.get('globalTicker');
@@ -397,7 +400,7 @@ Template.OceanPlots.helpers({
                         },
                     }],
                     xAxis: {
-                        categories: stationParameters,
+                        categories: stationParamsDisplayName,
                         labels: {
                             style: {
                                 fontSize: '0.9vw',
