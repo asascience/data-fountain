@@ -34,8 +34,8 @@ Template.Home.onCreated(() => {
     let DURATION = (userProfile.toTimeIndex - userProfile.fromTimeIndex) -1;
     let TIMER_DELAY = userProfile.refreshInterval * 1000;
     let REFERENCE_STATION = userProfile.primaryStation;
-    let dataTimes = Data.findOne({title: REFERENCE_STATION}, {fields: {'data.times': 1}});
-    dataTimes = dataTimes.data.times;
+    let dataTimes = Data.findOne({title: REFERENCE_STATION});
+    dataTimes = dataTimes.data[userProfile.topPlotDataParameter].times;
     dataTimes = dataTimes.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex);
 
 
