@@ -193,10 +193,12 @@ Template.Admin.events({
             $('.js-select-bottom-parameter').parent().parent().hide();
             $('#proximityStations').hide();
             $('#singleStationParameters').show();
+            $('.parameterAlertsDiv').hide();
         }else{
             $('#singleStationParameters').hide();
             $('.js-select-bottom-parameter').parent().parent().show();
             $('#proximityStations').show();
+            $('.parameterAlertsDiv').show();
         }
     },
 
