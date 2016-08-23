@@ -29,7 +29,6 @@ Template.OceanPlots.helpers({
                 primaryStationData = Data.findOne({title: primaryStation},
                                                   {fields: {data: 1, title: 1}}),
                 plotDisplayName = camelToRegular(topPlotDataParameter);
-
             if (!primaryStationData.data) throw `No Data available for ${primaryStation}`;
             if (!primaryStationData.data.times) throw `No Time for ${primaryStation}`;
 
@@ -47,8 +46,8 @@ Template.OceanPlots.helpers({
 
 
                 return [moment(times[index]).unix()*1000, (plotData[adjustedIndex] === 'NaN' || typeof(plotData[adjustedIndex]) === 'undefined') ? null : plotData[adjustedIndex]];
-                //return [moment(times[index]).unix()*1000, (plotData[index] === 'NaN' || typeof(plotData[index]) === 'undefined') ? null : plotData[index]];
             });
+
             Meteor.defer(() => {
                 try {
                     Highcharts.chart('topPlot', {
@@ -113,7 +112,7 @@ Template.OceanPlots.helpers({
         }
     },
     bottomPlot() {
-        try {
+        try{
             let userProfile = Meteor.user().profile;
             let proximityStations = userProfile.proximityStations,
                 primaryStation =  userProfile.primaryStation;
@@ -136,24 +135,36 @@ Template.OceanPlots.helpers({
                     dataSet.push(undefined);
                     axisLabels.push(undefined);
                 }
-
+                
+                //This loop makes sure that each station being graphed has the same data length by trimming/adding empty values
                 proximityStationsData.forEach((item, index) => {
                     let originalIndex = proximityStations.indexOf(item.title);
 
-                    //Trim the data to the data available from the primaryStation.
                     let itemData = item.data[bottomPlotDataParameter];
-                    let startIndex = item.data[bottomPlotDataParameter].times.indexOf(firstTime);
-                    if(startIndex === -1){
-                        let itemDataFirstTime = itemData.times[0];
-                        let noDataCount = primaryStationData.data[userProfile.topPlotDataParameter].times.indexOf(itemDataFirstTime)-userProfile.fromTimeIndex;
-                        let emptyValues = []
-                        for(let i=0; i < noDataCount; i++){
-                            //TODO: create an appropriate value for having no data.
+
+                    //If the station has no data return an appropriately sized array of empty values.
+                    if(itemData === null || itemData === undefined){
+                        let emptyValues = [];
+                        for(let i=0; i < (userProfile.toTimeIndex - userProfile.fromTimeIndex); i++){
                             emptyValues.push("");
                         }
-                        itemData = emptyValues.concat(itemData.values.slice(0, userProfile.toTimeIndex-noDataCount));
+                        itemData = emptyValues;
                     }else{
-                        itemData = itemData.values.slice(startIndex, startIndex + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
+                        //If needed prepend values to the data to fit the length.
+                        let startIndex = item.data[bottomPlotDataParameter].times.indexOf(firstTime);
+                        if(startIndex === -1){
+                            let itemDataFirstTime = itemData.times[0];
+                            let noDataCount = primaryStationData.data[userProfile.topPlotDataParameter].times.indexOf(itemDataFirstTime)-userProfile.fromTimeIndex;
+                            let emptyValues = []
+                            for(let i=0; i < noDataCount; i++){
+                                //TODO: create an appropriate value for having no data.
+                                emptyValues.push("");
+                            }
+                            itemData = emptyValues.concat(itemData.values.slice(0, userProfile.toTimeIndex-noDataCount));
+                        }else{
+                            //In this case the data set fills the entire range and we just need to slice it.
+                            itemData = itemData.values.slice(startIndex, startIndex + (userProfile.toTimeIndex - userProfile.fromTimeIndex));
+                        }
                     }
                     dataSet[originalIndex] = itemData;
                     axisLabels[originalIndex] = item.title;
@@ -179,6 +190,7 @@ Template.OceanPlots.helpers({
                 Tracker.nonreactive(() => {
                     ticker = Session.get('globalTicker');
                 });
+
                 //I wasted a stupid amount of time debugging after removing this.
                 //This line allows the chart to reference the plotData while animating.
                 //Don't remove it.
@@ -458,7 +470,6 @@ Template.OceanPlots.helpers({
 /*****************************************************************************/
 Template.OceanPlots.onCreated(function() {
 });
-
 Template.OceanPlots.onRendered(function() {
     try {
         let _this = Blaze.Template.instance();

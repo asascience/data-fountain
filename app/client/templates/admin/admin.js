@@ -166,18 +166,7 @@ Template.Admin.events({
             if(err){
                 console.log(err);
             }else{
-                //Show a success Message.
-                swal({
-                    title: 'Saved!',
-                    text: 'Your settings have been saved, go to the Data Fountain? To get back here, press Ctrl-D.',
-                    type: 'success',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, please!',
-                    cancelButtonText: 'No thanks.',
-                    closeOnConfirm: true
-                }, () => {
-                    Router.go('/');
-                });
+                Router.go('/');
             }
         });
     },

@@ -28,9 +28,8 @@ Template.Home.helpers({
 /*****************************************************************************/
 /* Home: Lifecycle Hooks */
 /*****************************************************************************/
-Template.Home.onCreated(() => {
+Template.Home.onCreated(function(){
     let userProfile = Meteor.user().profile;
-    let _this = Template.instance();
     let DURATION = (userProfile.toTimeIndex - userProfile.fromTimeIndex) -1;
     let TIMER_DELAY = userProfile.refreshInterval * 1000;
     let REFERENCE_STATION = userProfile.primaryStation;
@@ -53,7 +52,10 @@ Template.Home.onCreated(() => {
     }
 
     let index = indexGen();
-    this.runTimer = Meteor.setInterval(() => {
+    this.timerDelay = TIMER_DELAY;
+
+    //Function called to tick the timer one forward.
+    this.runTimer = function(){
         let currIndex = index.next().value;
         time = dataTimes[currIndex];
         Session.set('globalTimer', time);
@@ -73,22 +75,44 @@ Template.Home.onCreated(() => {
         //     });
         //
         // }
-    }, TIMER_DELAY);
+    };
 
-
+    //Start the ticker.
+    this.stopTimerHandle = Meteor.setInterval(() => {
+        this.runTimer();
+    }, this.timerDelay);
 
 });
 
-Template.Home.onRendered(() => {
-    function KeyPress(e) {
+Template.Home.onRendered(function(){
+    this.paused = false;
+
+    let keyPress = (() => {
+        //If the user presses ctrl + d bring them back to the admin page.
         var evtobj = window.event? event : e
-        if (evtobj.keyCode == 68 && evtobj.ctrlKey) Router.go('/admin');
-    }
+        if (evtobj.keyCode == 68 && evtobj.ctrlKey){ 
+            Router.go('/admin');
 
-    document.onkeydown = KeyPress;
+        //If the user presses space toggle the ticker.
+        }else if(evtobj.keyCode === 32){
+            if(this.paused === false){
+                //Stop the ticker.
+                clearInterval(this.stopTimerHandle);
+            }else{
+                //Continue ticking. Do an initial tick to indicate that the ticker has been unpaused.
+                this.runTimer();
+                this.stopTimerHandle = Meteor.setInterval(() => {
+                    this.runTimer();
+                }, this.timerDelay);
+            }
+            //toggle the template paused.
+            this.paused = !this.paused;
+        }
+    });
+    document.onkeydown = keyPress;
 
 });
 
-Template.Home.onDestroyed(() => {
-    clearInterval(this.runTimer);
+Template.Home.onDestroyed(function(){
+    clearInterval(this.stopTimerHandle);
 });
