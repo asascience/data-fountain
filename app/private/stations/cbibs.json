@@ -129,8 +129,8 @@
         "sea_water_temperature"
       ],
       "title": "Upper Potomac",
-      "usgs": "data.oceansmap.com:01484938",
-      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01484938/01484938.ncml",
+      "usgs": "data.oceansmap.com:01580620",
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
       "usgs_parameters": [
         "Gage_height"
       ]
@@ -197,8 +197,8 @@
         "sea_water_temperature"
       ],
       "title": "Potomac",
-      "usgs": "data.oceansmap.com:01484938",
-      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01484938/01484938.ncml",
+      "usgs": "data.oceansmap.com:01580620",
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
       "usgs_parameters": [
         "Gage_height"
       ]
@@ -231,8 +231,8 @@
         "sea_water_temperature"
       ],
       "title": "Stingray Point",
-      "usgs": "data.oceansmap.com:01484812",
-      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01484812/01484812.ncml",
+      "usgs": "data.oceansmap.com:01580620",
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
       "usgs_parameters": [
         "Gage_height"
       ]
@@ -265,8 +265,8 @@
         "sea_water_temperature"
       ],
       "title": "Jamestown",
-      "usgs": "data.oceansmap.com:02042770",
-      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/02042770/02042770.ncml",
+      "usgs": "data.oceansmap.com:01580620",
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
       "usgs_parameters": [
         "Gage_height"
       ]
@@ -299,8 +299,8 @@
         "sea_water_temperature"
       ],
       "title": "First Landing",
-      "usgs": "data.oceansmap.com:365423076051300",
-      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/365423076051300/365423076051300.ncml",
+      "usgs": "data.oceansmap.com:01580620",
+      "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
       "usgs_parameters": [
         "Gage_height"
       ]

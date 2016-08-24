@@ -316,6 +316,9 @@ export default class StationWebService {
                         data.data.windDirection.times = times;
                         data.data.windSpeed.times = times;
                         data.data.airTemp.times = times;
+                        if (!data.data.times) {
+                            data.data.times = times;
+                        }
                         Data.upsert({id: data.id}, data);
                     }
                 });
