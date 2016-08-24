@@ -2,6 +2,15 @@
 /* BuoyMap: Event Handlers */
 /*****************************************************************************/
 Template.BuoyMap.events({
+    'click #legendTable tr'(event, target){
+
+        //When the legend is clicked, update the user's primary station to the one clicked.
+
+        let stationName = $(event.target).text() || $(event.target).find('span').text();
+        Meteor.users.update(Meteor.userId(), {
+            $set: {'profile.primaryStation': stationName}
+        }, {multi:true});
+    }
 });
 
 /*****************************************************************************/
@@ -13,15 +22,14 @@ Template.BuoyMap.helpers({
 /*****************************************************************************/
 /* BuoyMap: Lifecycle Hooks */
 /*****************************************************************************/
-Template.BuoyMap.onCreated(() => {
+Template.BuoyMap.onCreated(function(){
 });
 
-Template.BuoyMap.onRendered(() => {
+Template.BuoyMap.onRendered(function(){
     try {
         let proximityStations = Meteor.user().profile.proximityStations;
         let stations = Stations.find({'title': {$in: proximityStations}}).fetch(),
             primaryStation = Stations.findOne({title: Meteor.user().profile.primaryStation});
-            console.log(primaryStation);
 
         //Map Initialization
         let map = L.map('map').setView([38.2,-76.2574], 8);
@@ -95,5 +103,5 @@ Template.BuoyMap.onRendered(() => {
 
 
 
-Template.BuoyMap.onDestroyed(() => {
+Template.BuoyMap.onDestroyed(function(){
 });
