@@ -15,3 +15,8 @@ html{
 .control-explanation{
     color:#a9a9a9;
 }
+.verticalCenter {
+    float: none;
+    display: inline-block;
+    vertical-align: middle;
+}                                    

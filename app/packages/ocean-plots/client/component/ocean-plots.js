@@ -191,6 +191,28 @@ Template.OceanPlots.helpers({
                     ticker = Session.get('globalTicker');
                 });
 
+                //Flip the color bars if needed.
+
+                let colorZones = [{
+                    value: userProfile.parameterAlerts.lowAlert,
+                    color: 'red'
+                }, {
+                    value: userProfile.parameterAlerts.midAlert,
+                    color: 'yellow'
+                },
+                {
+                    color: 'green'
+                },
+                {
+                    color:'green'
+                }];
+                
+                if(userProfile.parameterAlerts.flippedColors === true){
+                    colorZones[0].color = 'green';
+                    colorZones[1].color = 'yellow';
+                    colorZones[2].color = 'red';
+
+                }
                 //I wasted a stupid amount of time debugging after removing this.
                 //This line allows the chart to reference the plotData while animating.
                 //Don't remove it.
@@ -261,20 +283,7 @@ Template.OceanPlots.helpers({
                             },
                             plotOptions: {
                                 column: {
-                                    zones: [{
-                                        value: Meteor.user().profile.parameterAlerts.lowAlert,
-                                        color: 'red'
-                                    }, {
-                                        value: Meteor.user().profile.parameterAlerts.midAlert,
-                                        color: 'yellow'
-                                    },
-                                    {
-                                        value: Meteor.user().profile.parameterAlerts.highAlert,
-                                        color: 'green'
-                                    },
-                                    {
-                                        color: 'green'
-                                    }],
+                                    zones: colorZones
                                 }
                             }
                         });
@@ -433,17 +442,6 @@ Template.OceanPlots.helpers({
                     plotOptions: {
                         column: {
                             zones: [{
-                                value: Meteor.user().profile.parameterAlerts.lowAlert,
-                                color: 'red'
-                            }, {
-                                value: Meteor.user().profile.parameterAlerts.midAlert,
-                                color: 'yellow'
-                            },
-                            {
-                                value: Meteor.user().profile.parameterAlerts.highAlert,
-                                color: 'green'
-                            },
-                            {
                                 color: 'green'
                             }],
                         }

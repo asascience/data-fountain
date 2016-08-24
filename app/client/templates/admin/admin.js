@@ -3,24 +3,31 @@ import HUMPS from 'humps';
 
 //Checks the fields and generates an object represenatative of the user's choices.
 function getSubmitPayload(){
+    
 
-    let parameterAlerts = {
-        lowAlert: $('#lowAlert').val(),
-        midAlert: $('#midAlert').val(),
-        highAlert: $('#highAlert').val(),
-        unit: $('paramUnit').val()
-    };
     let viewMode = $('.singleStation').hasClass('active') ? 'single' : 'multiple';
-
-    //Make sure that the proximity stations contains the primary station.
-    let primaryStation = $('#primaryStation').val();
-    let proximityStations = [];
-    $('.proximityStationCheckbox').each(function(obj){
-        if($(this).prop('checked') === true)proximityStations.push($(this).prop('id')); 
-    });
-
-    if(proximityStations.indexOf(primaryStation) === -1)proximityStations.push(primaryStation);
    
+    let primaryStation = $('#primaryStation').val();
+    let parameterAlerts = {}
+    let proximityStations = [];
+    if(viewMode === 'multiple'){
+        parameterAlerts = {
+            lowAlert: $('#lowAlert').val(),
+            midAlert: $('#midAlert').val(),
+            unit: $('#paramUnit').val(),
+            flippedColors:$('#parameterAlertsSwitch').prop('checked')
+        };
+
+
+        $('.proximityStationCheckbox').each(function(obj){
+            if($(this).prop('checked') === true)proximityStations.push($(this).prop('id')); 
+        });
+
+       
+    }
+    //Make sure that the proximity stations contains the primary station.
+    if(proximityStations.indexOf(primaryStation) === -1)proximityStations.push(primaryStation);
+
     //Get the stationParameters
     let stationParameters = [];
     $('.stationParameterCheckbox').each(function(){
@@ -66,7 +73,8 @@ function updateInputsWithProfile(userProfile){
     $('#infoTickerText').val(userProfile.infoTickerText);
     $('#lowAlert').val(userProfile.parameterAlerts.lowAlert);
     $('#midAlert').val(userProfile.parameterAlerts.midAlert);
-    $('#highAlert').val(userProfile.parameterAlerts.highAlert);
+    $('#paramUnit').val(userProfile.parameterAlerts.unit);
+    $('#parameterAlertsSwitch').prop('checked', userProfile.parameterAlerts.flippedColors);
     if(userProfile.parameterAlerts.unit === "" || userProfile.parameterAlerts.unit === undefined){
         $('#paramUnit').val(Data.findOne({title:userProfile.primaryStation}).data[userProfile.topPlotDataParameter].units);
     }else{
@@ -360,7 +368,6 @@ Template.Admin.events({
 
         //Add the primary station to the proximity stations as well.
         let primaryStationValue = $('#primaryStation').val();
-        console.log(primaryStationValue);
         $('.proximityStationCheckbox[id=\'' + primaryStationValue + '\']').attr('checked', true); 
         
         $('.js-top-plot-param').trigger('change');
