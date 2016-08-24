@@ -2,7 +2,7 @@
 /* BuoyMap: Event Handlers */
 /*****************************************************************************/
 Template.BuoyMap.events({
-    'click #legendTable tr'(event, target){
+    /*'click #legendTable tr'(event, target){
 
         //When the legend is clicked, update the user's primary station to the one clicked.
 
@@ -10,7 +10,7 @@ Template.BuoyMap.events({
         Meteor.users.update(Meteor.userId(), {
             $set: {'profile.primaryStation': stationName}
         }, {multi:true});
-    }
+    }*/
 });
 
 /*****************************************************************************/
