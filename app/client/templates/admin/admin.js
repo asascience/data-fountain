@@ -160,7 +160,7 @@ Template.Admin.events({
 
         //Get the payload and make a deep copy so the two don't interact.
         let originalPayload = getSubmitPayload();
-        let payload =jQuery.extend(true, {}, originalPayload);
+        let payload =Object.assign({}, originalPayload);
 
         //Remove the last auto generated preference.
         Meteor.call('server/getUserPreferences', function(err, res){
