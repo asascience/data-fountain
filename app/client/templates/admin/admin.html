@@ -69,25 +69,27 @@
                         </div>
                     </div>
                     <div class="form-group">
-                       <div class="row parameterAlertsDiv">
-                            <label class="col-md-2 control-label" for="paramAlerts">
-                                Parameter Alerts
-                            </label>
-                            <div class="col-md-1">
-                                <input id="lowAlert" type="text" class="form-control form-control-rounded" placeholder="Low"/>
+                        <div class="parameterAlertsDiv">
+                            <div class="row">
+                                <label class="col-md-2 control-label" for="paramAlerts">
+                                    Parameter Alerts
+                                </label>
+                                <div class="col-md-1">
+                                    <input id="lowAlert" type="text" class="form-control form-control-rounded" placeholder="Low"/>
+                                </div>
+                                <div class="col-md-1">
+                                    <input id="midAlert" type="text" class="form-control form-control-rounded" placeholder="Mid"/>
+                                </div>
+                                <div class="col-md-1">
+                                    <input id="paramUnit" type="text" class="form-control form-control-rounded" disabled/>
+                                </div>
+                                <div class="col-md-1 verticalCenter">
+                                    <label>Flip Colors: <input type="checkbox" id="parameterAlertsSwitch"></label>
+                                </div>
                             </div>
-                            <div class="col-md-1">
-                                <input id="midAlert" type="text" class="form-control form-control-rounded" placeholder="Mid"/>
+                            <div class="row col-md-4 col-md-offset-2">
+                                <p class="control-explanation">Decide which ranges should be of a certain color on the bottom plot.</p>
                             </div>
-                            <div class="col-md-1">
-                                <input id="highAlert" type="text" class="form-control form-control-rounded" placeholder="High"/>
-                            </div>
-                            <div class="col-md-1">
-                                <input id="paramUnit" type="text" class="form-control form-control-rounded" disabled/>
-                            </div>
-                        </div>
-                        <div class="row col-md-4 col-md-offset-2">
-                            <p class="control-explanation">Decide which ranges should be of a certain color on the bottom plot.</p>
                         </div>
                     </div>
                     <div class="form-group" id="singleStationParameters">
