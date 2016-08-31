@@ -2,7 +2,7 @@
 <div class="admin">
     {{> Header }}
     <div class="panel panel-default">
-        <div CLASS="panel-body">
+        <div class="panel-body">
             <!-- You only need this form and the form-basic.css -->
             <form class="form-horizontal" method="post" action="#">
                 <fieldset>
@@ -35,7 +35,7 @@
                         </label>
                         <div class="col-md-4">
                             <select class="category-select form-control js-select-primary" id="primaryStation">
-                                {{#each stationsList}}
+                                {{#each primaryStationOptions}}
                                 <option value="{{this}}">{{this}}</option>
                                 {{/each}}
                             </select>
@@ -49,7 +49,7 @@
                         <div class="col-md-4">
                             <select class="category-select form-control js-top-plot-param" id="topPlotDataParameter">
                                 {{#each dataParams}}
-                                <option value="{{this.name}}">{{this.uiName}}</option>
+                                <option value="{{this}}">{{this}}</option>
                                 {{/each}}
                             </select>
                             <p class="control-explanation">Select a data paramter.</p>
@@ -62,7 +62,7 @@
                         <div class="col-md-4">
                             <select class="category-select form-control js-select-bottom-parameter" id="bottomPlotDataParameter">
                                 {{#each dataParams}}
-                                <option value="{{this.name}}">{{this.uiName}}</option>
+                                <option value="{{this}}">{{this}}</option>
                                 {{/each}}
                             </select>
                             <p class="control-explanation">Select a bar plot parameter.</p>
@@ -71,8 +71,7 @@
                     <div class="form-group">
                         <div class="parameterAlertsDiv">
                             <div class="row">
-                                <input type="checkbox">Enabled
-                        <label class="col-md-2 control-label" for="paramAlerts">
+                                <label class="col-md-2 control-label" for="paramAlerts">
                                     Parameter Alerts
                                 </label>
                                 <div class="col-md-1">
@@ -97,7 +96,7 @@
                         <label class="col-md-2 control-label">Station Parameters</label>
                         <div class="col-md-4">
                             {{#each singleStationParameters}}
-                            <label><input type="checkbox" class="stationParameterCheckbox" id="{{this.name}}">{{this.uiName}}</label>
+                            <label><input type="checkbox" class="stationParameterCheckbox" id="{{this}}">{{this}}</label>
                             {{/each}}
                             <p class="control-explanation">Select parameters to graph for a single station.</p>
                         </div>
@@ -107,10 +106,8 @@
                             Proximity Stations
                         </label>
                         <div class="col-md-4">
-                            {{#each stationsList}}
-                            <div class="row">
-                                <label><input type="checkbox" class="proximityStationCheckbox" id="{{this}}">{{this}}</label>
-                            </div>
+                            {{#each proximityStationOptions}}
+                            <label><input type="checkbox" class="proximityStationCheckbox" id="{{this}}">{{this}}</label>
                             {{/each}}
                             <p class="control-explanation">Nearby stations to display on the bottom bar plot.</p>
                         </div>
@@ -146,12 +143,7 @@
                             Ticker Marquee
                         </label>
                         <div class="col-md-4">
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <input type="checkbox" aria-label="..." id="tickerEnabledInput"><span>  enabled</span>
-                                </span>
-                                <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}}>
-                            </div>
+                            <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}} />
                             <p class="control-explanation">Select info ticker label.</p>
                         </div>
                     </div>

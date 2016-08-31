@@ -39,23 +39,24 @@ function getSubmitPayload(){
     let stationData = Data.findOne({title: primaryStation});
     let dateIndexes = findDateIndexes(moment(sliderData.from, 'X') , moment(sliderData.to, 'X'),  stationData.data[$('#topPlotDataParameter').val()].times);
     let payload = {
-        "profile":{
-            "stationViewMode": viewMode,
-            "singleStationParameters": stationParameters,
-            "primaryStation": primaryStation,
-            "proximityStations": proximityStations,
-            "refreshInterval": $('#refreshInterval').val(),
-            "infoTickerText": $('#infoTickerText').val(),
-            "timeZone": $('#timezoneSelect').val(),
+        'profile':{
+            'stationViewMode': viewMode,
+            'singleStationParameters': stationParameters,
+            'primaryStation': primaryStation,
+            'proximityStations': proximityStations,
+            'refreshInterval': $('#refreshInterval').val(),
+            'infoTickerText': $('#infoTickerText').val(),
+            'timeZone': $('#timezoneSelect').val(),
             'topPlotDataParameter': $('#topPlotDataParameter').val(),
             'bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
             'parameterAlerts': parameterAlerts,
-            "dateSliderData":{
+            'dateSliderData':{
                 from: sliderData.from,
                 to:sliderData.to
             },
-            "fromTimeIndex": dateIndexes[0],
-            "toTimeIndex": dateIndexes[1],
+            'tickerEnabled':$('#tickerEnabledInput').prop('checked'),
+            'fromTimeIndex': dateIndexes[0],
+            'toTimeIndex': dateIndexes[1],
             'saveDate': new Date()
         }
     };
@@ -75,11 +76,13 @@ function updateInputsWithProfile(userProfile){
     $('#midAlert').val(userProfile.parameterAlerts.midAlert);
     $('#paramUnit').val(userProfile.parameterAlerts.unit);
     $('#parameterAlertsSwitch').prop('checked', userProfile.parameterAlerts.flippedColors);
-    if(userProfile.parameterAlerts.unit === "" || userProfile.parameterAlerts.unit === undefined){
+    if(userProfile.parameterAlerts.unit === '' || userProfile.parameterAlerts.unit === undefined){
         $('#paramUnit').val(Data.findOne({title:userProfile.primaryStation}).data[userProfile.topPlotDataParameter].units);
     }else{
         $('#paramUnit').val(userProfile.parameterAlerts.unit);
     }
+    $('#tickerEnabledInput').prop('checked', userProfile.tickerEnabled);
+
     //update proximityStations:
     $('.proximityStationCheckbox').prop('checked', false);
     userProfile.proximityStations.forEach(function(obj){
@@ -124,9 +127,10 @@ function fetchUserPreferences(){
 function updateDateSelectorRange(){ 
     let topPlotDataParameter = $('#topPlotDataParameter').val();
     let primaryStation = $('#primaryStation').val();
-    let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
-    let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
-    if(topPlotDataParameter !== null){
+    if(topPlotDataParameter !== null && primaryStation != null){
+        let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
+        let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
+
         slider.update({
         min: moment(timeRange.data[topPlotDataParameter].times[0]).format('X'),
         max: moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X')
@@ -156,7 +160,10 @@ function findDateIndexes(startDate, endDate, dateArray){
     }
     return [startIndex, endIndex];
 }
-
+function camelToRegular(string) {
+    return string.replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (str) => { return str.toUpperCase(); })
+}
 /*****************************************************************************/
 /* Admin: Event Handlers */
 /*****************************************************************************/
@@ -215,10 +222,10 @@ Template.Admin.events({
     'click .stationDataViewOption'(event, template){
 
         //Change which button is active
-        $('.stationDataViewOption').removeClass("active");
+        $('.stationDataViewOption').removeClass('active');
         $(event.target).addClass('active');
         //Update the inputs
-        if($(event.target).hasClass("singleStation")){
+        if($(event.target).hasClass('singleStation')){
             //Get rid of the Proximity Stations, Bar Plot and Line Plot Inputs
             $('.js-select-bottom-parameter').parent().parent().hide();
             $('#proximityStations').hide();
@@ -235,7 +242,7 @@ Template.Admin.events({
     'click .preferenceSelectionButton'(event, template){
         let preferenceId = $(event.target).data('preference-id');
         let clickedPreference;
-        Session.get("DataPreferences").forEach(function(obj){
+        Session.get('DataPreferences').forEach(function(obj){
             if(obj._id === preferenceId){
                 clickedPreference = obj;
             }
@@ -248,7 +255,7 @@ Template.Admin.events({
                 $set: {'profile': clickedPreference.profile}
             }, {multi: true});
         }else{
-            console.log("Could not load preference");
+            console.log('Could not load preference');
         }
     },
 
@@ -271,7 +278,7 @@ Template.Admin.events({
         if(duplicateName === true){
             //Show a warning for duplicate name.
             swal('Warning', 'The preference name provided has already been used.');
-        }else if(preferenceName === null || preferenceName === ""){
+        }else if(preferenceName === null || preferenceName === ''){
             swal('Warning', 'You must provide a name for the saved preferences.', 'warning');
         }else{
 
@@ -282,7 +289,7 @@ Template.Admin.events({
 
             Meteor.call('server/addUserPreference', payload, function(err, res){
                 if(err){
-                    console.log("Error encountered while attempting to call server/addUserPreference. Error: " +err);
+                    console.log('Error encountered while attempting to call server/addUserPreference. Error: ' +err);
                 }else{
 
                     //Update the Session
@@ -309,7 +316,7 @@ Template.Admin.events({
                         closeOnConfirm: true
                     });
                     //Update the preferences so that the new option apears on the load preferences modal.
-                    Session.set("CurrentPreference", payload);
+                    Session.set('CurrentPreference', payload);
                     //fetchUserPreferences();
                 }
             });
@@ -362,7 +369,7 @@ Template.Admin.events({
     'change .js-select-primary'(event, template) {
         Meteor.users.update(Meteor.userId(), {
             $set: {
-                "profile.primaryStation": $('#primaryStation').val(),
+                'profile.primaryStation': $('#primaryStation').val(),
             }
         });
 
@@ -376,7 +383,7 @@ Template.Admin.events({
         //Don't allow the user to remove the primary station from the proximity stations.
         if($(event.target).attr('id') === $('#primaryStation').val()){
             $(event.target).prop('checked', true);
-            swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
+            swal('Warning', 'You\'ve selected that station as a primary station.', 'warning');
         }
     },
     'change .js-top-plot-param'(event, template) {
@@ -385,10 +392,25 @@ Template.Admin.events({
                 let topPlotDataParameter = $('#topPlotDataParameter').val();
                 Meteor.users.update(Meteor.userId(), {
                     $set: {
-                        "profile.topPlotDataParameter": topPlotDataParameter,
+                        'profile.topPlotDataParameter': topPlotDataParameter,
                     }
                 });
                 updateDateSelectorRange();
+
+                //Make sure that all enabled poximity stations have the data parameter selected.
+                let foundData = Data.find({['data.' + topPlotDataParameter]:{$exists:true}}).fetch();
+                if(foundData.length < Data.count){
+                    $('.proximityStationCheckbox').each(function(obj){
+                        let proximityTitle = $(obj).prop('id')
+                        let stationFoundInList = false;
+                        foundData.forEach(function(data){
+                            if(data.title === proximityTitle)stationFoundInList = true;    
+                        });
+                        if(stationFoundInList === false){
+                            $(obj).prop('disabled', true);    
+                        }
+                    });    
+                }
             } catch(e) {
                 console.log(e);
             }
@@ -413,17 +435,7 @@ Template.Admin.events({
 /* Admin: Helpers */
 /*****************************************************************************/
 Template.Admin.helpers({
-    primaryStationOptions: function(){
-        let listOfStations = Stations.find().fetch(),
-            stationNames = [];
-
-        _.each(listOfStations, (obj) => {
-            stationNames.push(obj.title);
-        });
-
-        return stationNames;
-    },
-    proximityStationOptions: function(){
+    stationsList: function(){
         try {
 
             let listOfStations = Stations.find({}).fetch(),
@@ -432,21 +444,44 @@ Template.Admin.helpers({
             _.each(listOfStations, (obj) => {
                 stationNames.push(obj.title);
             });
-
-            return stationNames;
+            return stationNames.sort();
         } catch(e) {
             console.log(e);
         }
+    },
+    singleStationParameters(){
+        let userPrimaryStation = Meteor.user().profile.primaryStation;
+        if(userPrimaryStation === null || userPrimaryStation === ''){
+            return [];
+        }
+
+        let keys = Object.keys(Data.findOne({title:userPrimaryStation}).data);
+
+        //Remove 'times' from the keys array.
+        var index = keys.indexOf('times');
+        if (index !== -1)keys.splice(index, 1);
+        keys.sort();
+
+        let parameterList = [];
+        keys.forEach(function(obj){
+            parameterList.push({'name' : obj, 'uiName': camelToRegular(obj)});
+        });
+        return parameterList;
     },
     dataParams() {
         try {
             if (Meteor.user() && Meteor.user().profile.primaryStation) {
                 let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation}),
-                    dataParams = Object.keys(dataSource.data);
+                    parameterNames = Object.keys(dataSource.data);
 
-                let timesIndex = dataParams.indexOf('times');
-                if (timesIndex > -1) dataParams.splice(timesIndex, 1);
-
+                let timesIndex = parameterNames.indexOf('times');
+                if (timesIndex > -1) parameterNames.splice(timesIndex, 1);
+                parameterNames.sort();
+                let dataParams = [];
+                parameterNames.forEach(function(obj){
+                    let object = {'name' : obj, 'uiName': camelToRegular(obj)};
+                    dataParams.push(object);
+                });
                 return dataParams;
             }
         } catch (exception) {
@@ -485,19 +520,6 @@ Template.Admin.helpers({
     },
     infoTickerText() {
         return Meteor.user().profile.infoTickerText;
-    },
-    singleStationParameters(){
-        let userPrimaryStation = Meteor.user().profile.primaryStation;
-        if(userPrimaryStation === null || userPrimaryStation === ""){
-            return [];
-        }
-
-        let keys = Object.keys(Data.findOne({title:userPrimaryStation}).data);
-
-        //Remove 'times' from the keys array.
-        var index = keys.indexOf("times");
-        if (index !== -1)keys.splice(index, 1);
-        return keys;
     }
 });
 
@@ -524,7 +546,7 @@ Template.Admin.onRendered(function() {
         $slider.ionRangeSlider({
             type: 'datetime',
             prettify: function (num) {
-                return moment(num, "X").format("LL");
+                return moment(num, 'X').format('LL');
             },
             onStart: saveTimeRange,
             onUpdate: saveTimeRange,
