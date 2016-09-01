@@ -15,7 +15,9 @@ function getSubmitPayload(){
             lowAlert: $('#lowAlert').val(),
             midAlert: $('#midAlert').val(),
             unit: $('#paramUnit').val(),
-            flippedColors:$('#parameterAlertsSwitch').prop('checked')
+            flippedColors:$('#parameterAlertsFlippedSwitch').prop('checked'),
+            enabled: $('#parameterAlertsEnableInput').prop('checked')
+
         };
 
 
@@ -63,8 +65,9 @@ function getSubmitPayload(){
     return payload;
 }
 
-
+//This function is called when the user changes profiles or reloads the page. It uses the profile to populate all the fields.
 function updateInputsWithProfile(userProfile){
+
     //Update inputs with the user's saved selections.
     $('#primaryStation').val(userProfile.primaryStation);
     $('#stationParameters').val(userProfile.singleStationParameters).change();
@@ -75,13 +78,21 @@ function updateInputsWithProfile(userProfile){
     $('#lowAlert').val(userProfile.parameterAlerts.lowAlert);
     $('#midAlert').val(userProfile.parameterAlerts.midAlert);
     $('#paramUnit').val(userProfile.parameterAlerts.unit);
-    $('#parameterAlertsSwitch').prop('checked', userProfile.parameterAlerts.flippedColors);
+    $('#parameterAlertsEnableInput').prop('checked', userProfile.parameterAlerts.enabled);
+    $('#parameterAlertsFlippedSwitch').prop('checked', userProfile.parameterAlerts.flippedColors);
     if(userProfile.parameterAlerts.unit === '' || userProfile.parameterAlerts.unit === undefined){
         $('#paramUnit').val(Data.findOne({title:userProfile.primaryStation}).data[userProfile.topPlotDataParameter].units);
     }else{
         $('#paramUnit').val(userProfile.parameterAlerts.unit);
     }
     $('#tickerEnabledInput').prop('checked', userProfile.tickerEnabled);
+
+    if(userProfile.parameterAlerts.enabled){
+        $('.paramterAlertToggle').hide();
+    }
+    if(userProfile.parameterAlerts.flippedColors === false){
+        $('#parameterAlertsNotFlippedSwitch').prop('checked', true);
+    }
 
     //update proximityStations:
     $('.proximityStationCheckbox').prop('checked', false);
@@ -428,6 +439,13 @@ Template.Admin.events({
                 'profile.parameterAlerts.unit': unit
             }
         });
+    },
+    'change #parameterAlertsEnableInput'(event, template){
+        if($(event.target).prop('checked') === true){
+            $('.parameterAlertToggle').show();
+        }else{
+            $('.parameterAlertToggle').hide();
+        }
     }
 });
 
@@ -553,6 +571,7 @@ Template.Admin.onRendered(function() {
             onFinish: saveTimeRange
 
         });
+        $('#parameterAlertsTooltip').popover({placement:'bottom'});
         updateDateSelectorRange();
 
         //Hide inputs for single station view.

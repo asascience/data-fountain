@@ -71,7 +71,6 @@
                     <div class="form-group">
                         <div class="parameterAlertsDiv">
                             <div class="row">
-                                <input type="checkbox">Enabled
                         <label class="col-md-2 control-label" for="paramAlerts">
                                     Parameter Alerts
                                 </label>
@@ -85,11 +84,19 @@
                                     <input id="paramUnit" type="text" class="form-control form-control-rounded" disabled/>
                                 </div>
                                 <div class="col-md-1 verticalCenter">
-                                    <label>Flip Colors: <input type="checkbox" id="parameterAlertsSwitch"></label>
+                                    <input type="checkbox" id="parameterAlertsEnableInput">Enabled
+                                    <div class="parameterAlertToggle">
+                                        <div class="row">
+                                            <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsFlippedSwitch"> Low = Green
+                                        </div>
+                                        <div class="row">
+                                            <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsNotFlippedSwitch"> Low = Red
+                                        </div>
+                                    </div>
+                                    <a tabindex="0" class="btn btn-default" id="parameterAlertsTooltip" role="button" data-toggle="popover" data-trigger="focus" title="Parameter Alerts" data-content="Use parameter alerts to color graphs based on values. Colors under the min value with be green. Colors between min and mid will be yellow. Colors above mid will be red. The colors can be flipped.">
+                                        <i class="fa fa-question-circle"></i>
+                                    </a>
                                 </div>
-                            </div>
-                            <div class="row col-md-4 col-md-offset-2">
-                                <p class="control-explanation">Decide which ranges should be of a certain color on the bottom plot.</p>
                             </div>
                         </div>
                     </div>
@@ -97,7 +104,9 @@
                         <label class="col-md-2 control-label">Station Parameters</label>
                         <div class="col-md-4">
                             {{#each singleStationParameters}}
-                            <label><input type="checkbox" class="stationParameterCheckbox" id="{{this.name}}">{{this.uiName}}</label>
+                            <div class="row">
+                                <label for="{{this.name}}"><input type="checkbox" class="stationParameterCheckbox" id="{{this.name}}">{{this.uiName}}</label>
+                            </div>
                             {{/each}}
                             <p class="control-explanation">Select parameters to graph for a single station.</p>
                         </div>
@@ -109,7 +118,7 @@
                         <div class="col-md-4">
                             {{#each stationsList}}
                             <div class="row">
-                                <label><input type="checkbox" class="proximityStationCheckbox" id="{{this}}">{{this}}</label>
+                                <label for="{{this}}"><input type="checkbox" class="proximityStationCheckbox" id="{{this}}">{{this}}</label>
                             </div>
                             {{/each}}
                             <p class="control-explanation">Nearby stations to display on the bottom bar plot.</p>
@@ -146,12 +155,17 @@
                             Ticker Marquee
                         </label>
                         <div class="col-md-4">
+                            <div class="row">
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <input type="checkbox" aria-label="..." id="tickerEnabledInput"><span>  enabled</span>
                                 </span>
                                 <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}}>
                             </div>
+
+                            <a tabindex="0" class="btn btn-default" id="parameterAlertsTooltip" role="button" data-toggle="popover" data-trigger="focus" title="Ticker Marquee" data-content="Text to scroll across the bottom of the screen.">
+                                <i class="fa fa-question-circle"></i>
+                            </a></div>
                             <p class="control-explanation">Select info ticker label.</p>
                         </div>
                     </div>
