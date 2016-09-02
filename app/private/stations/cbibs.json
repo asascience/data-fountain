@@ -304,5 +304,42 @@
       "usgs_parameters": [
         "Gage_height"
       ]
-    }
+    },
+    {
+    "dataUrl": "/api/data/df-11",
+    "id": "df-11",
+    "imageUrl": "/api/image/df-11",
+    "lat": 37.756,
+    "lon": -75.334,
+    "met": "data.oceansmap.com:KTGI",
+    "metData": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml",
+    "metParameters": [
+        "general_conditions",
+        "visibility_in_air",
+        "flight_category",
+        "dew_point_temperature"
+    ],
+    "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44089",
+    "ndbcData": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44089/44089.ncml",
+    "ndbcParameters": [
+        "wind_speed",
+        "wind_from_direction",
+        "sea_water_salinity",
+        "wind_speed_of_gust",
+        "air_temperature",
+        "sea_surface_wave_significant_height",
+        "sea_surface_wave_to_direction",
+        "sea_surface_wave_mean_period",
+        "sea_water_temperature"
+    ],
+    "title": "Wallops Island",
+    "usgs": "data.oceansmap.com:123123123",
+    "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
+    "usgsParameters": [
+        "Gage_height"
+    ],
+    "createdAt": 1471982630,
+    "stationId": "44089",
+    "isPrimary": false
+}
   ]
