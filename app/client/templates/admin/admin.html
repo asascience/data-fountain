@@ -69,12 +69,20 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="parameterAlertsDiv">
                             <div class="row">
                         <label class="col-md-2 control-label" for="paramAlerts">
                                     Parameter Alerts
                                 </label>
-                                <div class="col-md-1">
+                            <div class="parameterAlertsDiv row">
+                                <div class="row col-offset-2"> 
+                                    <input type="checkbox" id="parameterAlertsEnableInput"> Enabled
+                                    <div class="parameterAlertToggle" style="display:none;">
+                                            <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsFlippedSwitch"> Low = Green
+                                            <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsNotFlippedSwitch"> Low = Red
+                                        </div>
+                                </div>
+
+                                <div class="col-md-1 col-md-offset-2">
                                     <input id="lowAlert" type="text" class="form-control form-control-rounded" placeholder="Low"/>
                                 </div>
                                 <div class="col-md-1">
@@ -84,18 +92,11 @@
                                     <input id="paramUnit" type="text" class="form-control form-control-rounded" disabled/>
                                 </div>
                                 <div class="col-md-1 verticalCenter">
-                                    <input type="checkbox" id="parameterAlertsEnableInput">Enabled
-                                    <div class="parameterAlertToggle">
-                                        <div class="row">
-                                            <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsFlippedSwitch"> Low = Green
-                                        </div>
-                                        <div class="row">
-                                            <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsNotFlippedSwitch"> Low = Red
-                                        </div>
+                                    <div class="input-group-btn">
+                                        <a tabindex="0" class="btn btn-default" id="parameterAlertsTooltip" role="button" data-toggle="popover" data-trigger="focus" title="Parameter Alerts" data-content="Use parameter alerts to color graphs based on values. Colors under the min value with be green. Colors between min and mid will be yellow. Colors above mid will be red. The colors can be flipped.">
+                                            <i class="fa fa-question-circle"></i>
+                                        </a>
                                     </div>
-                                    <a tabindex="0" class="btn btn-default" id="parameterAlertsTooltip" role="button" data-toggle="popover" data-trigger="focus" title="Parameter Alerts" data-content="Use parameter alerts to color graphs based on values. Colors under the min value with be green. Colors between min and mid will be yellow. Colors above mid will be red. The colors can be flipped.">
-                                        <i class="fa fa-question-circle"></i>
-                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -156,17 +157,19 @@
                         </label>
                         <div class="col-md-4">
                             <div class="row">
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <input type="checkbox" aria-label="..." id="tickerEnabledInput"><span>  enabled</span>
-                                </span>
-                                <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}}>
-                            </div>
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <input type="checkbox" aria-label="..." id="tickerEnabledInput"><span>  enabled</span>
+                                    </span>
+                                    <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}}>
+                                    <div class="input-group-btn">
+                                        <a tabindex="0" class="btn btn-default" id="tickerMarqueeTooltip" role="button" data-toggle="popover" data-trigger="focus" title="Ticker Marquee" data-content="Text to scroll across the bottom of the screen.">
+                                            <i class="fa fa-question-circle"></i>
+                                        </a>
+                                    </div>
+                                </div>
 
-                            <a tabindex="0" class="btn btn-default" id="parameterAlertsTooltip" role="button" data-toggle="popover" data-trigger="focus" title="Ticker Marquee" data-content="Text to scroll across the bottom of the screen.">
-                                <i class="fa fa-question-circle"></i>
-                            </a></div>
-                            <p class="control-explanation">Select info ticker label.</p>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -242,6 +245,9 @@
                             </div>
                             <div class="col-md-2">
                                 <button class="pull-right btn btn-primary" type="submit">Plot Data</button>
+                            </div>
+                            <div class="row">
+                                <button type="button" class="btn btn-defualt" id="getCsvButton">get csv</button>
                             </div>
                         </div>
                     </div>

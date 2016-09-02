@@ -1,6 +1,93 @@
 import swal from 'sweetalert';
 import HUMPS from 'humps';
 
+export default function generateCSV(userOptions){
+    //Get the user inputs (Meteor.user().profile might not be updated).
+    let userProfile = userOptions; 
+
+    let station = userProfile.primaryStation;
+    let topPlotParameter = userProfile.topPlotDataParameter;
+    let stationData = Data.findOne({title:station});
+    let dataArray;
+    
+    //Get the selected start and end date.
+    let startDate = stationData.data[topPlotParameter].times[userProfile.fromTimeIndex];
+    let endDate = stationData.data[topPlotParameter].times[userProfile.toTimeIndex];
+
+    let csvString = '';
+
+    //The single station version will create a csv file listing the data for each sensor
+    //on the station (selected in singleStationParameters).
+    if(userProfile.stationViewMode === "single"){
+        let stationParameters = userProfile.singleStationParameters;
+
+        let headerString = 'dateTime,';
+
+        //Initialize the data with the dates for every entry.
+        dataArray=[stationData.data.times.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex)];
+
+        //Iterate over stationParameters, a list of the parameters for a single station to generate our csv header
+        //and to add values to the date array.
+        stationParameters.forEach(function(obj){
+            headerString += obj + ','
+
+            //This function takes the start and end date for the data and returns the index of the data
+            //that within those times for each paramter. We will then slice off the excess from the array.
+            let indexes = findDateIndexes(moment(startDate), moment(endDate), stationData.data[obj].times);
+            let valuesSlice = stationData.data[obj].values.slice(indexes[0], indexes[1]);
+            dataArray.push(valuesSlice);
+        });
+
+        //Add the header to csv.
+        csvString += headerString + '\n';
+        
+    }else{
+        //This is the multiple station case. Here we will create a csv file that lists one parameter,
+        //the top plot parameter across a range of stations (the proximity stations).
+        let proximityStations = userProfile.proximityStations;
+        let headerString = 'dateTime,';
+        dataArray=[stationData.data.times.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex)];
+
+        //Simalar to the single station case, iterates over the two dimensional data array and takes
+        //the nth index of every nested array and adds it to a new line in the csv. 
+        proximityStations.forEach(function(obj){
+            headerString += obj;
+            let currentStation = Data.findOne({title:obj});
+            let slicedData = []
+
+            //Deal with the case that a station doesn't contain the parameter alltogether.
+            if(currentStation.data[topPlotParameter] === undefined){
+                for(var i = 0; i < dataArray.length; i++){
+                    slicedData.push('null');
+                }
+            }else{
+                let indexes = findDateIndexes(moment(startDate), moment(endDate), currentStation.data[topPlotParameter].times);
+                slicedData = currentStation.data[topPlotParameter].values.slice(indexes[0], indexes[1]);
+            }
+            dataArray.push(slicedData);
+        });
+        csvString += headerString + '\n'; 
+    }
+
+    //At this point the dataArray will be a two dimensional array. An array of parameter data arrays.
+    //We will iterate this array and on the nth line write the nth index of each array.
+    dataArray[0].forEach(function(element, index){
+        let partialString = '';
+        dataArray.forEach(function(obj){
+
+            //It's ok for the parameter data to be missing some values. Change the output to "null" if it is.
+            let value = obj[index];
+            if(value === undefined){
+               value = "null";
+            }
+            partialString += value + ','    
+        });
+        partialString += "\n";
+        csvString+=partialString;
+    });
+    return csvString;
+}
+
 //Checks the fields and generates an object represenatative of the user's choices.
 function getSubmitPayload(){
     
@@ -87,8 +174,14 @@ function updateInputsWithProfile(userProfile){
     }
     $('#tickerEnabledInput').prop('checked', userProfile.tickerEnabled);
 
-    if(userProfile.parameterAlerts.enabled){
-        $('.paramterAlertToggle').hide();
+    if(userProfile.parameterAlerts.enabled === false){
+        $('.parameterAlertToggle').hide();
+        $('#midAlert').prop('disabled', true);
+        $('#lowAlert').prop('disabled', true);
+    }else{
+        $('.parameterAlertToggle').show();
+        $('#midAlert').prop('disabled', false);
+        $('#lowAlert').prop('disabled', false);
     }
     if(userProfile.parameterAlerts.flippedColors === false){
         $('#parameterAlertsNotFlippedSwitch').prop('checked', true);
@@ -443,9 +536,35 @@ Template.Admin.events({
     'change #parameterAlertsEnableInput'(event, template){
         if($(event.target).prop('checked') === true){
             $('.parameterAlertToggle').show();
+
+            $('#midAlert').prop('disabled', false);
+            $('#lowAlert').prop('disabled', false);
         }else{
             $('.parameterAlertToggle').hide();
+            $('#midAlert').prop('disabled', true);
+            $('#lowAlert').prop('disabled', true);
         }
+    },
+    'click #getCsvButton'(event, template){
+        let profile = getSubmitPayload().profile;
+        let csvString = generateCSV(profile);
+
+        //This initiates a download of the csv file.
+        let blob = new Blob([csvString]);
+        let a = window.document.createElement('a');
+        a.href = window.URL.createObjectURL(blob, {type: 'text/plain'});
+
+        //This is the name of the file
+        let fileName = 'data.csv';
+        if(profile.stationViewMode === 'single'){
+            fileName = profile.primaryStation + '.csv'
+        }else if(profile.stationViewMode === 'multiple'){
+            fileName = profile.topPlotDataParameter;
+        }
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a); 
     }
 });
 
@@ -572,6 +691,7 @@ Template.Admin.onRendered(function() {
 
         });
         $('#parameterAlertsTooltip').popover({placement:'bottom'});
+        $('#tickerMarqueeTooltip').popover({placement:'right'});
         updateDateSelectorRange();
 
         //Hide inputs for single station view.
