@@ -167,7 +167,8 @@
       "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
       "usgs_parameters": [
         "Gage_height"
-      ]
+      ],
+      "isPrimary": true
     },
     {
       "data_url": "/api/data/df-06",
@@ -340,6 +341,43 @@
     ],
     "createdAt": 1471982630,
     "stationId": "44089",
+    "isPrimary": false
+},
+{
+    "dataUrl": "/api/data/df-12",
+    "id": "df-12",
+    "imageUrl": "/api/image/df-12",
+    "lat": 36.611,
+    "lon": -74.842,
+    "met": "data.oceansmap.com:KTGI",
+    "metData": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml",
+    "metParameters": [
+        "general_conditions",
+        "visibility_in_air",
+        "flight_category",
+        "dew_point_temperature"
+    ],
+    "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44014",
+    "ndbcData": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44014/44014.ncml",
+    "ndbcParameters": [
+        "wind_speed",
+        "wind_from_direction",
+        "sea_water_salinity",
+        "wind_speed_of_gust",
+        "air_temperature",
+        "sea_surface_wave_significant_height",
+        "sea_surface_wave_to_direction",
+        "sea_surface_wave_mean_period",
+        "sea_water_temperature"
+    ],
+    "title": "Virginia Beach",
+    "usgs": "data.oceansmap.com:123123123",
+    "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
+    "usgsParameters": [
+        "Gage_height"
+    ],
+    "createdAt": 1471982630,
+    "stationId": "44014",
     "isPrimary": false
 }
   ]

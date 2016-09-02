@@ -103,49 +103,53 @@ export default class StationWebService {
                  *  OceansMap
                  ***************/
                 // // make the call to get the scientific data, and block with future.
-                HTTP.call('GET', compiledUrl, (error, response) => {
-                    if (error || response.error) {
-                        console.log(`[!] Error from OceansMap: ${error}`);
-                    } else {
-                        let responseData = Humps.camelizeKeys(response.data);
-                        let gageHeight = responseData.data.gageHeight;
-                        let oceansMapData =  Humps.camelizeKeys(response.data);
-
-                        let times = moment(responseData.data.times).seconds(0).milliseconds(0).toISOString()
-
-                        let airPressure = {
-                            values: responseData.data.airPressure.values,
-                            units: responseData.data.airPressure.units[0],
-                            times
-                        };
-
-                        let dewPointTemperature = {
-                            values: this._convertCtoF(responseData.data.dewPointTemperature.values),
-                            units: "F",
-                            times
-
-                        };
-
-                        let relativeHumidity = {
-                            values: responseData.data.relativeHumidity.values,
-                            units: responseData.data.relativeHumidity.units[0],
-                            times
-                        };
-
-                        let seanettleProb = {
-                            values: responseData.data.seanettleProb.values,
-                            units:  responseData.data.seanettleProb.units[0],
-                            times
-                        };
-
-                        data.data.airPressure = airPressure;
-                        data.data.dewPointTemperature = dewPointTemperature;
-                        data.data.relativeHumidity = relativeHumidity;
-                        data.data.seaNettleProbability = seanettleProb;
-
-                        Data.upsert({id: data.id}, data);
-                    }
-                });
+                // HTTP.call('GET', compiledUrl, (error, response) => {
+                //     if (error || response.error) {
+                //         console.log(`[!] Error from OceansMap: ${error}`);
+                //     } else {
+                //         try {
+                //         let responseData = Humps.camelizeKeys(response.data);
+                //         let gageHeight = responseData.data.gageHeight;
+                //         let oceansMapData =  Humps.camelizeKeys(response.data);
+                //
+                //         let times = moment(responseData.data.times).seconds(0).milliseconds(0).toISOString()
+                //
+                //         let airPressure = {
+                //             values: responseData.data.airPressure.values,
+                //             units: responseData.data.airPressure.units[0],
+                //             times
+                //         };
+                //
+                //         let dewPointTemperature = {
+                //             values: this._convertCtoF(responseData.data.dewPointTemperature.values),
+                //             units: "F",
+                //             times
+                //
+                //         };
+                //
+                //         let relativeHumidity = {
+                //             values: responseData.data.relativeHumidity.values,
+                //             units: responseData.data.relativeHumidity.units[0],
+                //             times
+                //         };
+                //
+                //         let seanettleProb = {
+                //             values: responseData.data.seanettleProb.values,
+                //             units:  responseData.data.seanettleProb.units[0],
+                //             times
+                //         };
+                //
+                //         data.data.airPressure = airPressure;
+                //         data.data.dewPointTemperature = dewPointTemperature;
+                //         data.data.relativeHumidity = relativeHumidity;
+                //         data.data.seaNettleProbability = seanettleProb;
+                //
+                //         Data.upsert({id: data.id}, data);
+                //         } catch (e) {
+                //             console.log(e);
+                //         }
+                //     }
+                // });
 
                 /***************
                  *  BuoyJS
@@ -267,6 +271,15 @@ export default class StationWebService {
                                 atmp.push(this._convertCtoF(datum.airTemp));
                                 waveHeightValues.push(datum.waveHeight);
                                 wtmp.push(this._convertCtoF(datum.waterTemp));
+                            } else if (moment(datum.date).minute() === 50 ) {
+                                let time = moment(datum.date).minutes(0).seconds(0).milliseconds(0).toISOString();
+                                times.push(time);
+                                wdir.push(datum.windDirection);
+                                wspd.push(datum.windSpeed * KNOTS_TO_MPH);
+                                atmp.push(this._convertCtoF(datum.airTemp));
+                                waveHeightValues.push(datum.waveHeight);
+                                wtmp.push(this._convertCtoF(datum.waterTemp));
+
                             }
                         });
 
