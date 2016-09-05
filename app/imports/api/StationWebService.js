@@ -171,11 +171,11 @@ export default class StationWebService {
                         currentBuoyData.forEach((datum) => {
                             let time = moment(datum.date).seconds(0).milliseconds(0).toISOString();
                             times.push(time);
-                            oceanTempValues.push(this._convertCtoF(datum.oceanTemp));
-                            clconValues.push(datum.chlorophyllConcentration);
-                            o2ppmValues.push(datum.oxygenPartsPerMil);
-                            turbidityValues.push(datum.turbidity);
-                            salinityValues.push(datum.waterSalinity);
+                            oceanTempValues.push([time, this._convertCtoF(datum.oceanTemp)]);
+                            clconValues.push([time, datum.chlorophyllConcentration]);
+                            o2ppmValues.push([time, datum.oxygenPartsPerMil]);
+                            turbidityValues.push([time, datum.turbidity]);
+                            salinityValues.push([time, datum.waterSalinity]);
                         });
 
                         // Make sure all the data is in the correct order.
@@ -198,6 +198,22 @@ export default class StationWebService {
                             return new Date(a[0]) - new Date(b[0]);
                         });
 
+                        // remove the timestamps now
+                        oceanTempValues = oceanTempValues.map((item, index) => {
+                            return item[1];
+                        });
+                        clconValues = clconValues.map((item, index) => {
+                            return item[1];
+                        });
+                        o2ppmValues = o2ppmValues.map((item, index) => {
+                            return item[1];
+                        });
+                        turbidityValues = turbidityValues.map((item, index) => {
+                            return item[1];
+                        });
+                        salinityValues = salinityValues.map((item, index) => {
+                            return item[1];
+                        });
 
                         let oceanTemp = {
                             values: oceanTempValues,
@@ -241,6 +257,13 @@ export default class StationWebService {
                         data.data.dissolvedOxygen = oxygenPartsPerMil;
                         data.data.turbidity = turbidity;
                         data.data.salinity = waterSalinity;
+
+                        data.data.oceanTemperature.times = times;
+                        data.data.chlorophyll.times = times;
+                        data.data.dissolvedOxygen.times = times;
+                        data.data.turbidity.times = times;
+                        data.data.salinity.times = times;
+
                         if (!data.data.times) {
                             data.data.times = times;
                         }
@@ -256,7 +279,7 @@ export default class StationWebService {
                         console.log(`[!] Error from BuoyJS met: ${error}`);
                     } else {
                         let currentBuoyData = Buoy.Buoy.realTime(response.content),
-                            times = [];
+                            times = [],
                             wdir = [],
                             wspd = [],
                             atmp = [],
@@ -267,21 +290,23 @@ export default class StationWebService {
                             if (moment(datum.date).minute() === 0) {
                                 let time = moment(datum.date).seconds(0).milliseconds(0).toISOString();
                                 times.push(time);
-                                wdir.push(datum.windDirection);
-                                wspd.push(datum.windSpeed * MPS_TO_MPH);
-                                atmp.push(this._convertCtoF(datum.airTemp));
-                                waveHeightValues.push(datum.waveHeight);
-                                wtmp.push(this._convertCtoF(datum.waterTemp));
-                            } else if (moment(datum.date).minute() === 50 ) {
+                                wdir.push([time, datum.windDirection]);
+                                wspd.push([time, datum.windSpeed * MPS_TO_MPH]);
+                                atmp.push([time, this._convertCtoF(datum.airTemp)]);
+                                waveHeightValues.push([time,datum.waveHeight]);
+                                wtmp.push([time,this._convertCtoF(datum.waterTemp)]);
+
+                            } else if (moment(datum.date).minute() === 50) {
                                 let time = moment(datum.date).minutes(0).seconds(0).milliseconds(0).toISOString();
                                 times.push(time);
-                                wdir.push(datum.windDirection);
-                                wspd.push(datum.windSpeed * MPS_TO_MPH);
-                                atmp.push(this._convertCtoF(datum.airTemp));
-                                waveHeightValues.push(datum.waveHeight);
-                                wtmp.push(this._convertCtoF(datum.waterTemp));
+                                wdir.push([time, datum.windDirection]);
+                                wspd.push([time, datum.windSpeed * MPS_TO_MPH]);
+                                atmp.push([time, this._convertCtoF(datum.airTemp)]);
+                                waveHeightValues.push([time,datum.waveHeight]);
+                                wtmp.push([time,this._convertCtoF(datum.waterTemp)]);
 
                             }
+
                         });
 
                         // Make sure all the data is in the correct order.
@@ -304,6 +329,22 @@ export default class StationWebService {
                             return new Date(a[0]) - new Date(b[0]);
                         });
 
+                        // remove the timestamps now
+                        wdir = wdir.map((item, index) => {
+                            return item[1];
+                        });
+                        wspd = wspd.map((item, index) => {
+                            return item[1];
+                        });
+                        atmp = atmp.map((item, index) => {
+                            return item[1];
+                        });
+                        waveHeightValues = waveHeightValues.map((item, index) => {
+                            return item[1];
+                        });
+                        wtmp = wtmp.map((item, index) => {
+                            return item[1];
+                        });
 
                         let windDirection = {
                             values: wdir,
@@ -339,11 +380,19 @@ export default class StationWebService {
                             type: 'timeSeries',
                             times
                         };
+
                         data.data.windDirection = windDirection;
                         data.data.windSpeed = windSpeed;
                         data.data.airTemperature = airTemp;
                         data.data.waveHeight = waveHeight;
                         data.data.waterTemperature = waterTemp;
+
+                        data.data.windDirection.times = times;
+                        data.data.windSpeed.times = times;
+                        data.data.airTemperature.times = times;
+                        data.data.waveHeight.times = times;
+                        data.data.waterTemperature.times = times;
+
                         if (!data.data.times) {
                             data.data.times = times;
                         }

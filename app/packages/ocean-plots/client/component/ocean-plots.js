@@ -135,7 +135,7 @@ Template.OceanPlots.helpers({
                     dataSet.push(undefined);
                     axisLabels.push(undefined);
                 }
-                
+
                 //This loop makes sure that each station being graphed has the same data length by trimming/adding empty values
                 proximityStationsData.forEach((item, index) => {
                     let originalIndex = proximityStations.indexOf(item.title);
@@ -206,7 +206,7 @@ Template.OceanPlots.helpers({
                 {
                     color:'green'
                 }];
-                
+
                 if(userProfile.parameterAlerts.flippedColors === true){
                     colorZones[0].color = 'green';
                     colorZones[1].color = 'yellow';
@@ -296,6 +296,7 @@ Template.OceanPlots.helpers({
         }
     },
     singleBottomPlot(){
+        try {
         let userProfile = Meteor.user().profile;
         let stationName = userProfile.primaryStation;
         let stationParameters = userProfile.singleStationParameters;
@@ -451,6 +452,10 @@ Template.OceanPlots.helpers({
                 console.log(exception);
             }
         });
+        }
+        catch (e) {
+            console.log(e);
+        }
     },
     singleStationMode(){
         return Meteor.user().profile.stationViewMode === "single";
