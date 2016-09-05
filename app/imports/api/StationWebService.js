@@ -74,6 +74,7 @@ export default class StationWebService {
             const DURATION = Meteor.settings.defaultDuration;
             const KNOTS_TO_MPH = 1.152;
             const METER_TO_FT = 3.28084;
+            const MPS_TO_MPH = 2.2369363;
 
             // set the end date to today.
             let endDate = DATE.toISOString();
@@ -267,7 +268,7 @@ export default class StationWebService {
                                 let time = moment(datum.date).seconds(0).milliseconds(0).toISOString();
                                 times.push(time);
                                 wdir.push(datum.windDirection);
-                                wspd.push(datum.windSpeed * KNOTS_TO_MPH);
+                                wspd.push(datum.windSpeed * MPS_TO_MPH);
                                 atmp.push(this._convertCtoF(datum.airTemp));
                                 waveHeightValues.push(datum.waveHeight);
                                 wtmp.push(this._convertCtoF(datum.waterTemp));
@@ -275,7 +276,7 @@ export default class StationWebService {
                                 let time = moment(datum.date).minutes(0).seconds(0).milliseconds(0).toISOString();
                                 times.push(time);
                                 wdir.push(datum.windDirection);
-                                wspd.push(datum.windSpeed * KNOTS_TO_MPH);
+                                wspd.push(datum.windSpeed * MPS_TO_MPH);
                                 atmp.push(this._convertCtoF(datum.airTemp));
                                 waveHeightValues.push(datum.waveHeight);
                                 wtmp.push(this._convertCtoF(datum.waterTemp));
