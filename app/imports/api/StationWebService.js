@@ -69,12 +69,12 @@ export default class StationWebService {
         console.log(`[+] Compiling a collection of data from stations`);
         try {
             // define our method constants
-            let _this = this;
             const Humps = Npm.require('humps');
             const DATE = new Date();
             const DURATION = Meteor.settings.defaultDuration;
             const KNOTS_TO_MPH = 1.152;
             const METER_TO_FT = 3.28084;
+            const MPS_TO_MPH = 2.2369363;
 
             // set the end date to today.
             let endDate = DATE.toISOString();
@@ -106,19 +106,48 @@ export default class StationWebService {
                 // // make the call to get the scientific data, and block with future.
                 // HTTP.call('GET', compiledUrl, (error, response) => {
                 //     if (error || response.error) {
-                //         console.log(error);
+                //         console.log(`[!] Error from OceansMap: ${error}`);
                 //     } else {
+                //         try {
                 //         let responseData = Humps.camelizeKeys(response.data);
                 //         let gageHeight = responseData.data.gageHeight;
-                //         if (gageHeight) {
-                //             let waterLevel = {
-                //                 type: gageHeight.type,
-                //                 units: gageHeight.units[0],
-                //                 values: gageHeight.values[0]
-                //             }
+                //         let oceansMapData =  Humps.camelizeKeys(response.data);
                 //
-                //             data.data.waterLevel = waterLevel;
-                //             Data.upsert({id: data.id}, data);
+                //         let times = moment(responseData.data.times).seconds(0).milliseconds(0).toISOString()
+                //
+                //         let airPressure = {
+                //             values: responseData.data.airPressure.values,
+                //             units: responseData.data.airPressure.units[0],
+                //             times
+                //         };
+                //
+                //         let dewPointTemperature = {
+                //             values: this._convertCtoF(responseData.data.dewPointTemperature.values),
+                //             units: "F",
+                //             times
+                //
+                //         };
+                //
+                //         let relativeHumidity = {
+                //             values: responseData.data.relativeHumidity.values,
+                //             units: responseData.data.relativeHumidity.units[0],
+                //             times
+                //         };
+                //
+                //         let seanettleProb = {
+                //             values: responseData.data.seanettleProb.values,
+                //             units:  responseData.data.seanettleProb.units[0],
+                //             times
+                //         };
+                //
+                //         data.data.airPressure = airPressure;
+                //         data.data.dewPointTemperature = dewPointTemperature;
+                //         data.data.relativeHumidity = relativeHumidity;
+                //         data.data.seaNettleProbability = seanettleProb;
+                //
+                //         Data.upsert({id: data.id}, data);
+                //         } catch (e) {
+                //             console.log(e);
                 //         }
                 //     }
                 // });
@@ -128,7 +157,9 @@ export default class StationWebService {
                  ***************/
                 let ndbcRootUrl = `http://www.ndbc.noaa.gov/data/realtime2/`;
                 HTTP.get(`${ndbcRootUrl}${data.stationId}.ocean`, (error, response) => {
-                    if (!error) {
+                    if (error || response.error) {
+                        console.log(`[!] Error from BuoyJS ocean: ${error}`);
+                    } else {
                         let currentBuoyData = Buoy.Buoy.realTime(response.content),
                             times = [],
                             oceanTempValues = [],
@@ -140,7 +171,7 @@ export default class StationWebService {
                         currentBuoyData.forEach((datum) => {
                             let time = moment(datum.date).seconds(0).milliseconds(0).toISOString();
                             times.push(time);
-                            oceanTempValues.push([time, _this._convertCtoF(datum.oceanTemp)]);
+                            oceanTempValues.push([time, this._convertCtoF(datum.oceanTemp)]);
                             clconValues.push([time, datum.chlorophyllConcentration]);
                             o2ppmValues.push([time, datum.oxygenPartsPerMil]);
                             turbidityValues.push([time, datum.turbidity]);
@@ -184,59 +215,58 @@ export default class StationWebService {
                             return item[1];
                         });
 
-                        // only get the last 48 hours
-
-                        // times = times.splice(times.length - DURATION-1, times.length -1);
-                        // clconValues = clconValues.splice(clconValues.length - DURATION -1, clconValues.length -1);
-                        // oceanTempValues = oceanTempValues.splice(oceanTempValues.length - DURATION -1, oceanTempValues.length -1);
-                        // o2ppmValues = o2ppmValues.splice(o2ppmValues.length - DURATION -1, o2ppmValues.length -1);
-                        // turbidityValues = turbidityValues.splice(turbidityValues.length - DURATION -1, turbidityValues.length -1);
-                        // salinityValues = salinityValues.splice(salinityValues.length - DURATION -1, salinityValues.length -1);
-
-                        // values have to be put into another array to stay consistent
-                        // with OceansMap.  For some reason they are a multi array.
                         let oceanTemp = {
                             values: oceanTempValues,
                             units: 'F',
-                            type: 'timeSeries'
+                            type: 'timeSeries',
+                            times
                         };
 
                         let chlorophyllCon = {
                             values: clconValues,
                             units: '\u03BCg/L',
-                            type: 'timeSeries'
+                            type: 'timeSeries',
+                            times
                         };
 
                         let oxygenPartsPerMil = {
                             values: o2ppmValues,
                             units: 'ppm',
-                            type: 'timeSeries'
+                            type: 'timeSeries',
+                            times
                         };
 
                         let turbidity = {
                             values: turbidityValues,
                             units: 'FTU',
-                            type: 'timeSeries'
+                            type: 'timeSeries',
+                            times
                         };
 
                         let waterSalinity = {
                             values: salinityValues,
                             units: 'PSU',
-                            type: 'timeSeries'
+                            type: 'timeSeries',
+                            times
                         };
 
-                        data.data.oceanTemp = oceanTemp;
+
+
+                        data.data.oceanTemperature = oceanTemp;
                         data.data.chlorophyll = chlorophyllCon;
                         data.data.dissolvedOxygen = oxygenPartsPerMil;
                         data.data.turbidity = turbidity;
                         data.data.salinity = waterSalinity;
-                        data.data.times = times;
 
-                        data.data.oceanTemp.times = times;
+                        data.data.oceanTemperature.times = times;
                         data.data.chlorophyll.times = times;
                         data.data.dissolvedOxygen.times = times;
                         data.data.turbidity.times = times;
                         data.data.salinity.times = times;
+
+                        if (!data.data.times) {
+                            data.data.times = times;
+                        }
                         Data.upsert({id: data.id}, data);
                     }
                 });
@@ -245,21 +275,38 @@ export default class StationWebService {
                  *  BuoyJS
                  ***************/
                 HTTP.get(`${ndbcRootUrl}${data.stationId}.txt`, (error, response) => {
-                    if (!error) {
+                    if (error || response.error) {
+                        console.log(`[!] Error from BuoyJS met: ${error}`);
+                    } else {
                         let currentBuoyData = Buoy.Buoy.realTime(response.content),
-                            times = [];
+                            times = [],
                             wdir = [],
                             wspd = [],
-                            atmp = [];
+                            atmp = [],
+                            waveHeightValues = [],
+                            wtmp = [];
 
                         currentBuoyData.forEach((datum) => {
                             if (moment(datum.date).minute() === 0) {
                                 let time = moment(datum.date).seconds(0).milliseconds(0).toISOString();
                                 times.push(time);
                                 wdir.push([time, datum.windDirection]);
-                                wspd.push([time, datum.windSpeed * KNOTS_TO_MPH]);
-                                atmp.push([time, _this._convertCtoF(datum.airTemp)]);
+                                wspd.push([time, datum.windSpeed * MPS_TO_MPH]);
+                                atmp.push([time, this._convertCtoF(datum.airTemp)]);
+                                waveHeightValues.push([time,datum.waveHeight]);
+                                wtmp.push([time,this._convertCtoF(datum.waterTemp)]);
+
+                            } else if (moment(datum.date).minute() === 50) {
+                                let time = moment(datum.date).minutes(0).seconds(0).milliseconds(0).toISOString();
+                                times.push(time);
+                                wdir.push([time, datum.windDirection]);
+                                wspd.push([time, datum.windSpeed * MPS_TO_MPH]);
+                                atmp.push([time, this._convertCtoF(datum.airTemp)]);
+                                waveHeightValues.push([time,datum.waveHeight]);
+                                wtmp.push([time,this._convertCtoF(datum.waterTemp)]);
+
                             }
+
                         });
 
                         // Make sure all the data is in the correct order.
@@ -275,6 +322,12 @@ export default class StationWebService {
                         atmp.sort((a,b) => {
                             return new Date(a[0]) - new Date(b[0]);
                         });
+                        waveHeightValues.sort((a,b) => {
+                            return new Date(a[0]) - new Date(b[0]);
+                        });
+                        wtmp.sort((a,b) => {
+                            return new Date(a[0]) - new Date(b[0]);
+                        });
 
                         // remove the timestamps now
                         wdir = wdir.map((item, index) => {
@@ -286,36 +339,60 @@ export default class StationWebService {
                         atmp = atmp.map((item, index) => {
                             return item[1];
                         });
+                        waveHeightValues = waveHeightValues.map((item, index) => {
+                            return item[1];
+                        });
+                        wtmp = wtmp.map((item, index) => {
+                            return item[1];
+                        });
 
-                        // wdir = wdir.splice(wdir.length - DURATION-1, wdir.length -1);
-                        // wspd = wspd.splice(wspd.length - DURATION-1, wspd.length -1);
-                        // atmp = atmp.splice(atmp.length - DURATION-1, atmp.length -1);
-
-                        // values have to be put into another array to stay consistent
-                        // with OceansMap.  For some reason they are a multi array.
                         let windDirection = {
                             values: wdir,
                             units: 'deg',
-                            type: 'timeSeries'
+                            type: 'timeSeries',
+                            times
                         };
 
                         let windSpeed = {
                             values: wspd,
                             units: 'mph',
-                            type: 'timeSeries'
+                            type: 'timeSeries',
+                            times
                         };
 
                         let airTemp = {
                             values: atmp,
                             units: 'F',
-                            type: 'timeSeries'
+                            type: 'timeSeries',
+                            times
                         };
+
+                        let waterTemp = {
+                            values: wtmp,
+                            units: 'F',
+                            type: 'timeSeries',
+                            times
+                        };
+
+                        let waveHeight = {
+                            values: waveHeightValues,
+                            units: 'm',
+                            type: 'timeSeries',
+                            times
+                        };
+
                         data.data.windDirection = windDirection;
                         data.data.windSpeed = windSpeed;
-                        data.data.airTemp = airTemp;
+                        data.data.airTemperature = airTemp;
+                        data.data.waveHeight = waveHeight;
+                        data.data.waterTemperature = waterTemp;
+
                         data.data.windDirection.times = times;
                         data.data.windSpeed.times = times;
-                        data.data.airTemp.times = times;
+                        data.data.airTemperature.times = times;
+                        data.data.waveHeight.times = times;
+                        data.data.waterTemperature.times = times;
+
                         if (!data.data.times) {
                             data.data.times = times;
                         }
@@ -329,39 +406,44 @@ export default class StationWebService {
                 let usgsPortalUrl = 'http://usgs-portal.herokuapp.com/';
 
                 HTTP.get(`${usgsPortalUrl}${data.usgsSite}?startDT=${startDate}&endDT=${endDate}`, (error, response) => {
-                    try {
-                        let usgsBuoyData = JSON.parse(response.content),
-                            gageHeight = [],
-                            times = [];
+                    if (error || response.error) {
+                        console.log(`[!] Error from USGS: ${error}`);
+                    } else {
+                        try {
+                            let usgsBuoyData = JSON.parse(response.content),
+                                gageHeight = [],
+                                times = [];
 
-                        usgsBuoyData.data.forEach((datum) => {
-                            if (moment(datum.utc).minute() === 0) {
-                                if (datum['69564_00065']) {
-                                    gageHeight.push(parseFloat(datum['69564_00065']));
-                                    times.push(datum['utc']);
+                            usgsBuoyData.data.forEach((datum) => {
+                                if (moment(datum.utc).minute() === 0) {
+                                    if (datum['69564_00065']) {
+                                        gageHeight.push(parseFloat(datum['69564_00065']));
+                                        times.push(datum['utc']);
+                                    }
                                 }
+                            });
+
+                            times.sort((a,b) => {
+                                return new Date(a) - new Date(b);
+                            });
+
+                            let waterLevel = {
+                                type: 'timeSeries',
+                                units: 'ft',
+                                values: gageHeight,
+                                times
                             }
-                        });
 
-                        times.sort((a,b) => {
-                            return new Date(a) - new Date(b);
-                        });
-
-                        let waterLevel = {
-                            type: 'timeSeries',
-                            units: 'ft',
-                            values: gageHeight
+                            if (gageHeight.length > 0) {
+                                data.data.waterLevel = waterLevel;
+                                Data.upsert({id: data.id}, data);
+                            }
+                        } catch(exception) {
+                            console.log(exception);
                         }
-
-                        if (gageHeight.length > 0) {
-                            data.data.waterLevel = waterLevel;
-                            data.data.waterLevel.times = times;
-                            Data.upsert({id: data.id}, data);
-                        }
-                    } catch(exception) {
-                        console.log(exception);
                     }
                 });
+
             }
             console.log(`[+] Station Data compilations complete.`);
             return;
