@@ -1,6 +1,93 @@
 import swal from 'sweetalert';
 import HUMPS from 'humps';
 
+export default function generateCSV(userOptions){
+    //Get the user inputs (Meteor.user().profile might not be updated).
+    let userProfile = userOptions; 
+
+    let station = userProfile.primaryStation;
+    let topPlotParameter = userProfile.topPlotDataParameter;
+    let stationData = Data.findOne({title:station});
+    let dataArray;
+    
+    //Get the selected start and end date.
+    let startDate = stationData.data[topPlotParameter].times[userProfile.fromTimeIndex];
+    let endDate = stationData.data[topPlotParameter].times[userProfile.toTimeIndex];
+
+    let csvString = '';
+
+    //The single station version will create a csv file listing the data for each sensor
+    //on the station (selected in singleStationParameters).
+    if(userProfile.stationViewMode === "single"){
+        let stationParameters = userProfile.singleStationParameters;
+
+        let headerString = 'dateTime,';
+
+        //Initialize the data with the dates for every entry.
+        dataArray=[stationData.data.times.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex)];
+
+        //Iterate over stationParameters, a list of the parameters for a single station to generate our csv header
+        //and to add values to the date array.
+        stationParameters.forEach(function(obj){
+            headerString += obj + ','
+
+            //This function takes the start and end date for the data and returns the index of the data
+            //that within those times for each paramter. We will then slice off the excess from the array.
+            let indexes = findDateIndexes(moment(startDate), moment(endDate), stationData.data[obj].times);
+            let valuesSlice = stationData.data[obj].values.slice(indexes[0], indexes[1]);
+            dataArray.push(valuesSlice);
+        });
+
+        //Add the header to csv.
+        csvString += headerString + '\n';
+        
+    }else{
+        //This is the multiple station case. Here we will create a csv file that lists one parameter,
+        //the top plot parameter across a range of stations (the proximity stations).
+        let proximityStations = userProfile.proximityStations;
+        let headerString = 'dateTime,';
+        dataArray=[stationData.data.times.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex)];
+
+        //Simalar to the single station case, iterates over the two dimensional data array and takes
+        //the nth index of every nested array and adds it to a new line in the csv. 
+        proximityStations.forEach(function(obj){
+            headerString += obj;
+            let currentStation = Data.findOne({title:obj});
+            let slicedData = []
+
+            //Deal with the case that a station doesn't contain the parameter alltogether.
+            if(currentStation.data[topPlotParameter] === undefined){
+                for(var i = 0; i < dataArray.length; i++){
+                    slicedData.push('null');
+                }
+            }else{
+                let indexes = findDateIndexes(moment(startDate), moment(endDate), currentStation.data[topPlotParameter].times);
+                slicedData = currentStation.data[topPlotParameter].values.slice(indexes[0], indexes[1]);
+            }
+            dataArray.push(slicedData);
+        });
+        csvString += headerString + '\n'; 
+    }
+
+    //At this point the dataArray will be a two dimensional array. An array of parameter data arrays.
+    //We will iterate this array and on the nth line write the nth index of each array.
+    dataArray[0].forEach(function(element, index){
+        let partialString = '';
+        dataArray.forEach(function(obj){
+
+            //It's ok for the parameter data to be missing some values. Change the output to "null" if it is.
+            let value = obj[index];
+            if(value === undefined){
+               value = "null";
+            }
+            partialString += value + ','    
+        });
+        partialString += "\n";
+        csvString+=partialString;
+    });
+    return csvString;
+}
+
 //Checks the fields and generates an object represenatative of the user's choices.
 function getSubmitPayload(){
     
@@ -15,7 +102,9 @@ function getSubmitPayload(){
             lowAlert: $('#lowAlert').val(),
             midAlert: $('#midAlert').val(),
             unit: $('#paramUnit').val(),
-            flippedColors:$('#parameterAlertsSwitch').prop('checked')
+            flippedColors:$('#parameterAlertsFlippedSwitch').prop('checked'),
+            enabled: $('#parameterAlertsEnableInput').prop('checked')
+
         };
 
 
@@ -39,31 +128,33 @@ function getSubmitPayload(){
     let stationData = Data.findOne({title: primaryStation});
     let dateIndexes = findDateIndexes(moment(sliderData.from, 'X') , moment(sliderData.to, 'X'),  stationData.data[$('#topPlotDataParameter').val()].times);
     let payload = {
-        "profile":{
-            "stationViewMode": viewMode,
-            "singleStationParameters": stationParameters,
-            "primaryStation": primaryStation,
-            "proximityStations": proximityStations,
-            "refreshInterval": $('#refreshInterval').val(),
-            "infoTickerText": $('#infoTickerText').val(),
-            "timeZone": $('#timezoneSelect').val(),
+        'profile':{
+            'stationViewMode': viewMode,
+            'singleStationParameters': stationParameters,
+            'primaryStation': primaryStation,
+            'proximityStations': proximityStations,
+            'refreshInterval': $('#refreshInterval').val(),
+            'infoTickerText': $('#infoTickerText').val(),
+            'timeZone': $('#timezoneSelect').val(),
             'topPlotDataParameter': $('#topPlotDataParameter').val(),
             'bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
             'parameterAlerts': parameterAlerts,
-            "dateSliderData":{
+            'dateSliderData':{
                 from: sliderData.from,
                 to:sliderData.to
             },
-            "fromTimeIndex": dateIndexes[0],
-            "toTimeIndex": dateIndexes[1],
+            'tickerEnabled':$('#tickerEnabledInput').prop('checked'),
+            'fromTimeIndex': dateIndexes[0],
+            'toTimeIndex': dateIndexes[1],
             'saveDate': new Date()
         }
     };
     return payload;
 }
 
-
+//This function is called when the user changes profiles or reloads the page. It uses the profile to populate all the fields.
 function updateInputsWithProfile(userProfile){
+
     //Update inputs with the user's saved selections.
     $('#primaryStation').val(userProfile.primaryStation);
     $('#stationParameters').val(userProfile.singleStationParameters).change();
@@ -74,12 +165,28 @@ function updateInputsWithProfile(userProfile){
     $('#lowAlert').val(userProfile.parameterAlerts.lowAlert);
     $('#midAlert').val(userProfile.parameterAlerts.midAlert);
     $('#paramUnit').val(userProfile.parameterAlerts.unit);
-    $('#parameterAlertsSwitch').prop('checked', userProfile.parameterAlerts.flippedColors);
-    if(userProfile.parameterAlerts.unit === "" || userProfile.parameterAlerts.unit === undefined){
+    $('#parameterAlertsEnableInput').prop('checked', userProfile.parameterAlerts.enabled);
+    $('#parameterAlertsFlippedSwitch').prop('checked', userProfile.parameterAlerts.flippedColors);
+    if(userProfile.parameterAlerts.unit === '' || userProfile.parameterAlerts.unit === undefined){
         $('#paramUnit').val(Data.findOne({title:userProfile.primaryStation}).data[userProfile.topPlotDataParameter].units);
     }else{
         $('#paramUnit').val(userProfile.parameterAlerts.unit);
     }
+    $('#tickerEnabledInput').prop('checked', userProfile.tickerEnabled);
+
+    if(userProfile.parameterAlerts.enabled === false){
+        $('.parameterAlertToggle').hide();
+        $('#midAlert').prop('disabled', true);
+        $('#lowAlert').prop('disabled', true);
+    }else{
+        $('.parameterAlertToggle').show();
+        $('#midAlert').prop('disabled', false);
+        $('#lowAlert').prop('disabled', false);
+    }
+    if(userProfile.parameterAlerts.flippedColors === false){
+        $('#parameterAlertsNotFlippedSwitch').prop('checked', true);
+    }
+
     //update proximityStations:
     $('.proximityStationCheckbox').prop('checked', false);
     userProfile.proximityStations.forEach(function(obj){
@@ -124,9 +231,10 @@ function fetchUserPreferences(){
 function updateDateSelectorRange(){ 
     let topPlotDataParameter = $('#topPlotDataParameter').val();
     let primaryStation = $('#primaryStation').val();
-    let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
-    let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
-    if(topPlotDataParameter !== null){
+    if(topPlotDataParameter !== null && primaryStation != null){
+        let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
+        let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
+
         slider.update({
         min: moment(timeRange.data[topPlotDataParameter].times[0]).format('X'),
         max: moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X')
@@ -156,7 +264,10 @@ function findDateIndexes(startDate, endDate, dateArray){
     }
     return [startIndex, endIndex];
 }
-
+function camelToRegular(string) {
+    return string.replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (str) => { return str.toUpperCase(); })
+}
 /*****************************************************************************/
 /* Admin: Event Handlers */
 /*****************************************************************************/
@@ -215,10 +326,10 @@ Template.Admin.events({
     'click .stationDataViewOption'(event, template){
 
         //Change which button is active
-        $('.stationDataViewOption').removeClass("active");
+        $('.stationDataViewOption').removeClass('active');
         $(event.target).addClass('active');
         //Update the inputs
-        if($(event.target).hasClass("singleStation")){
+        if($(event.target).hasClass('singleStation')){
             //Get rid of the Proximity Stations, Bar Plot and Line Plot Inputs
             $('.js-select-bottom-parameter').parent().parent().hide();
             $('#proximityStations').hide();
@@ -235,7 +346,7 @@ Template.Admin.events({
     'click .preferenceSelectionButton'(event, template){
         let preferenceId = $(event.target).data('preference-id');
         let clickedPreference;
-        Session.get("DataPreferences").forEach(function(obj){
+        Session.get('DataPreferences').forEach(function(obj){
             if(obj._id === preferenceId){
                 clickedPreference = obj;
             }
@@ -248,7 +359,7 @@ Template.Admin.events({
                 $set: {'profile': clickedPreference.profile}
             }, {multi: true});
         }else{
-            console.log("Could not load preference");
+            console.log('Could not load preference');
         }
     },
 
@@ -271,7 +382,7 @@ Template.Admin.events({
         if(duplicateName === true){
             //Show a warning for duplicate name.
             swal('Warning', 'The preference name provided has already been used.');
-        }else if(preferenceName === null || preferenceName === ""){
+        }else if(preferenceName === null || preferenceName === ''){
             swal('Warning', 'You must provide a name for the saved preferences.', 'warning');
         }else{
 
@@ -282,7 +393,7 @@ Template.Admin.events({
 
             Meteor.call('server/addUserPreference', payload, function(err, res){
                 if(err){
-                    console.log("Error encountered while attempting to call server/addUserPreference. Error: " +err);
+                    console.log('Error encountered while attempting to call server/addUserPreference. Error: ' +err);
                 }else{
 
                     //Update the Session
@@ -309,7 +420,7 @@ Template.Admin.events({
                         closeOnConfirm: true
                     });
                     //Update the preferences so that the new option apears on the load preferences modal.
-                    Session.set("CurrentPreference", payload);
+                    Session.set('CurrentPreference', payload);
                     //fetchUserPreferences();
                 }
             });
@@ -362,7 +473,7 @@ Template.Admin.events({
     'change .js-select-primary'(event, template) {
         Meteor.users.update(Meteor.userId(), {
             $set: {
-                "profile.primaryStation": $('#primaryStation').val(),
+                'profile.primaryStation': $('#primaryStation').val(),
             }
         });
 
@@ -376,7 +487,7 @@ Template.Admin.events({
         //Don't allow the user to remove the primary station from the proximity stations.
         if($(event.target).attr('id') === $('#primaryStation').val()){
             $(event.target).prop('checked', true);
-            swal("Warning", 'You\'ve selected that station as a primary station.', 'warning');
+            swal('Warning', 'You\'ve selected that station as a primary station.', 'warning');
         }
     },
     'change .js-top-plot-param'(event, template) {
@@ -385,10 +496,25 @@ Template.Admin.events({
                 let topPlotDataParameter = $('#topPlotDataParameter').val();
                 Meteor.users.update(Meteor.userId(), {
                     $set: {
-                        "profile.topPlotDataParameter": topPlotDataParameter,
+                        'profile.topPlotDataParameter': topPlotDataParameter,
                     }
                 });
                 updateDateSelectorRange();
+
+                //Make sure that all enabled poximity stations have the data parameter selected.
+                let foundData = Data.find({['data.' + topPlotDataParameter]:{$exists:true}}).fetch();
+                if(foundData.length < Data.count){
+                    $('.proximityStationCheckbox').each(function(obj){
+                        let proximityTitle = $(obj).prop('id')
+                        let stationFoundInList = false;
+                        foundData.forEach(function(data){
+                            if(data.title === proximityTitle)stationFoundInList = true;    
+                        });
+                        if(stationFoundInList === false){
+                            $(obj).prop('disabled', true);    
+                        }
+                    });    
+                }
             } catch(e) {
                 console.log(e);
             }
@@ -406,6 +532,39 @@ Template.Admin.events({
                 'profile.parameterAlerts.unit': unit
             }
         });
+    },
+    'change #parameterAlertsEnableInput'(event, template){
+        if($(event.target).prop('checked') === true){
+            $('.parameterAlertToggle').show();
+
+            $('#midAlert').prop('disabled', false);
+            $('#lowAlert').prop('disabled', false);
+        }else{
+            $('.parameterAlertToggle').hide();
+            $('#midAlert').prop('disabled', true);
+            $('#lowAlert').prop('disabled', true);
+        }
+    },
+    'click #getCsvButton'(event, template){
+        let profile = getSubmitPayload().profile;
+        let csvString = generateCSV(profile);
+
+        //This initiates a download of the csv file.
+        let blob = new Blob([csvString]);
+        let a = window.document.createElement('a');
+        a.href = window.URL.createObjectURL(blob, {type: 'text/plain'});
+
+        //This is the name of the file
+        let fileName = 'data.csv';
+        if(profile.stationViewMode === 'single'){
+            fileName = profile.primaryStation + '.csv'
+        }else if(profile.stationViewMode === 'multiple'){
+            fileName = profile.topPlotDataParameter;
+        }
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a); 
     }
 });
 
@@ -413,17 +572,7 @@ Template.Admin.events({
 /* Admin: Helpers */
 /*****************************************************************************/
 Template.Admin.helpers({
-    primaryStationOptions: function(){
-        let listOfStations = Stations.find().fetch(),
-            stationNames = [];
-
-        _.each(listOfStations, (obj) => {
-            stationNames.push(obj.title);
-        });
-
-        return stationNames;
-    },
-    proximityStationOptions: function(){
+    stationsList: function(){
         try {
 
             let listOfStations = Stations.find({}).fetch(),
@@ -432,21 +581,44 @@ Template.Admin.helpers({
             _.each(listOfStations, (obj) => {
                 stationNames.push(obj.title);
             });
-
-            return stationNames;
+            return stationNames.sort();
         } catch(e) {
             console.log(e);
         }
+    },
+    singleStationParameters(){
+        let userPrimaryStation = Meteor.user().profile.primaryStation;
+        if(userPrimaryStation === null || userPrimaryStation === ''){
+            return [];
+        }
+
+        let keys = Object.keys(Data.findOne({title:userPrimaryStation}).data);
+
+        //Remove 'times' from the keys array.
+        var index = keys.indexOf('times');
+        if (index !== -1)keys.splice(index, 1);
+        keys.sort();
+
+        let parameterList = [];
+        keys.forEach(function(obj){
+            parameterList.push({'name' : obj, 'uiName': camelToRegular(obj)});
+        });
+        return parameterList;
     },
     dataParams() {
         try {
             if (Meteor.user() && Meteor.user().profile.primaryStation) {
                 let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation}),
-                    dataParams = Object.keys(dataSource.data);
+                    parameterNames = Object.keys(dataSource.data);
 
-                let timesIndex = dataParams.indexOf('times');
-                if (timesIndex > -1) dataParams.splice(timesIndex, 1);
-
+                let timesIndex = parameterNames.indexOf('times');
+                if (timesIndex > -1) parameterNames.splice(timesIndex, 1);
+                parameterNames.sort();
+                let dataParams = [];
+                parameterNames.forEach(function(obj){
+                    let object = {'name' : obj, 'uiName': camelToRegular(obj)};
+                    dataParams.push(object);
+                });
                 return dataParams;
             }
         } catch (exception) {
@@ -485,19 +657,6 @@ Template.Admin.helpers({
     },
     infoTickerText() {
         return Meteor.user().profile.infoTickerText;
-    },
-    singleStationParameters(){
-        let userPrimaryStation = Meteor.user().profile.primaryStation;
-        if(userPrimaryStation === null || userPrimaryStation === ""){
-            return [];
-        }
-
-        let keys = Object.keys(Data.findOne({title:userPrimaryStation}).data);
-
-        //Remove 'times' from the keys array.
-        var index = keys.indexOf("times");
-        if (index !== -1)keys.splice(index, 1);
-        return keys;
     }
 });
 
@@ -524,13 +683,15 @@ Template.Admin.onRendered(function() {
         $slider.ionRangeSlider({
             type: 'datetime',
             prettify: function (num) {
-                return moment(num, "X").format("LL");
+                return moment(num, 'X').format('LL');
             },
             onStart: saveTimeRange,
             onUpdate: saveTimeRange,
             onFinish: saveTimeRange
 
         });
+        $('#parameterAlertsTooltip').popover({placement:'bottom'});
+        $('#tickerMarqueeTooltip').popover({placement:'right'});
         updateDateSelectorRange();
 
         //Hide inputs for single station view.

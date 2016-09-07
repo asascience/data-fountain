@@ -17,6 +17,9 @@ Template.BuoyMap.events({
 /* BuoyMap: Helpers */
 /*****************************************************************************/
 Template.BuoyMap.helpers({
+    imageName(){
+        return Meteor.user().profile.primaryStation.replace(/\s/g,'');    
+    }
 });
 
 /*****************************************************************************/

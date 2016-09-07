@@ -1,5 +1,5 @@
 ## Data-Fountain
-Data-Fountain is project funded by an educational grant and it's aim is to represent meteorological (MET) and oceanographic (Ocean) data from buoys and weather stations in a way that is easy to interpret by middle and high school students.
+Data-Fountain is project funded by an educational grant and its aim is to represent meteorological (MET) and oceanographic (Ocean) data from buoys and weather stations in a way that is easy to interpret by middle and high school students.
 
 The site will collect and store, at regular intervals, MET and Ocean data.  This data will be represented by various graphs and icons and put on display via Television screens located around the school through a Google Chrome HDMI streaming video adapter.
 
