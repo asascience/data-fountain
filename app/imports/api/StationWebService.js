@@ -296,17 +296,7 @@ export default class StationWebService {
                                 waveHeightValues.push([time,datum.waveHeight]);
                                 wtmp.push([time,this._convertCtoF(datum.waterTemp)]);
 
-                            } else if (moment(datum.date).minute() === 50) {
-                                let time = moment(datum.date).minutes(0).seconds(0).milliseconds(0).toISOString();
-                                times.push(time);
-                                wdir.push([time, datum.windDirection]);
-                                wspd.push([time, datum.windSpeed * MPS_TO_MPH]);
-                                atmp.push([time, this._convertCtoF(datum.airTemp)]);
-                                waveHeightValues.push([time,datum.waveHeight]);
-                                wtmp.push([time,this._convertCtoF(datum.waterTemp)]);
-
                             }
-
                         });
 
                         // Make sure all the data is in the correct order.
