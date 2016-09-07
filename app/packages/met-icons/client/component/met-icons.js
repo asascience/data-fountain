@@ -37,7 +37,7 @@ Template.MetIcons.helpers({
     tempIcon() {
         try {
             let weather = Template.instance().weather(),
-                temp = Math.round(weather.ndbc.airTemp);
+                temp = Math.round(weather.ndbc.airTemperature);
 
             return temp;
         } catch (exception) {
@@ -84,12 +84,12 @@ Template.MetIcons.helpers({
 /*****************************************************************************/
 /* MetIcons: Lifecycle Hooks */
 /*****************************************************************************/
-Template.MetIcons.onCreated(() => {
+Template.MetIcons.onCreated(function() {
     const weatherDep = new Tracker.Dependency;
     let primaryStation = Meteor.user().profile.primaryStation;
 
     let weatherCollection = Weather.find({}).fetch(),
-        dataCollection = Data.findOne({title: primaryStation}, {fields: {'title': 1, 'data.windSpeed': 1, 'data.airTemp': 1, 'data.windDirection': 1}}),
+        dataCollection = Data.findOne({title: primaryStation}, {fields: {'title': 1, 'data.windSpeed': 1, 'data.airTemperature': 1, 'data.windDirection': 1}}),
         weather = {};
 
     weather.ndbc = {};
@@ -117,11 +117,11 @@ Template.MetIcons.onCreated(() => {
     });
 });
 
-Template.MetIcons.onRendered(() => {
+Template.MetIcons.onRendered(function() {
     $('[data-skycon]').each(initSkycon);
 });
 
-Template.MetIcons.onDestroyed(() => {
+Template.MetIcons.onDestroyed(function() {
 });
 
 (function(window, document, $, undefined){

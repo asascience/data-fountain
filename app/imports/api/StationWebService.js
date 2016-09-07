@@ -286,17 +286,20 @@ export default class StationWebService {
                             waveHeightValues = [],
                             wtmp = [];
 
+                        let last, curr;
                         currentBuoyData.forEach((datum) => {
-                            if (moment(datum.date).minute() === 0) {
-                                let time = moment(datum.date).seconds(0).milliseconds(0).toISOString();
+                            curr = moment(datum.date).hour();
+                            if (last === undefined || last-curr === 1) {
+                                let time = moment(datum.date).minutes(0).seconds(0).milliseconds(0).toISOString();
                                 times.push(time);
                                 wdir.push([time, datum.windDirection]);
                                 wspd.push([time, datum.windSpeed * MPS_TO_MPH]);
                                 atmp.push([time, this._convertCtoF(datum.airTemp)]);
                                 waveHeightValues.push([time,datum.waveHeight]);
                                 wtmp.push([time,this._convertCtoF(datum.waterTemp)]);
-
                             }
+                            // set the time for use in the "last" calculation.
+                            last = curr;
                         });
 
                         // Make sure all the data is in the correct order.
