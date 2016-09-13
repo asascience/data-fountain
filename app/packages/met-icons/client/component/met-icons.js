@@ -104,7 +104,9 @@ Template.MetIcons.onCreated(function() {
 
     Tracker.autorun(() => {
         weather.forecastIo = weatherCollection.filter((obj) => {
-            return obj.currently.time === moment(Session.get('globalTimer')).unix();
+            if(obj.currently !== undefined){
+                return obj.currently.time === moment(Session.get('globalTimer')).unix();
+            }
         });
 
         Object.keys(dataCollection.data).forEach((item, index) => {

@@ -35,7 +35,7 @@
                         </label>
                         <div class="col-md-4">
                             <select class="category-select form-control js-select-primary" id="primaryStation">
-                                {{#each primaryStationOptions}}
+                                {{#each stationsList}}
                                 <option value="{{this}}">{{this}}</option>
                                 {{/each}}
                             </select>
@@ -49,7 +49,7 @@
                         <div class="col-md-4">
                             <select class="category-select form-control js-top-plot-param" id="topPlotDataParameter">
                                 {{#each dataParams}}
-                                <option value="{{this}}">{{this}}</option>
+                                <option value="{{this.name}}">{{this.uiName}}</option>
                                 {{/each}}
                             </select>
                             <p class="control-explanation">Select a data paramter.</p>
@@ -62,19 +62,27 @@
                         <div class="col-md-4">
                             <select class="category-select form-control js-select-bottom-parameter" id="bottomPlotDataParameter">
                                 {{#each dataParams}}
-                                <option value="{{this}}">{{this}}</option>
+                                <option value="{{this.name}}">{{this.uiName}}</option>
                                 {{/each}}
                             </select>
                             <p class="control-explanation">Select a bar plot parameter.</p>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="parameterAlertsDiv">
                             <div class="row">
-                                <label class="col-md-2 control-label" for="paramAlerts">
+                        <label class="col-md-2 control-label" for="paramAlerts">
                                     Parameter Alerts
                                 </label>
-                                <div class="col-md-1">
+                            <div class="parameterAlertsDiv row">
+                                <div class="row col-offset-2"> 
+                                    <input type="checkbox" id="parameterAlertsEnableInput"> Enabled
+                                    <div class="parameterAlertToggle" style="display:none;">
+                                            <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsFlippedSwitch"> Low = Green
+                                            <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsNotFlippedSwitch"> Low = Red
+                                        </div>
+                                </div>
+
+                                <div class="col-md-1 col-md-offset-2">
                                     <input id="lowAlert" type="text" class="form-control form-control-rounded" placeholder="Low"/>
                                 </div>
                                 <div class="col-md-1">
@@ -84,11 +92,12 @@
                                     <input id="paramUnit" type="text" class="form-control form-control-rounded" disabled/>
                                 </div>
                                 <div class="col-md-1 verticalCenter">
-                                    <label>Flip Colors: <input type="checkbox" id="parameterAlertsSwitch"></label>
+                                    <div class="input-group-btn">
+                                        <a tabindex="0" class="btn btn-default" id="parameterAlertsTooltip" role="button" data-toggle="popover" data-trigger="focus" title="Parameter Alerts" data-content="Use parameter alerts to color graphs based on values. Colors under the min value with be green. Colors between min and mid will be yellow. Colors above mid will be red. The colors can be flipped.">
+                                            <i class="fa fa-question-circle"></i>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row col-md-4 col-md-offset-2">
-                                <p class="control-explanation">Decide which ranges should be of a certain color on the bottom plot.</p>
                             </div>
                         </div>
                     </div>
@@ -96,7 +105,9 @@
                         <label class="col-md-2 control-label">Station Parameters</label>
                         <div class="col-md-4">
                             {{#each singleStationParameters}}
-                            <label><input type="checkbox" class="stationParameterCheckbox" id="{{this}}">{{this}}</label>
+                            <div class="row">
+                                <label for="{{this.name}}"><input type="checkbox" class="stationParameterCheckbox" id="{{this.name}}">{{this.uiName}}</label>
+                            </div>
                             {{/each}}
                             <p class="control-explanation">Select parameters to graph for a single station.</p>
                         </div>
@@ -106,8 +117,10 @@
                             Proximity Stations
                         </label>
                         <div class="col-md-4">
-                            {{#each proximityStationOptions}}
-                            <label><input type="checkbox" class="proximityStationCheckbox" id="{{this}}">{{this}}</label>
+                            {{#each stationsList}}
+                            <div class="row">
+                                <label for="{{this}}"><input type="checkbox" class="proximityStationCheckbox" id="{{this}}">{{this}}</label>
+                            </div>
                             {{/each}}
                             <p class="control-explanation">Nearby stations to display on the bottom bar plot.</p>
                         </div>
@@ -143,8 +156,20 @@
                             Ticker Marquee
                         </label>
                         <div class="col-md-4">
-                            <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}} />
-                            <p class="control-explanation">Select info ticker label.</p>
+                            <div class="row">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <input type="checkbox" aria-label="..." id="tickerEnabledInput"><span>  enabled</span>
+                                    </span>
+                                    <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}}>
+                                    <div class="input-group-btn">
+                                        <a tabindex="0" class="btn btn-default" id="tickerMarqueeTooltip" role="button" data-toggle="popover" data-trigger="focus" title="Ticker Marquee" data-content="Text to scroll across the bottom of the screen.">
+                                            <i class="fa fa-question-circle"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -220,6 +245,9 @@
                             </div>
                             <div class="col-md-2">
                                 <button class="pull-right btn btn-primary" type="submit">Plot Data</button>
+                            </div>
+                            <div class="row">
+                                <button type="button" class="btn btn-defualt" id="getCsvButton">get csv</button>
                             </div>
                         </div>
                     </div>

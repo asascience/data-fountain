@@ -22,7 +22,9 @@ Template.Home.events({
 /* Home: Helpers */
 /*****************************************************************************/
 Template.Home.helpers({
-
+    tickerEnabled(){
+        return Meteor.user().profile.tickerEnabled;    
+    }
 });
 
 /*****************************************************************************/
