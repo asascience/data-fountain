@@ -2,6 +2,9 @@
 <div class="admin">
     {{> Header }}
     <div class="panel panel-default">
+        <div class="spinner">
+            {{> spinner }}
+        </div>
         <div class="panel-body">
             <!-- You only need this form and the form-basic.css -->
             <form class="form-horizontal" method="post" action="#">
@@ -35,6 +38,9 @@
                         </label>
                         <div class="col-md-4">
                             <select class="category-select form-control js-select-primary" id="primaryStation">
+                                {{#unless primaryStation}}
+                                    <option value="">-- Please Choose One --</option>
+                                {{/unless}}
                                 {{#each stationsList}}
                                 <option value="{{this}}">{{this}}</option>
                                 {{/each}}
@@ -68,27 +74,19 @@
                             <p class="control-explanation">Select a bar plot parameter.</p>
                         </div>
                     </div>
-                    <div class="form-group">
-                            <div class="row">
+                    <div class="form-group parameterAlertsDiv">
                         <label class="col-md-2 control-label" for="paramAlerts">
-                                    Parameter Alerts
-                                </label>
-                            <div class="parameterAlertsDiv row">
-                                <div class="row col-offset-2"> 
-                                    <input type="checkbox" id="parameterAlertsEnableInput"> Enabled
-                                    <div class="parameterAlertToggle" style="display:none;">
-                                            <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsFlippedSwitch"> Low = Green
-                                            <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsNotFlippedSwitch"> Low = Red
-                                        </div>
-                                </div>
-
-                                <div class="col-md-1 col-md-offset-2">
+                            Parameter Alerts
+                        </label>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-4">
                                     <input id="lowAlert" type="text" class="form-control form-control-rounded" placeholder="Low"/>
                                 </div>
-                                <div class="col-md-1">
+                                <div class="col-md-4">
                                     <input id="midAlert" type="text" class="form-control form-control-rounded" placeholder="Mid"/>
                                 </div>
-                                <div class="col-md-1">
+                                <div class="col-md-2">
                                     <input id="paramUnit" type="text" class="form-control form-control-rounded" disabled/>
                                 </div>
                                 <div class="col-md-1 verticalCenter">
@@ -99,15 +97,23 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row ">
+                                <div class="col-md-3">
+                                    <input type="checkbox" id="parameterAlertsEnableInput"> Enabled
+                                </div>
+                                <div class="col-md-6 parameterAlertToggle">
+                                    <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsFlippedSwitch"> Low = Green
+                                    <input type="radio" name="flipGroup" class="parameterAlertToggle" id="parameterAlertsNotFlippedSwitch"> Low = Red
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <div class="form-group" id="singleStationParameters">
                         <label class="col-md-2 control-label">Station Parameters</label>
                         <div class="col-md-4">
                             {{#each singleStationParameters}}
-                            <div class="row">
                                 <label for="{{this.name}}"><input type="checkbox" class="stationParameterCheckbox" id="{{this.name}}">{{this.uiName}}</label>
-                            </div>
                             {{/each}}
                             <p class="control-explanation">Select parameters to graph for a single station.</p>
                         </div>
@@ -118,9 +124,7 @@
                         </label>
                         <div class="col-md-4">
                             {{#each stationsList}}
-                            <div class="row">
                                 <label for="{{this}}"><input type="checkbox" class="proximityStationCheckbox" id="{{this}}">{{this}}</label>
-                            </div>
                             {{/each}}
                             <p class="control-explanation">Nearby stations to display on the bottom bar plot.</p>
                         </div>
@@ -156,10 +160,9 @@
                             Ticker Marquee
                         </label>
                         <div class="col-md-4">
-                            <div class="row">
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <input type="checkbox" aria-label="..." id="tickerEnabledInput"><span>  enabled</span>
+                                        <input type="checkbox" aria-label="..." id="tickerEnabledInput"><span>  Enabled</span>
                                     </span>
                                     <input type="text" class="form-control form-control-rounded" id="infoTickerText" value={{infoTickerText}}>
                                     <div class="input-group-btn">
@@ -169,7 +172,6 @@
                                     </div>
                                 </div>
 
-                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -177,7 +179,7 @@
                             <div class="col-md-2 col-md-offset-2">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Save Settings
+                                        Saved Preferences
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu">

@@ -4,25 +4,25 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-base             # Packages every Meteor app needs to have
-mobile-experience       # Packages for a great mobile UX
-mongo                   # The database Meteor supports right now
-blaze-html-templates    # Compile .html files into Meteor Blaze views
-reactive-var            # Reactive variable for tracker
-jquery                  # Helpful client-side library
-tracker                 # Meteor's client-side reactive programming library
-standard-minifier-css   # CSS minifier run for production mode
-standard-minifier-js    # JS minifier run for production mode
-es5-shim                # ECMAScript 5 compatibility for older browsers.
-ecmascript              # Enable ECMAScript2015+ syntax in app code
+meteor-base@1.0.4             # Packages every Meteor app needs to have
+mobile-experience@1.0.4       # Packages for a great mobile UX
+mongo@1.1.12                   # The database Meteor supports right now
+blaze-html-templates@1.0.4    # Compile .html files into Meteor Blaze views
+reactive-var@1.0.10            # Reactive variable for tracker
+jquery@1.11.9                  # Helpful client-side library
+tracker@1.1.0                 # Meteor's client-side reactive programming library
+standard-minifier-css@1.2.0   # CSS minifier run for production mode
+standard-minifier-js@1.2.0    # JS minifier run for production mode
+es5-shim@4.6.14                # ECMAScript 5 compatibility for older browsers.
+ecmascript@0.5.8              # Enable ECMAScript2015+ syntax in app code
 iron:router
-markdown
-modules
-less
+markdown@1.0.10
+modules@0.7.6
+less@2.7.5
 sanjo:jasmine
 velocity:html-reporter
 velocity:console-reporter
-http
+http@1.2.9
 twbs:bootstrap
 maka:light-theme
 bevanhunt:leaflet
@@ -30,11 +30,11 @@ fortawesome:fontawesome
 mrt:leaflet-label
 json
 d3js:d3
-session
+session@1.1.6
 mrt:moment
 michalvalasek:jquery-marquee
-reactive-dict
-check
+reactive-dict@1.1.8
+check@1.2.3
 meteortoys:allthings
 percolate:synced-cron
 nimble:restivus
@@ -43,10 +43,12 @@ ocean-plots
 buoy-map
 info-ticker
 auth
-accounts-password
+accounts-password@1.3.0
 ian:accounts-ui-bootstrap-3
 jss:bootstrap-multi-select
 mrt:chosen-package
 natestrauser:select2
 zimme:active-route
 postrednik:meteor-rangeslider
+shell-server
+sacha:spin

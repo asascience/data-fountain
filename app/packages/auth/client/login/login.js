@@ -16,6 +16,8 @@ Template.Login.events({
                 return;
             } else {
                 if (Router.current().route.name === 'login') {
+                    $('.spinner').css('opacity', 1);
+                    $('.panel').css('opacity', 0);
                     Router.go('admin');
                 }
             }

@@ -95,3 +95,10 @@
     background: orange;
 }
 
+.map-zone {
+    position: relative;
+}
+.map-zone > img {
+    position: absolute;
+    bottom: 0;
+}

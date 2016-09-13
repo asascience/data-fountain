@@ -8,15 +8,26 @@ html{
     background-color: #f3f3f3;
 }
 
-.form-group {
+.admin .form-group {
     padding: 10px 0 10px 0;
 }
 
-.control-explanation{
+.admin .control-explanation{
     color:#a9a9a9;
 }
-.verticalCenter {
+.admin .verticalCenter {
     float: none;
     display: inline-block;
     vertical-align: middle;
-}                                    
+}
+.admin .panel-body {
+    opacity: 0;
+    transition: all 1s ease;
+}
+
+.admin .spinner {
+    opacity: 1;
+    transition: all 1s ease;
+}
+
+

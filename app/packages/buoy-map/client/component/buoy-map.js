@@ -8,9 +8,9 @@ Template.BuoyMap.events({
 
         let stationName = $(event.target).text() || $(event.target).find('span').text();
         Meteor.users.update(Meteor.userId(), {
-            $set: {'profile.primaryStation': stationName}
+        $set: {'profile.primaryStation': stationName}
         }, {multi:true});
-    }*/
+        }*/
 });
 
 /*****************************************************************************/
@@ -18,7 +18,7 @@ Template.BuoyMap.events({
 /*****************************************************************************/
 Template.BuoyMap.helpers({
     imageName(){
-        return Meteor.user().profile.primaryStation.replace(/\s/g,'');    
+        return Meteor.user().profile.primaryStation.replace(/\s/g,'');
     }
 });
 
@@ -34,8 +34,10 @@ Template.BuoyMap.onRendered(function(){
         let stations = Stations.find({'title': {$in: proximityStations}}).fetch(),
             primaryStation = Stations.findOne({title: Meteor.user().profile.primaryStation});
 
+
+
         //Map Initialization
-        let map = L.map('map').setView([38.2,-76.2574], 8);
+        let map = L.map('map').setView([primaryStation.lat,primaryStation.lon], 8);
         // map.createPane('labels');
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
             maxZoom: 13,
@@ -43,9 +45,7 @@ Template.BuoyMap.onRendered(function(){
             id: 'mapbox.streets'
         }).addTo(map);
 
-        //Adding Stations and legend
 
-        let legend=document.getElementById('legendTable');
         for(i=0;i<stations.length;i++)
         {
             let lat=Number(stations[i].lat);//latitude
@@ -53,11 +53,6 @@ Template.BuoyMap.onRendered(function(){
             let stationName = stations[i].title;
             if (stationName !== primaryStation.title) {
                 //Adding a point
-                let row = legend.insertRow();
-                let cell1 = row.insertCell(0);
-                let cell2 = row.insertCell(1);
-                cell1.innerHTML = "<div id='blackcircle' style='height: 2vw; width: 2vw;'></div>";
-                cell2.innerHTML = `<span style="font-size: 1.40vw">${stationName}</span>`;
                 L.circle([lat, long], 4500, {
                     color: 'black',
                     fillColor: 'black',
@@ -74,11 +69,6 @@ Template.BuoyMap.onRendered(function(){
                     zIndexOffset: 1000
                 }).addTo(map);
             } else {
-                let row = legend.insertRow();
-                let cell1 = row.insertCell(0);
-                let cell2 = row.insertCell(1);
-                cell1.innerHTML = "<div id='orangecircle' style='height: 2vw; width: 2vw;'></div>";
-                cell2.innerHTML = `<span style="font-size: 1.35vw">${primaryStation.title}</span>`;
                 L.circle([primaryStation.lat, primaryStation.lon], 4500, {
                     color: 'orange',
                     fillColor: 'orange',

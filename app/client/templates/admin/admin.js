@@ -2,98 +2,102 @@ import swal from 'sweetalert';
 import HUMPS from 'humps';
 
 export default function generateCSV(userOptions){
-    //Get the user inputs (Meteor.user().profile might not be updated).
-    let userProfile = userOptions; 
+    try {
+        //Get the user inputs (Meteor.user().profile might not be updated).
+        let userProfile = userOptions;
 
-    let station = userProfile.primaryStation;
-    let topPlotParameter = userProfile.topPlotDataParameter;
-    let stationData = Data.findOne({title:station});
-    let dataArray;
-    
-    //Get the selected start and end date.
-    let startDate = stationData.data[topPlotParameter].times[userProfile.fromTimeIndex];
-    let endDate = stationData.data[topPlotParameter].times[userProfile.toTimeIndex];
+        let station = userProfile.primaryStation;
+        let topPlotParameter = userProfile.topPlotDataParameter;
+        let stationData = Data.findOne({title:station});
+        let dataArray;
 
-    let csvString = '';
+        //Get the selected start and end date.
+        let startDate = stationData.data[topPlotParameter].times[userProfile.fromTimeIndex];
+        let endDate = stationData.data[topPlotParameter].times[userProfile.toTimeIndex];
 
-    //The single station version will create a csv file listing the data for each sensor
-    //on the station (selected in singleStationParameters).
-    if(userProfile.stationViewMode === "single"){
-        let stationParameters = userProfile.singleStationParameters;
+        let csvString = '';
 
-        let headerString = 'dateTime,';
+        //The single station version will create a csv file listing the data for each sensor
+        //on the station (selected in singleStationParameters).
+        if(userProfile.stationViewMode === "single"){
+            let stationParameters = userProfile.singleStationParameters;
 
-        //Initialize the data with the dates for every entry.
-        dataArray=[stationData.data.times.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex)];
+            let headerString = 'dateTime,';
 
-        //Iterate over stationParameters, a list of the parameters for a single station to generate our csv header
-        //and to add values to the date array.
-        stationParameters.forEach(function(obj){
-            headerString += obj + ','
+            //Initialize the data with the dates for every entry.
+            dataArray=[stationData.data.times.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex)];
 
-            //This function takes the start and end date for the data and returns the index of the data
-            //that within those times for each paramter. We will then slice off the excess from the array.
-            let indexes = findDateIndexes(moment(startDate), moment(endDate), stationData.data[obj].times);
-            let valuesSlice = stationData.data[obj].values.slice(indexes[0], indexes[1]);
-            dataArray.push(valuesSlice);
-        });
+            //Iterate over stationParameters, a list of the parameters for a single station to generate our csv header
+            //and to add values to the date array.
+            stationParameters.forEach(function(obj){
+                headerString += obj + ','
 
-        //Add the header to csv.
-        csvString += headerString + '\n';
-        
-    }else{
-        //This is the multiple station case. Here we will create a csv file that lists one parameter,
-        //the top plot parameter across a range of stations (the proximity stations).
-        let proximityStations = userProfile.proximityStations;
-        let headerString = 'dateTime,';
-        dataArray=[stationData.data.times.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex)];
+                //This function takes the start and end date for the data and returns the index of the data
+                //that within those times for each paramter. We will then slice off the excess from the array.
+                let indexes = findDateIndexes(moment(startDate), moment(endDate), stationData.data[obj].times);
+                let valuesSlice = stationData.data[obj].values.slice(indexes[0], indexes[1]);
+                dataArray.push(valuesSlice);
+            });
 
-        //Simalar to the single station case, iterates over the two dimensional data array and takes
-        //the nth index of every nested array and adds it to a new line in the csv. 
-        proximityStations.forEach(function(obj){
-            headerString += obj;
-            let currentStation = Data.findOne({title:obj});
-            let slicedData = []
+            //Add the header to csv.
+            csvString += headerString + '\n';
 
-            //Deal with the case that a station doesn't contain the parameter alltogether.
-            if(currentStation.data[topPlotParameter] === undefined){
-                for(var i = 0; i < dataArray.length; i++){
-                    slicedData.push('null');
+        }else{
+            //This is the multiple station case. Here we will create a csv file that lists one parameter,
+            //the top plot parameter across a range of stations (the proximity stations).
+            let proximityStations = userProfile.proximityStations;
+            let headerString = 'dateTime,';
+            dataArray=[stationData.data.times.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex)];
+
+            //Simalar to the single station case, iterates over the two dimensional data array and takes
+            //the nth index of every nested array and adds it to a new line in the csv.
+            proximityStations.forEach(function(obj){
+                headerString += obj;
+                let currentStation = Data.findOne({title:obj});
+                let slicedData = []
+
+                //Deal with the case that a station doesn't contain the parameter alltogether.
+                if(currentStation.data[topPlotParameter] === undefined){
+                    for(var i = 0; i < dataArray.length; i++){
+                        slicedData.push('null');
+                    }
+                }else{
+                    let indexes = findDateIndexes(moment(startDate), moment(endDate), currentStation.data[topPlotParameter].times);
+                    slicedData = currentStation.data[topPlotParameter].values.slice(indexes[0], indexes[1]);
                 }
-            }else{
-                let indexes = findDateIndexes(moment(startDate), moment(endDate), currentStation.data[topPlotParameter].times);
-                slicedData = currentStation.data[topPlotParameter].values.slice(indexes[0], indexes[1]);
-            }
-            dataArray.push(slicedData);
+                dataArray.push(slicedData);
+            });
+            csvString += headerString + '\n';
+        }
+
+        //At this point the dataArray will be a two dimensional array. An array of parameter data arrays.
+        //We will iterate this array and on the nth line write the nth index of each array.
+        dataArray[0].forEach(function(element, index){
+            let partialString = '';
+            dataArray.forEach(function(obj){
+
+                //It's ok for the parameter data to be missing some values. Change the output to "null" if it is.
+                let value = obj[index];
+                if(value === undefined){
+                    value = "null";
+                }
+                partialString += value + ','
+            });
+            partialString += "\n";
+            csvString+=partialString;
         });
-        csvString += headerString + '\n'; 
+        return csvString;
+    } catch(e) {
+        console.log(e);
     }
-
-    //At this point the dataArray will be a two dimensional array. An array of parameter data arrays.
-    //We will iterate this array and on the nth line write the nth index of each array.
-    dataArray[0].forEach(function(element, index){
-        let partialString = '';
-        dataArray.forEach(function(obj){
-
-            //It's ok for the parameter data to be missing some values. Change the output to "null" if it is.
-            let value = obj[index];
-            if(value === undefined){
-               value = "null";
-            }
-            partialString += value + ','    
-        });
-        partialString += "\n";
-        csvString+=partialString;
-    });
-    return csvString;
 }
 
-//Checks the fields and generates an object represenatative of the user's choices.
+//Checks the fields and generates an object representative of the user's choices.
 function getSubmitPayload(){
-    
+
 
     let viewMode = $('.singleStation').hasClass('active') ? 'single' : 'multiple';
-   
+
     let primaryStation = $('#primaryStation').val();
     let parameterAlerts = {}
     let proximityStations = [];
@@ -109,10 +113,10 @@ function getSubmitPayload(){
 
 
         $('.proximityStationCheckbox').each(function(obj){
-            if($(this).prop('checked') === true)proximityStations.push($(this).prop('id')); 
+            if($(this).prop('checked') === true)proximityStations.push($(this).prop('id'));
         });
 
-       
+
     }
     //Make sure that the proximity stations contains the primary station.
     if(proximityStations.indexOf(primaryStation) === -1)proximityStations.push(primaryStation);
@@ -122,7 +126,7 @@ function getSubmitPayload(){
     $('.stationParameterCheckbox').each(function(){
         if($(this).prop('checked') === true)stationParameters.push($(this).prop('id'));
     });
-    
+
     //Get data collected from the date slider and process it.
     let sliderData = Session.get('sliderData');
     let stationData = Data.findOne({title: primaryStation});
@@ -190,13 +194,13 @@ function updateInputsWithProfile(userProfile){
     //update proximityStations:
     $('.proximityStationCheckbox').prop('checked', false);
     userProfile.proximityStations.forEach(function(obj){
-        $('.proximityStationCheckbox[id=\''+ obj +'\']').prop('checked', true);    
+        $('.proximityStationCheckbox[id=\''+ obj +'\']').prop('checked', true);
     });
-    
+
     //Update stationParameters
     $('.stationParameterCheckbox').prop('checked', false);
     userProfile.singleStationParameters.forEach(function(obj){
-        $('.stationParameterCheckbox[id=\'' + obj + '\']').prop('checked', true);    
+        $('.stationParameterCheckbox[id=\'' + obj + '\']').prop('checked', true);
     });
 
     //Update the date slider
@@ -228,7 +232,7 @@ function fetchUserPreferences(){
     });
 }
 
-function updateDateSelectorRange(){ 
+function updateDateSelectorRange(){
     let topPlotDataParameter = $('#topPlotDataParameter').val();
     let primaryStation = $('#primaryStation').val();
     if(topPlotDataParameter !== null && primaryStation != null){
@@ -253,14 +257,14 @@ function findDateIndexes(startDate, endDate, dateArray){
     let startIndex, endIndex;
     for(let i = 0; i < dateArray.length; i++){
         let currentArrayDate = moment(dateArray[i]);
-        
+
         if(startDate.isSame(currentArrayDate) || startDate.isAfter(currentArrayDate)){
-            startIndex = i; 
+            startIndex = i;
         }
         if(endDate.isSame(currentArrayDate) || endDate.isBefore(currentArrayDate)){
             endIndex = i;
             break;
-        } 
+        }
     }
     return [startIndex, endIndex];
 }
@@ -289,7 +293,7 @@ Template.Admin.events({
                 res.forEach(function(obj){
                     if(obj.profile.autoGenerated === true){
                         Meteor.call('server/removeUserPreference', obj._id);
-                        
+
                         //Remove preference from the session.
                         let preferences = Session.get('DataPreferences');
                         preferences.forEach(function(sessionObj, index){
@@ -302,7 +306,7 @@ Template.Admin.events({
                 });
             }
         });
-        
+
         payload.profile['preferenceName'] = 'Last Preference';
         payload.profile['autoGenerated'] = true;
         Meteor.call('server/addUserPreference', payload, function(err, res){
@@ -318,6 +322,8 @@ Template.Admin.events({
             if(err){
                 console.log(err);
             }else{
+                $('.panel-body').css('opacity', 0);
+                $('.spinner').css('opacity', 1);
                 Router.go('/');
             }
         });
@@ -479,8 +485,8 @@ Template.Admin.events({
 
         //Add the primary station to the proximity stations as well.
         let primaryStationValue = $('#primaryStation').val();
-        $('.proximityStationCheckbox[id=\'' + primaryStationValue + '\']').attr('checked', true); 
-        
+        $('.proximityStationCheckbox[id=\'' + primaryStationValue + '\']').attr('checked', true);
+
         $('.js-top-plot-param').trigger('change');
     },
     'click .proximityStationCheckbox'(event, template){
@@ -508,12 +514,12 @@ Template.Admin.events({
                         let proximityTitle = $(obj).prop('id')
                         let stationFoundInList = false;
                         foundData.forEach(function(data){
-                            if(data.title === proximityTitle)stationFoundInList = true;    
+                            if(data.title === proximityTitle)stationFoundInList = true;
                         });
                         if(stationFoundInList === false){
-                            $(obj).prop('disabled', true);    
+                            $(obj).prop('disabled', true);
                         }
-                    });    
+                    });
                 }
             } catch(e) {
                 console.log(e);
@@ -537,6 +543,7 @@ Template.Admin.events({
         if($(event.target).prop('checked') === true){
             $('.parameterAlertToggle').show();
 
+
             $('#midAlert').prop('disabled', false);
             $('#lowAlert').prop('disabled', false);
         }else{
@@ -546,25 +553,35 @@ Template.Admin.events({
         }
     },
     'click #getCsvButton'(event, template){
-        let profile = getSubmitPayload().profile;
-        let csvString = generateCSV(profile);
+        try {
+            let isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
 
-        //This initiates a download of the csv file.
-        let blob = new Blob([csvString]);
-        let a = window.document.createElement('a');
-        a.href = window.URL.createObjectURL(blob, {type: 'text/plain'});
+            if (isSafari) {
+                swal('Browser Not Supported', "Sorry, downloading this data is currently not supported in safari.  Please try with any other browser", 'warning');
+            } else {
+                let profile = getSubmitPayload().profile;
+                let csvString = generateCSV(profile);
 
-        //This is the name of the file
-        let fileName = 'data.csv';
-        if(profile.stationViewMode === 'single'){
-            fileName = profile.primaryStation + '.csv'
-        }else if(profile.stationViewMode === 'multiple'){
-            fileName = profile.topPlotDataParameter;
+                //This initiates a download of the csv file.
+                let blob = new Blob([csvString]);
+                let a = window.document.createElement('a');
+                a.href = window.URL.createObjectURL(blob, {type: 'text/plain'});
+
+                //This is the name of the file
+                let fileName = 'data.csv';
+                if(profile.stationViewMode === 'single'){
+                    fileName = profile.primaryStation + '.csv'
+                }else if(profile.stationViewMode === 'multiple'){
+                    fileName = profile.topPlotDataParameter;
+                }
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        } catch(e) {
+            console.log(e);
         }
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a); 
     }
 });
 
@@ -587,23 +604,27 @@ Template.Admin.helpers({
         }
     },
     singleStationParameters(){
-        let userPrimaryStation = Meteor.user().profile.primaryStation;
-        if(userPrimaryStation === null || userPrimaryStation === ''){
-            return [];
+        try {
+            let userPrimaryStation = (Meteor.user()) ? Meteor.user().profile.primaryStation : null;
+            if(userPrimaryStation === null || userPrimaryStation === ''){
+                return [];
+            }
+
+            let keys = Object.keys(Data.findOne({title:userPrimaryStation}).data);
+
+            //Remove 'times' from the keys array.
+            var index = keys.indexOf('times');
+            if (index !== -1)keys.splice(index, 1);
+            keys.sort();
+
+            let parameterList = [];
+            keys.forEach(function(obj){
+                parameterList.push({'name' : obj, 'uiName': camelToRegular(obj)});
+            });
+            return parameterList;
+        } catch(e) {
+            console.log(e);
         }
-
-        let keys = Object.keys(Data.findOne({title:userPrimaryStation}).data);
-
-        //Remove 'times' from the keys array.
-        var index = keys.indexOf('times');
-        if (index !== -1)keys.splice(index, 1);
-        keys.sort();
-
-        let parameterList = [];
-        keys.forEach(function(obj){
-            parameterList.push({'name' : obj, 'uiName': camelToRegular(obj)});
-        });
-        return parameterList;
     },
     dataParams() {
         try {
@@ -636,27 +657,32 @@ Template.Admin.helpers({
         return Session.get('DataPreferences');
     },
     topPlotDataParameter() {
-        return Meteor.user().profile.topPlotDataParameter;
+        return (Meteor.user()) ? Meteor.user().profile.topPlotDataParameter : null;
     },
     bottomPlotDataParameter() {
-        return Meteor.user().profile.bottomPlotDataParameter;
+        return (Meteor.user()) ? Meteor.user().profile.bottomPlotDataParameter : null;
     },
     primaryStation() {
-        return Meteor.user().profile.primaryStation;
+        return (Meteor.user()) ? Meteor.user().profile.primaryStation : null;
     },
     proximityStations() {
-        return Meteor.user().profile.proximityStations;
+        return (Meteor.user()) ? Meteor.user().profile.proximityStations : null;
     },
     dataDuration() {
-        return Meteor.user().profile.dataDuration;
+        return (Meteor.user()) ? Meteor.user().profile.dataDuration : null;
     },
     refreshInterval() {
-        if (!Meteor.user().profile.refreshInterval)
-            return 2;
-        return Meteor.user().profile.refreshInterval;
+        try {
+            if (Meteor.user() && !Meteor.user().profile.refreshInterval) {
+                return 2;
+            }
+            return (Meteor.user()) ? Meteor.user().profile.refreshInterval: null;
+        } catch(e) {
+            console.log(e);
+        }
     },
     infoTickerText() {
-        return Meteor.user().profile.infoTickerText;
+        return (Meteor.user()) ? Meteor.user().profile.infoTickerText: null;
     }
 });
 
@@ -698,11 +724,16 @@ Template.Admin.onRendered(function() {
         $('#singleStationParameters').hide();
         updateInputsWithProfile(Meteor.user().profile);
     }, 500);
+
+    Meteor.setTimeout(() => {
+        $('.panel-body').css('opacity', 1);
+        $('.spinner').css('opacity', 0);
+    }, 600);
 });
 
 Template.Admin.onDestroyed(() => {
     //Get rid of helper functions
-    // getSubmitPayload = undefined;
-    // updateInputsWithProfile = undefined;
-    // fetchUserPreference = undefined;
+    //getSubmitPayload = undefined;
+    //updateInputsWithProfile = undefined;
+    //fetchUserPreference = undefined;
 });

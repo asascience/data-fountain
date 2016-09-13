@@ -1,20 +1,9 @@
 <template name="BuoyMap">
     <div class="buoy-map ">
         <div class="row">
-            <div class="col-xs-5">
-                <div class="row">
-                    <div class="col-md-12">
-                        <img id='stationimg' src="{{imageName}}.png"/>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <table  id='legendTable'  class='legendTable'> </table>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-7 pull-right">
+            <div class="col-xs-12 map-zone">
                 <div id='map'></div>
+                <img id='stationimg' src="{{imageName}}.png"/>
             </div>
         </div>
     </div>

@@ -37,6 +37,8 @@ Template.Register.events({
             if (err) {
                 console.log(err);
             } else {
+                $('.spinner').css('opacity', 1);
+                $('.loginscreen').css('opacity', 0);
                 Router.go('/admin');
             }
         });
