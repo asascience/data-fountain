@@ -48,6 +48,7 @@
 }
 #stationimg
 {
+    border:2px solid black;
     width:12.5vw;
 }
 
@@ -100,5 +101,5 @@
 }
 .map-zone > img {
     position: absolute;
-    bottom: 0;
+    top: 0;
 }

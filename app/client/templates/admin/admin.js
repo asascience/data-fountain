@@ -7,7 +7,7 @@ export default function generateCSV(userOptions){
         let userProfile = userOptions;
 
         let station = userProfile.primaryStation;
-        let topPlotParameter = userProfile.topPlotDataParameter;
+        let topPlotParameter = userProfile.bottomPlotDataParameter;
         let stationData = Data.findOne({title:station});
         let dataArray;
 
@@ -30,7 +30,7 @@ export default function generateCSV(userOptions){
             //Iterate over stationParameters, a list of the parameters for a single station to generate our csv header
             //and to add values to the date array.
             stationParameters.forEach(function(obj){
-                headerString += obj + ','
+                headerString += obj + '(' + stationData.data[obj].units + '),';
 
                 //This function takes the start and end date for the data and returns the index of the data
                 //that within those times for each paramter. We will then slice off the excess from the array.
@@ -54,6 +54,7 @@ export default function generateCSV(userOptions){
             proximityStations.forEach(function(obj){
                 headerString += obj;
                 let currentStation = Data.findOne({title:obj});
+                headerString += '(' + currentStation.data[topPlotParameter].units + ')'
                 let slicedData = []
 
                 //Deal with the case that a station doesn't contain the parameter alltogether.
@@ -239,10 +240,13 @@ function updateDateSelectorRange(){
         let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
         let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
 
+        let minDate = moment(timeRange.data[topPlotDataParameter].times[0]).format('X');
+        let maxDate = moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X');
         slider.update({
-        min: moment(timeRange.data[topPlotDataParameter].times[0]).format('X'),
-        max: moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X')
+            min: minDate,
+            max: maxDate
         });
+        console.log(minDate);
     }else{
         slider.update({
             min: moment().subtract(7, 'days').format('X'),
@@ -408,6 +412,7 @@ Template.Admin.events({
                     Session.set('DataPreferences', dataPrefs);
 
                     //Update the user.
+
                     Meteor.users.update(Meteor.userId(), {
                         $set:payload
                     }, function(err, res){
@@ -572,7 +577,7 @@ Template.Admin.events({
                 if(profile.stationViewMode === 'single'){
                     fileName = profile.primaryStation + '.csv'
                 }else if(profile.stationViewMode === 'multiple'){
-                    fileName = profile.topPlotDataParameter;
+                    fileName = profile.bottomPlotDataParameter + '.csv';
                 }
                 a.download = fileName;
                 document.body.appendChild(a);
@@ -582,6 +587,14 @@ Template.Admin.events({
         } catch(e) {
             console.log(e);
         }
+    },
+    'change #regionSelection'(event, template){
+        let updateValue = $('#regionSelection').val();
+        Meteor.users.update(Meteor.userId(), {
+            $set: {
+                'profile.stationRegion': updateValue
+            }    
+        });
     }
 });
 
@@ -592,9 +605,16 @@ Template.Admin.helpers({
     stationsList: function(){
         try {
 
-            let listOfStations = Stations.find({}).fetch(),
-                stationNames = [];
+            let query;
+            if(Meteor.user().profile.stationRegion === "Offshore"){
+                query = {title:{$in:['Virginia Beach', 'Wallops Island']}};
+            }else{
+                query = {title:{$nin:['Virginia Beach', 'Wallops Island']}};
+            }
 
+            let listOfStations = Stations.find(query).fetch(),
+                stationNames = [];
+            
             _.each(listOfStations, (obj) => {
                 stationNames.push(obj.title);
             });
