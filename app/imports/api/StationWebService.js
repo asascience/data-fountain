@@ -104,53 +104,63 @@ export default class StationWebService {
                  *  OceansMap
                  ***************/
                 // // make the call to get the scientific data, and block with future.
-                // HTTP.call('GET', compiledUrl, (error, response) => {
-                //     if (error || response.error) {
-                //         console.log(`[!] Error from OceansMap: ${error}`);
-                //     } else {
-                //         try {
-                //         let responseData = Humps.camelizeKeys(response.data);
-                //         let gageHeight = responseData.data.gageHeight;
-                //         let oceansMapData =  Humps.camelizeKeys(response.data);
-                //
-                //         let times = moment(responseData.data.times).seconds(0).milliseconds(0).toISOString()
-                //
-                //         let airPressure = {
-                //             values: responseData.data.airPressure.values,
-                //             units: responseData.data.airPressure.units[0],
-                //             times
-                //         };
-                //
-                //         let dewPointTemperature = {
-                //             values: this._convertCtoF(responseData.data.dewPointTemperature.values),
-                //             units: "F",
-                //             times
-                //
-                //         };
-                //
-                //         let relativeHumidity = {
-                //             values: responseData.data.relativeHumidity.values,
-                //             units: responseData.data.relativeHumidity.units[0],
-                //             times
-                //         };
-                //
-                //         let seanettleProb = {
-                //             values: responseData.data.seanettleProb.values,
-                //             units:  responseData.data.seanettleProb.units[0],
-                //             times
-                //         };
-                //
-                //         data.data.airPressure = airPressure;
-                //         data.data.dewPointTemperature = dewPointTemperature;
-                //         data.data.relativeHumidity = relativeHumidity;
-                //         data.data.seaNettleProbability = seanettleProb;
-                //
-                //         Data.upsert({id: data.id}, data);
-                //         } catch (e) {
-                //             console.log(e);
-                //         }
-                //     }
-                // });
+                HTTP.call('GET', compiledUrl, (error, response) => {
+                    if (error || response.error) {
+                        console.log(`[!] Error from OceansMap: ${error}`);
+                    } else {
+                        try {
+                        let responseData = Humps.camelizeKeys(response.data);
+                        let gageHeight = responseData.data.gageHeight;
+                        let oceansMapData =  Humps.camelizeKeys(response.data);
+
+                        let times = moment(responseData.data.times).seconds(0).milliseconds(0).toISOString()
+
+                        let airPressure = {
+                            values: (responseData.data.airPressure) ? responseData.data.airPressure.values : null,
+                            units: responseData.data.airPressure.units[0],
+                            times
+                        };
+
+                        let dewPointTemperature = {
+                            values: (responseData.data && responseData.data.dewPointTemperature) ? this._convertCtoF(responseData.data.dewPointTemperature.values) : null,
+                            units: "F",
+                            times
+                        };
+
+                        let relativeHumidity = {
+                            values: (responseData.data && responseData.data.relativeHumidity) ? responseData.data.relativeHumidity.values : null,
+                            units: (responseData.data && responseData.data.relativeHumidity) ? responseData.data.relativeHumidity.units[0] : null,
+                            times
+                        };
+
+                        let seanettleProb = {
+                            values: (responseData.data && responseData.data.seanettleProb) ? responseData.data.seanettleProb.values : null,
+                            units:  (responseData.data &&responseData.data.seanettleProb) ? responseData.data.seanettleProb.units[0] : null,
+                            times
+                        };
+
+                        if (airPressure.values) {
+                            data.data.airPressure = airPressure;
+                        }
+
+                        if (dewPointTemperature.values) {
+                            data.data.dewPointTemperature = dewPointTemperature;
+                        }
+
+                        if (relativeHumidity.values) {
+                            data.data.relativeHumidity = relativeHumidity;
+                        }
+
+                        if (seanettleProb.values) {
+                            data.data.seaNettleProbability = seanettleProb;
+                        }
+
+                        Data.upsert({id: data.id}, data);
+                        } catch (e) {
+                            console.log(e);
+                        }
+                    }
+                });
 
                 /***************
                  *  BuoyJS
@@ -171,11 +181,11 @@ export default class StationWebService {
                         currentBuoyData.forEach((datum) => {
                             let time = moment(datum.date).seconds(0).milliseconds(0).toISOString();
                             times.push(time);
-                            oceanTempValues.push([time, this._convertCtoF(datum.oceanTemp)]);
-                            clconValues.push([time, datum.chlorophyllConcentration]);
-                            o2ppmValues.push([time, datum.oxygenPartsPerMil]);
-                            turbidityValues.push([time, datum.turbidity]);
-                            salinityValues.push([time, datum.waterSalinity]);
+                            if (!isNaN(Math.max(datum.oceanTemp))) { oceanTempValues.push([time, this._convertCtoF(datum.oceanTemp)]); }
+                            if (!isNaN(Math.max(datum.chlorophyllConcentration))) { clconValues.push([time, datum.chlorophyllConcentration]); }
+                            if (!isNaN(Math.max(datum.oxygenPartsPerMil))) { o2ppmValues.push([time, datum.oxygenPartsPerMil]); }
+                            if (!isNaN(Math.max(datum.turbidity))) { turbidityValues.push([time, datum.turbidity]); }
+                            if (!isNaN(Math.max(datum.waterSalinity))) { salinityValues.push([time, datum.waterSalinity]); }
                         });
 
                         // Make sure all the data is in the correct order.
@@ -216,53 +226,64 @@ export default class StationWebService {
                         });
 
                         let oceanTemp = {
-                            values: oceanTempValues,
+                            values: oceanTempValues || null,
                             units: 'F',
                             type: 'timeSeries',
                             times
                         };
 
                         let chlorophyllCon = {
-                            values: clconValues,
+                            values: clconValues || null,
                             units: '\u03BCg/L',
                             type: 'timeSeries',
                             times
                         };
 
                         let oxygenPartsPerMil = {
-                            values: o2ppmValues,
+                            values: o2ppmValues || null,
                             units: 'ppm',
                             type: 'timeSeries',
                             times
                         };
 
                         let turbidity = {
-                            values: turbidityValues,
+                            values: turbidityValues || null,
                             units: 'FTU',
                             type: 'timeSeries',
                             times
                         };
 
                         let waterSalinity = {
-                            values: salinityValues,
+                            values: salinityValues || null,
                             units: 'PSU',
                             type: 'timeSeries',
                             times
                         };
 
+                        if (oceanTemp.values) {
+                            data.data.oceanTemperature = oceanTemp;
+                            data.data.oceanTemperature.times = times;
+                        }
 
+                        if (chlorophyllCon.values) {
+                            data.data.chlorophyll = chlorophyllCon;
+                            data.data.chlorophyll.times = times;
+                        }
 
-                        data.data.oceanTemperature = oceanTemp;
-                        data.data.chlorophyll = chlorophyllCon;
-                        data.data.dissolvedOxygen = oxygenPartsPerMil;
-                        data.data.turbidity = turbidity;
-                        data.data.salinity = waterSalinity;
+                        if (oxygenPartsPerMil.values) {
+                            data.data.dissolvedOxygen = oxygenPartsPerMil;
+                            data.data.dissolvedOxygen.times = times;
+                        }
 
-                        data.data.oceanTemperature.times = times;
-                        data.data.chlorophyll.times = times;
-                        data.data.dissolvedOxygen.times = times;
-                        data.data.turbidity.times = times;
-                        data.data.salinity.times = times;
+                        if (turbidity.values) {
+                            data.data.turbidity = turbidity;
+                            data.data.turbidity.times = times;
+                        }
+
+                        if (waterSalinity.values) {
+                            data.data.salinity = waterSalinity;
+                            data.data.salinity.times = times;
+                        }
 
                         if (!data.data.times) {
                             data.data.times = times;
@@ -292,11 +313,11 @@ export default class StationWebService {
                             if (last === undefined || last-curr === 1) {
                                 let time = moment(datum.date).minutes(0).seconds(0).milliseconds(0).toISOString();
                                 times.push(time);
-                                wdir.push([time, datum.windDirection]);
-                                wspd.push([time, datum.windSpeed * MPS_TO_MPH]);
-                                atmp.push([time, this._convertCtoF(datum.airTemp)]);
-                                waveHeightValues.push([time,datum.waveHeight]);
-                                wtmp.push([time,this._convertCtoF(datum.waterTemp)]);
+                                if (!isNaN(Math.max(datum.windDirection))) { wdir.push([time, datum.windDirection]); }
+                                if (!isNaN(Math.max(datum.windSpeed))) { wspd.push([time, datum.windSpeed * MPS_TO_MPH]); }
+                                if (!isNaN(Math.max(datum.airTemp))) { atmp.push([time, this._convertCtoF(datum.airTemp)]); }
+                                if (!isNaN(Math.max(datum.waveHeight))) { waveHeightValues.push([time,datum.waveHeight]); }
+                                if (!isNaN(Math.max(datum.waterTemp))) { wtmp.push([time, this._convertCtoF(datum.waterTemp)]); }
                             }
                             // set the time for use in the "last" calculation.
                             last = curr;
@@ -374,17 +395,30 @@ export default class StationWebService {
                             times
                         };
 
-                        data.data.windDirection = windDirection;
-                        data.data.windSpeed = windSpeed;
-                        data.data.airTemperature = airTemp;
-                        data.data.waveHeight = waveHeight;
-                        data.data.waterTemperature = waterTemp;
+                        if (windDirection.values) {
+                            data.data.windDirection = windDirection;
+                            data.data.windDirection.times = times;
+                        }
 
-                        data.data.windDirection.times = times;
-                        data.data.windSpeed.times = times;
-                        data.data.airTemperature.times = times;
-                        data.data.waveHeight.times = times;
-                        data.data.waterTemperature.times = times;
+                        if (windSpeed.values) {
+                            data.data.windSpeed = windSpeed;
+                            data.data.windSpeed.times = times;
+                        }
+
+                        if (airTemp.values) {
+                            data.data.airTemperature = airTemp;
+                            data.data.airTemperature.times = times;
+                        }
+
+                        if (waveHeight.values) {
+                            data.data.waveHeight = waveHeight;
+                            data.data.waveHeight.times = times;
+                        }
+
+                        if (waterTemp.values) {
+                            data.data.waterTemperature = waterTemp;
+                            data.data.waterTemperature.times = times;
+                        }
 
                         if (!data.data.times) {
                             data.data.times = times;
