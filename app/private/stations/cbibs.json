@@ -307,9 +307,9 @@
       ]
     },
     {
-    "dataUrl": "/api/data/df-11",
-    "id": "df-11",
-    "imageUrl": "/api/image/df-11",
+    "dataUrl": "/api/data/df-13",
+    "id": "df-13",
+    "imageUrl": "/api/image/df-13",
     "lat": 37.756,
     "lon": -75.334,
     "met": "data.oceansmap.com:KTGI",
@@ -379,5 +379,50 @@
     "createdAt": 1471982630,
     "stationId": "44014",
     "isPrimary": false
-}
-  ]
+},
+{
+    "cbibs_data": "URLROOTapi/opendap?url=http://data.oceansmap.com/thredds/dodsC/cbmm_ag/CBMM/CBMM.ncml",
+    "cbibs_parameters": [
+        "wind_speed",
+        "rainfall",
+        "dew_point",
+        "wind_from_direction",
+        "air_temperature",
+        "mass_concentration_of_oxygen_in_sea_water",
+        "air_pressure",
+        "wdir_i",
+        "wspd_i",
+        "relative_humidity",
+        "simple_turbidity",
+        "ph",
+        "sea_water_salinity",
+        "sea_water_temperature"
+    ],
+    "cbibs_url": "URLROOTapi/opendap?url=http://data.oceansmap.com/thredds/dodsC/cbmm_ag/CBMM/CBMM.ncml",
+    "data_url": "/api/data/df-11",
+    "id": "df-11",
+    "image_url": "/api/image/df-11",
+    "lat": 38.787326,
+    "lon": -76.220273,
+    "param_mapping": [
+        "MET_06_Wind_Speed_Mean",
+        "MET_04_Rainfall",
+        "MET_03_Dew_Point",
+        "MET_07_Wind_Dir_Mean",
+        "MET_01_Atemp",
+        "WQ_04_mg_Diss_Ox",
+        "MET_05_Baro_Press",
+        "MET_09_WDir_I",
+        "MET_08_WSpd_I",
+        "MET_02_Rel_Humidity",
+        "WQ_05_Turbidity",
+        "WQ_06_pH",
+        "WQ_02_Salinity",
+        "WQ_01_Wtemp"
+    ],
+    "title": "CBMM",
+    "usgs": "data.oceansmap.com:01580620",
+    "stationId": "99999",
+    "isPrimary": false
+  }
+]
