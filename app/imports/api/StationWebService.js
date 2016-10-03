@@ -18,6 +18,11 @@ export default class StationWebService {
         return fahr;
     }
 
+    _convertKnotToMph(value) {
+        let mph = value * 1.151;
+        return mph;
+    }
+
     fetchStations() {
         console.log('[+] Compiling a collection of stations');
         try {
@@ -127,11 +132,6 @@ export default class StationWebService {
                                     times
                                 };
 
-                                let dewPointTemperature = {
-                                    values: (responseData.data && responseData.data.dewPointTemperature) ? this._convertCtoF(responseData.data.dewPointTemperature.values) : null,
-                                    units: "F",
-                                    times
-                                };
 
                                 function createDataObject(paramName) {
                                     return {
@@ -148,28 +148,67 @@ export default class StationWebService {
 
                                 if (data.id) {
 
+                                    if (responseData.data.dewPointTemperature && responseData.data.dewPointTemperature.values) {
+                                        let dewPointTempValues = responseData.data.dewPointTemperature.values.map((obj) => {
+                                            return this._convertCtoF(obj);
+                                        });
+
+                                        let dewPointTemperature = {
+                                            values: (responseData.data && responseData.data.dewPointTemperature) ? dewPointTempValues : null,
+                                            units: "F",
+                                            times
+                                        };
+
+                                        if (dewPointTemperature.values) {
+                                            data.data.dewPointTemperature = dewPointTemperature;
+                                        }
+                                    }
+
+                                    if (responseData.data.airTemperature && responseData.data.airTemperature.values) {
+                                        let airTempValues = responseData.data.airTemperature.values.map((obj) => {
+                                            return this._convertCtoF(obj);
+                                        });
+
+                                        let airTemperature = {
+                                            values: (responseData.data && responseData.data.airTemperature) ? airTempValues : null,
+                                            units: "F",
+                                            times
+                                        };
+
+                                        if (airTemperature.values) {
+                                            data.data.airTemperature = airTemperature;
+                                        }
+                                    }
+
+
+                                    if (responseData.data.windSpeed && responseData.data.windSpeed.values) {
+                                        let windSpeedValues = responseData.data.windSpeed.values.map((obj) => {
+                                            return this._convertKnotToMph(obj);
+                                        });
+
+                                        let windSpeed = {
+                                            values: (responseData.data && responseData.data.windSpeed) ? windSpeedValues : null,
+                                            units: "mph",
+                                            times
+                                        };
+
+                                        if (windSpeed.values) {
+                                            data.data.windSpeed = windSpeed;
+                                        }
+                                    }
+
                                     let rainFall = createDataObject('rainfall');
-                                    let airTemperature = createDataObject('airTemperature');
-                                    let airPressure = createDataObject('airPressure');
                                     let dissolvedOxygen = createDataObject('massConcentrationOfOxygenInSeaWater');
                                     let ph = createDataObject('ph');
                                     let seaWaterSalinity = createDataObject('seaWaterSalinity');
                                     let seaWaterTemperature = createDataObject('seaWaterTemperature');
                                     let turbidity = createDataObject('simpleTurbidity');
-                                    let windSpeed = createDataObject('windSpeed');
                                     let windDirection = createDataObject('windFromDirection');
 
                                     if (windDirection.values) {
                                         data.data.windDirection = windDirection;
                                     }
 
-                                    if (windSpeed.values) {
-                                        data.data.windSpeed = windSpeed;
-                                    }
-
-                                    if (airTemperature.values) {
-                                        data.data.airTemperature = airTemperature;
-                                    }
 
                                     if (ph.values) {
                                         data.data.ph = ph;
@@ -199,10 +238,6 @@ export default class StationWebService {
 
                                 if (airPressure.values) {
                                     data.data.airPressure = airPressure;
-                                }
-
-                                if (dewPointTemperature.values) {
-                                    data.data.dewPointTemperature = dewPointTemperature;
                                 }
 
                                 if (relativeHumidity.values) {
