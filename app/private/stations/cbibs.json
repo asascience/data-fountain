@@ -424,5 +424,116 @@
     "usgs": "data.oceansmap.com:01580620",
     "stationId": "99999",
     "isPrimary": false
-  }
+  },
+  {
+    "dataUrl": "/api/data/df-20",
+    "id": "df-20",
+    "imageUrl": "/api/image/df-20",
+    "lat": 41.443,
+    "lon": -70.187,
+    "met": "data.oceansmap.com:KTGI",
+    "metData": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml",
+    "metParameters": [
+        "general_conditions",
+        "visibility_in_air",
+        "flight_category",
+        "dew_point_temperature"
+    ],
+    "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44020",
+    "ndbcData": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44020/44020.ncml",
+    "ndbcParameters": [
+        "wind_speed",
+        "wind_from_direction",
+        "sea_water_salinity",
+        "wind_speed_of_gust",
+        "air_temperature",
+        "sea_surface_wave_significant_height",
+        "sea_surface_wave_to_direction",
+        "sea_surface_wave_mean_period",
+        "sea_water_temperature"
+    ],
+    "title": "Nantucket Sound",
+    "usgs": "data.oceansmap.com:123123123",
+    "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
+    "usgsParameters": [
+        "Gage_height"
+    ],
+    "createdAt": 1471982630,
+    "stationId": "44020",
+    "isPrimary": false
+},
+{
+    "dataUrl": "/api/data/df-21",
+    "id": "df-21",
+    "imageUrl": "/api/image/df-21",
+    "lat": 40.251,
+    "lon": -73.164,
+    "met": "data.oceansmap.com:KTGI",
+    "metData": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml",
+    "metParameters": [
+        "general_conditions",
+        "visibility_in_air",
+        "flight_category",
+        "dew_point_temperature"
+    ],
+    "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44025",
+    "ndbcData": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44025/44025.ncml",
+    "ndbcParameters": [
+        "wind_speed",
+        "wind_from_direction",
+        "sea_water_salinity",
+        "wind_speed_of_gust",
+        "air_temperature",
+        "sea_surface_wave_significant_height",
+        "sea_surface_wave_to_direction",
+        "sea_surface_wave_mean_period",
+        "sea_water_temperature"
+    ],
+    "title": "Long Island",
+    "usgs": "data.oceansmap.com:123123123",
+    "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
+    "usgsParameters": [
+        "Gage_height"
+    ],
+    "createdAt": 1471982630,
+    "stationId": "44025",
+    "isPrimary": false
+},
+{
+    "dataUrl": "/api/data/df-22",
+    "id": "df-22",
+    "imageUrl": "/api/image/df-22",
+    "lat": 39.568,
+    "lon": -72.586,
+    "met": "data.oceansmap.com:KTGI",
+    "metData": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml",
+    "metParameters": [
+        "general_conditions",
+        "visibility_in_air",
+        "flight_category",
+        "dew_point_temperature"
+    ],
+    "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:44066",
+    "ndbcData": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/44066/44066.ncml",
+    "ndbcParameters": [
+        "wind_speed",
+        "wind_from_direction",
+        "sea_water_salinity",
+        "wind_speed_of_gust",
+        "air_temperature",
+        "sea_surface_wave_significant_height",
+        "sea_surface_wave_to_direction",
+        "sea_surface_wave_mean_period",
+        "sea_water_temperature"
+    ],
+    "title": "Texas Tower #4",
+    "usgs": "data.oceansmap.com:123123123",
+    "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
+    "usgsParameters": [
+        "Gage_height"
+    ],
+    "createdAt": 1471982630,
+    "stationId": "44066",
+    "isPrimary": false
+}
 ]
