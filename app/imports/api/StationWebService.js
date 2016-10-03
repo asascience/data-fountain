@@ -126,18 +126,25 @@ export default class StationWebService {
                                     times.push(time);
                                 });
 
-                                let airPressure = {
-                                    values: (responseData.data.airPressure) ? responseData.data.airPressure.values : null,
-                                    units: responseData.data.airPressure.units[0],
-                                    times
-                                };
-
-
                                 function createDataObject(paramName) {
-                                    return {
-                                        values: (responseData.data && responseData.data[paramName]) ? responseData.data[paramName].values : null,
-                                        units:  (responseData.data && responseData.data[paramName]) ? responseData.data[paramName].units[0] : null,
-                                        times
+                                    // OceansMap insists on sending NaNs, which break Highcharts...
+                                    if (responseData.data[paramName] && responseData.data[paramName].values) {
+                                        let noNaNValue = responseData.data[paramName].values.map((obj) => {
+                                            return (obj === "NaN" || isNaN(obj)) ? null : obj;
+                                        });
+
+
+                                        return {
+                                            values: (responseData.data && responseData.data[paramName]) ? noNaNValue : null,
+                                            units:  (responseData.data && responseData.data[paramName]) ? responseData.data[paramName].units[0] : null,
+                                            times
+                                        }
+                                    } else {
+                                        return {
+                                            values: null,
+                                            units: null,
+                                            times: null
+                                        };
                                     }
                                 }
 
@@ -150,6 +157,7 @@ export default class StationWebService {
 
                                     if (responseData.data.dewPointTemperature && responseData.data.dewPointTemperature.values) {
                                         let dewPointTempValues = responseData.data.dewPointTemperature.values.map((obj) => {
+                                            obj = (obj === "NaN" || isNaN(obj)) ? null : obj;
                                             return this._convertCtoF(obj);
                                         });
 
@@ -166,6 +174,7 @@ export default class StationWebService {
 
                                     if (responseData.data.airTemperature && responseData.data.airTemperature.values) {
                                         let airTempValues = responseData.data.airTemperature.values.map((obj) => {
+                                            obj = (obj === "NaN" || isNaN(obj)) ? null : obj;
                                             return this._convertCtoF(obj);
                                         });
 
@@ -183,6 +192,7 @@ export default class StationWebService {
 
                                     if (responseData.data.windSpeed && responseData.data.windSpeed.values) {
                                         let windSpeedValues = responseData.data.windSpeed.values.map((obj) => {
+                                            obj = (obj === "NaN" || isNaN(obj)) ? null : obj;
                                             return this._convertKnotToMph(obj);
                                         });
 
@@ -204,6 +214,7 @@ export default class StationWebService {
                                     let seaWaterTemperature = createDataObject('seaWaterTemperature');
                                     let turbidity = createDataObject('simpleTurbidity');
                                     let windDirection = createDataObject('windFromDirection');
+                                    let airPressure = createDataObject('airPressure');
 
                                     if (windDirection.values) {
                                         data.data.windDirection = windDirection;
@@ -234,11 +245,12 @@ export default class StationWebService {
                                         data.data.seaWaterSalinity = seaWaterSalinity;
                                     }
 
+                                    if (airPressure.values) {
+                                        data.data.airPressure = airPressure;
+                                    }
+
                                 }
 
-                                if (airPressure.values) {
-                                    data.data.airPressure = airPressure;
-                                }
 
                                 if (relativeHumidity.values) {
                                     data.data.relativeHumidity = relativeHumidity;
