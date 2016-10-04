@@ -237,7 +237,7 @@ Template.OceanPlots.helpers({
                                 enabled: false
                             },
                             series: [{
-                                name: 'Random data',
+                                name: null,
                                 data: plotData[ticker],
                                 animation: {
                                     duration: 1000
@@ -398,7 +398,7 @@ Template.OceanPlots.helpers({
                         enabled: false
                     },
                     series: [{
-                        name: 'Random data',
+                        name: null,
                         data: plotData[ticker],
                         animation: {
                             duration: 1000
