@@ -611,7 +611,7 @@ export default class StationWebService {
                 let TEMPTimeSet = timeSet.splice(timeSet.length - 55, timeSet.length - 1);
                 for (let i=0; i < TEMPTimeSet.length -1; i++) {
                     let unixTime = moment(TEMPTimeSet[i]).unix();
-                    let url = `https://api.forecast.io/forecast/${FORECAST_API}/${referenceStation.lat},${referenceStation.lon},${unixTime}`;
+                    let url = `https://api.darksky.net/forecast/${FORECAST_API}/${referenceStation.lat},${referenceStation.lon},${unixTime}`;
                     HTTP.get(url, (error, response) => {
                         if (error) {
                             console.log(`fetchWeatherForecast ${error}`);
