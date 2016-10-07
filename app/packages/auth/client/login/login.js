@@ -41,6 +41,7 @@ Template.Login.onCreated(function () {
 });
 
 Template.Login.onRendered(function () {
+    $('.spinner').css('opacity', 0);
 });
 
 Template.Login.onDestroyed(function () {
