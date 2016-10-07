@@ -43,7 +43,7 @@
                                     <option value="">-- Please Choose One --</option>
                                 {{/unless}}
                                 {{#each stationsList}}
-                                <option value="{{this}}">{{this}}</option>
+                                <option value="{{this.title}}">{{this.title}}</option>
                                 {{/each}}
                             </select>
                             <p class="control-explanation">Select a station.</p>
@@ -56,7 +56,7 @@
                         <div class="col-md-4">
                             <select class="category-select form-control js-top-plot-param" id="topPlotDataParameter">
                                 {{#each dataParams}}
-                                <option value="{{this.name}}">{{this.uiName}}</option>
+                                    <option value="{{this.name}}"> {{this.uiName}}</option>
                                 {{/each}}
                             </select>
                             <p class="control-explanation">Select a data paramter.</p>
@@ -126,7 +126,9 @@
                         </label>
                         <div class="col-md-4">
                             {{#each stationsList}}
-                                <label for="{{this}}"><input type="checkbox" class="proximityStationCheckbox" id="{{this}}">{{this}}</label>
+                            <label for="{{this.title}}">
+                                <input type="checkbox" class="proximityStationCheckbox" id="{{this.title}}">
+                                {{this.title}}</label>
                             {{/each}}
                             <p class="control-explanation">Nearby stations to display on the bottom bar plot.</p>
                         </div>

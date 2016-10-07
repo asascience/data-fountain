@@ -530,8 +530,8 @@ Template.OceanPlots.onRendered(function() {
         });
     } catch(exception) {
         console.log(exception);
-        // Meteor.setTimeout(() => {
-        //     document.location.reload(true);
-        // }, 2000);
+        Meteor.setTimeout(() => {
+            document.location.reload(true);
+        }, 2000);
     }
 });
