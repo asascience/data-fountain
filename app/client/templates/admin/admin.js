@@ -7,7 +7,7 @@ export default function generateCSV(userOptions){
         let userProfile = userOptions;
 
         let station = userProfile.primaryStation;
-        let topPlotParameter = userProfile.topPlotDataParameter;
+        let topPlotParameter = userProfile.bottomPlotDataParameter;
         let stationData = Data.findOne({title:station});
         let dataArray;
 
@@ -30,7 +30,7 @@ export default function generateCSV(userOptions){
             //Iterate over stationParameters, a list of the parameters for a single station to generate our csv header
             //and to add values to the date array.
             stationParameters.forEach(function(obj){
-                headerString += obj + ','
+                headerString += obj + '(' + stationData.data[obj].units + '),';
 
                 //This function takes the start and end date for the data and returns the index of the data
                 //that within those times for each paramter. We will then slice off the excess from the array.
@@ -54,6 +54,7 @@ export default function generateCSV(userOptions){
             proximityStations.forEach(function(obj){
                 headerString += obj;
                 let currentStation = Data.findOne({title:obj});
+                headerString += '(' + currentStation.data[topPlotParameter].units + ')'
                 let slicedData = []
 
                 //Deal with the case that a station doesn't contain the parameter alltogether.
@@ -235,19 +236,24 @@ function fetchUserPreferences(){
 function updateDateSelectorRange(){
     let topPlotDataParameter = $('#topPlotDataParameter').val();
     let primaryStation = $('#primaryStation').val();
-    if(topPlotDataParameter !== null && primaryStation != null){
-        let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
-        let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
+    let slider = $('input[type="rangeslide"]').data('ionRangeSlider');
 
-        slider.update({
-        min: moment(timeRange.data[topPlotDataParameter].times[0]).format('X'),
-        max: moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X')
-        });
-    }else{
-        slider.update({
-            min: moment().subtract(7, 'days').format('X'),
-            max: moment().format('X')
-        })
+    if(topPlotDataParameter !== null && primaryStation !== null){
+        let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
+
+        if(timeRange.data[topPlotDataParameter].times !== null && Array.isArray(timeRange.data[topPlotDataParameter].times)){
+            let minDate = moment(timeRange.data[topPlotDataParameter].times[0]).format('X');
+            let maxDate = moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X');
+            slider.update({
+                min: minDate,
+                max: maxDate
+            });
+        }else{
+            slider.update({
+                min: moment().subtract(7, 'days').format('X'),
+                max: moment().format('X')
+            })
+        }
     }
 }
 
@@ -408,6 +414,7 @@ Template.Admin.events({
                     Session.set('DataPreferences', dataPrefs);
 
                     //Update the user.
+
                     Meteor.users.update(Meteor.userId(), {
                         $set:payload
                     }, function(err, res){
@@ -572,7 +579,7 @@ Template.Admin.events({
                 if(profile.stationViewMode === 'single'){
                     fileName = profile.primaryStation + '.csv'
                 }else if(profile.stationViewMode === 'multiple'){
-                    fileName = profile.topPlotDataParameter;
+                    fileName = profile.bottomPlotDataParameter + '.csv';
                 }
                 a.download = fileName;
                 document.body.appendChild(a);
@@ -582,6 +589,14 @@ Template.Admin.events({
         } catch(e) {
             console.log(e);
         }
+    },
+    'change #regionSelection'(event, template){
+        let updateValue = $('#regionSelection').val();
+        Meteor.users.update(Meteor.userId(), {
+            $set: {
+                'profile.stationRegion': updateValue
+            }    
+        });
     }
 });
 
@@ -589,14 +604,32 @@ Template.Admin.events({
 /* Admin: Helpers */
 /*****************************************************************************/
 Template.Admin.helpers({
-    stationsList: function(){
+    stationsList(){
         try {
+            //Create a mongo query that finds the data entries for offshore stations if the offshore option has been selected (in).
+            //Otherwise find all the others (nin)
+            let query;
+            if(Meteor.user().profile.stationRegion === "Offshore"){
+                query = {title:{$in:['Virginia Beach', 'Wallops Island']}};
+            }else{
+                query = {title:{$nin:['Virginia Beach', 'Wallops Island']}};
+            }
 
-            let listOfStations = Stations.find({}).fetch(),
+            let listOfStations = Stations.find(query).fetch(),
                 stationNames = [];
-
+            
+            let bottomPlotParameter = $('#bottomPlotDataParameter').val();
             _.each(listOfStations, (obj) => {
-                stationNames.push(obj.title);
+                let enabled = true;
+                if(bottomPlotParameter !== null && bottomPlotParameter !== ''){
+                    let queryString = 'data.' + bottomPlotParameter;
+                    let bottomPlotData = Data.findOne({title:obj.title, [queryString]:{$exists:true}});
+                    if(bottomPlotData === undefined || bottomPlotData.data[bottomPlotParameter].values === undefined || Array.isArray(bottomPlotData.data[bottomPlotParameter].times)===false){
+                        enabled = false; 
+                    }
+                }
+                let object = {'title': obj.title, 'enabled': enabled};
+                stationNames.push(object);
             });
             return stationNames.sort();
         } catch(e) {
@@ -627,17 +660,20 @@ Template.Admin.helpers({
         }
     },
     dataParams() {
+        //Return an object with the name, uiName and enabled status of each parameter. The name parameter is important because it is used to match the ui selection with the actuall parameter in the db. 
         try {
             if (Meteor.user() && Meteor.user().profile.primaryStation) {
-                let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation}),
-                    parameterNames = Object.keys(dataSource.data);
+                let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation});
+                let parameterNames = Object.keys(dataSource.data);
 
                 let timesIndex = parameterNames.indexOf('times');
                 if (timesIndex > -1) parameterNames.splice(timesIndex, 1);
                 parameterNames.sort();
                 let dataParams = [];
                 parameterNames.forEach(function(obj){
-                    let object = {'name' : obj, 'uiName': camelToRegular(obj)};
+                    let enabled = true;
+                    if(Array.isArray(dataSource.data[obj].times) === false)enabled = false;
+                    let object = {'name' : obj, 'uiName': camelToRegular(obj), 'enabled':enabled};
                     dataParams.push(object);
                 });
                 return dataParams;

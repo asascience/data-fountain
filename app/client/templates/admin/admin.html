@@ -18,8 +18,9 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label">Region</label>
                         <div class="col-md-4">
-                            <select class="category-select form-control js-select-primary">
+                            <select class="category-select form-control js-select-primary" id="regionSelection">
                                 <option value="Chesapeake Bay">Chesapeake Bay</option>
+                                <option value="Offshore">Offshore</option>
                             </select>
                         </div>
                     </div>
@@ -42,7 +43,7 @@
                                     <option value="">-- Please Choose One --</option>
                                 {{/unless}}
                                 {{#each stationsList}}
-                                <option value="{{this}}">{{this}}</option>
+                                <option value="{{this.title}}">{{this.title}}</option>
                                 {{/each}}
                             </select>
                             <p class="control-explanation">Select a station.</p>
@@ -55,7 +56,11 @@
                         <div class="col-md-4">
                             <select class="category-select form-control js-top-plot-param" id="topPlotDataParameter">
                                 {{#each dataParams}}
-                                <option value="{{this.name}}">{{this.uiName}}</option>
+                                    {{#if this.enabled}}
+                                        <option value="{{this.name}}"> {{this.uiName}}</option>
+                                    {{else}}
+                                        <option value="{{this.name}}" disabled="disabled"> {{this.uiName}}</option>
+                                    {{/if}}
                                 {{/each}}
                             </select>
                             <p class="control-explanation">Select a data paramter.</p>
@@ -124,7 +129,13 @@
                         </label>
                         <div class="col-md-4">
                             {{#each stationsList}}
-                                <label for="{{this}}"><input type="checkbox" class="proximityStationCheckbox" id="{{this}}">{{this}}</label>
+                            <label for="{{this.title}}">
+                                {{#if this.enabled}}
+                                    <input type="checkbox" class="proximityStationCheckbox" id="{{this.title}}">
+                                {{else}}
+                                    <input type="checkbox" class="proximityStationCheckbox" id="{{this.title}}" disabled="disabled">
+                                {{/if}}
+                            {{this.title}}</label>
                             {{/each}}
                             <p class="control-explanation">Nearby stations to display on the bottom bar plot.</p>
                         </div>
