@@ -143,6 +143,8 @@ function getSubmitPayload(){
             'timeZone': $('#timezoneSelect').val(),
             'topPlotDataParameter': $('#topPlotDataParameter').val(),
             'bottomPlotDataParameter': $('#bottomPlotDataParameter').val(),
+            'keepUpdated': $('#chkKeepUpdated').prop('checked'),
+            'cycleStationParams': $('#chkCycleParams').prop('checked'),
             'parameterAlerts': parameterAlerts,
             'dateSliderData':{
                 from: sliderData.from,
@@ -161,6 +163,8 @@ function getSubmitPayload(){
 function updateInputsWithProfile(userProfile){
 
     //Update inputs with the user's saved selections.
+    $('#chkKeepUpdated').attr('checked', userProfile.keepUpdated);
+    $('#chkCycleParams').attr('checked', userProfile.cycleStationParams);
     $('#primaryStation').val(userProfile.primaryStation);
     $('#stationParameters').val(userProfile.singleStationParameters).change();
     $('#refreshInterval').val(userProfile.refreshInterval);
@@ -276,6 +280,28 @@ function camelToRegular(string) {
     return string.replace(/([A-Z])/g, ' $1')
     .replace(/^./, (str) => { return str.toUpperCase(); })
 }
+
+let getDataParams = (function () {
+    try {
+        if (Meteor.user() && Meteor.user().profile.primaryStation) {
+            let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation}),
+                parameterNames = Object.keys(dataSource.data);
+
+            let timesIndex = parameterNames.indexOf('times');
+            if (timesIndex > -1) parameterNames.splice(timesIndex, 1);
+            parameterNames.sort();
+            let dataParams = [];
+            parameterNames.forEach(function(obj){
+                let object = {'name' : obj, 'uiName': camelToRegular(obj)};
+                dataParams.push(object);
+            });
+            return dataParams;
+        }
+    } catch (exception) {
+        console.log(exception);
+    }
+});
+
 /*****************************************************************************/
 /* Admin: Event Handlers */
 /*****************************************************************************/
@@ -593,8 +619,29 @@ Template.Admin.events({
         Meteor.users.update(Meteor.userId(), {
             $set: {
                 'profile.stationRegion': updateValue
-            }    
+            }
         });
+    },
+    'change #chkCycleParams'(e,t) {
+        if ($(e.target).prop('checked') === true) {
+            let dataParams = getDataParams();
+            let dataParamList = [];
+            dataParams.forEach((item, index) => {
+                dataParamList.push(item.name);
+            });
+            Meteor.users.update(Meteor.userId(), {
+                $set: {
+                    'profile.cycleStationParams': true,
+                    'profile.singleStationParameters': dataParamList
+                }
+            });
+        } else {
+            Meteor.users.update(Meteor.userId(), {
+                $set: {
+                    'profile.cycleStationParams': false
+                }
+            });
+        }
     }
 });
 
@@ -614,7 +661,7 @@ Template.Admin.helpers({
 
             let listOfStations = Stations.find(query).fetch(),
                 stationNames = [];
-            
+
             _.each(listOfStations, (obj) => {
                 stationNames.push(obj.title);
             });
@@ -647,24 +694,7 @@ Template.Admin.helpers({
         }
     },
     dataParams() {
-        try {
-            if (Meteor.user() && Meteor.user().profile.primaryStation) {
-                let dataSource = Data.findOne({title: Meteor.user().profile.primaryStation}),
-                    parameterNames = Object.keys(dataSource.data);
-
-                let timesIndex = parameterNames.indexOf('times');
-                if (timesIndex > -1) parameterNames.splice(timesIndex, 1);
-                parameterNames.sort();
-                let dataParams = [];
-                parameterNames.forEach(function(obj){
-                    let object = {'name' : obj, 'uiName': camelToRegular(obj)};
-                    dataParams.push(object);
-                });
-                return dataParams;
-            }
-        } catch (exception) {
-            console.log(exception);
-        }
+        return getDataParams();
     },
     currentPreferenceName(){
         try{
@@ -703,6 +733,9 @@ Template.Admin.helpers({
     },
     infoTickerText() {
         return (Meteor.user()) ? Meteor.user().profile.infoTickerText: null;
+    },
+    keepUpdated() {
+        return (Meteor.user() && Meteor.user().profile.keepUpdated === 'om') ? "checked" : null;
     }
 });
 

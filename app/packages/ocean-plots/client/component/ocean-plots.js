@@ -516,15 +516,15 @@ Template.OceanPlots.onRendered(function() {
                             let ticker = Session.get('globalTicker');
                             bottomPlot.series[0].setData( _this.plotData[ticker]);
                         } catch(exception) {
-                           // Meteor.setTimeout(() => {
-                             //   document.location.reload(true);
-                            //}, 2000);
+                           Meteor.setTimeout(() => {
+                               document.location.reload(true);
+                            }, 2000);
                         }
                     });
                 } catch(exception) {
-                    // Meteor.setTimeout(() => {
-                    //     document.location.reload(true);
-                    // }, 2000);
+                    Meteor.setTimeout(() => {
+                        document.location.reload(true);
+                    }, 2000);
                 }
             }, 2000);
         });

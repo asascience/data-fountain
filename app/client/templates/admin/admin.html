@@ -72,6 +72,7 @@
                                 <option value="{{this.name}}">{{this.uiName}}</option>
                                 {{/each}}
                             </select>
+                            <input type="checkbox" id="chkCycleParams" /><label>&nbsp; Cycle data parameters?</label>
                             <p class="control-explanation">Select a bar plot parameter.</p>
                         </div>
                     </div>
@@ -153,6 +154,7 @@
                         </label>
                         <div class="col-md-4">
                             <input type="rangeslide"/>
+                            <input type="checkbox" id="chkKeepUpdated" /><label>&nbsp; Keep updated to current time?</label>
                             <p class="control-explanation">Select a range of data to display. This parameter is limited by data availability</p>
                         </div>
                     </div>
@@ -179,6 +181,7 @@
                         <div class="row">
                             <div class="col-md-2 col-md-offset-2">
                                 <div class="btn-group">
+
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Saved Preferences
                                         <span class="caret"></span>

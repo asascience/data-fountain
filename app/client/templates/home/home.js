@@ -23,7 +23,7 @@ Template.Home.events({
 /*****************************************************************************/
 Template.Home.helpers({
     tickerEnabled(){
-        return Meteor.user().profile.tickerEnabled;    
+        return Meteor.user().profile.tickerEnabled;
     }
 });
 
@@ -37,7 +37,7 @@ Template.Home.onCreated(function(){
     let REFERENCE_STATION = userProfile.primaryStation;
     let dataTimes = Data.findOne({title: REFERENCE_STATION});
     dataTimes = dataTimes.data[userProfile.topPlotDataParameter].times;
-    dataTimes = dataTimes.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex);
+    let displayDataTimes = dataTimes.slice(userProfile.fromTimeIndex, userProfile.toTimeIndex);
 
 
     // using var explicitly
@@ -59,9 +59,41 @@ Template.Home.onCreated(function(){
     //Function called to tick the timer one forward.
     this.runTimer = function(){
         let currIndex = index.next().value;
-        time = dataTimes[currIndex];
+        time = displayDataTimes[currIndex];
         Session.set('globalTimer', time);
         Session.set('globalTicker', currIndex);
+
+        if (currIndex >= DURATION && userProfile.keepUpdated) {
+            let currDataTime = moment(dataTimes[dataTimes.length -1]).unix();
+
+            if (userProfile.dateSliderData.to != currDataTime && userProfile.toTimeIndex != dataTimes.length -1) {
+
+                Meteor.users.update(Meteor.userId(), {
+                    $set: {
+                        'profile.dateSliderData.to': currDataTime,
+                        'profile.toTimeIndex': dataTimes.length - 1
+                    }
+                });
+                document.location.reload(true);
+            }
+
+        }
+
+        if (currIndex >= DURATION && userProfile.cycleStationParams) {
+            let params = userProfile.singleStationParameters;
+            let cParam = userProfile.bottomPlotDataParameter;
+            let pIndex = params.indexOf(cParam);
+
+            if (pIndex === params.length -1) {
+                pIndex = 0;
+            } else {
+                 Meteor.users.update(Meteor.userId(), {
+                    $set: {
+                        'profile.bottomPlotDataParameter': params[pIndex+1],
+                    }
+                });
+            }
+        }
 
         // if (currIndex === DURATION-1) {
         //     let rotationIndex = Meteor.user().profile.proximityStations.indexOf(REFERENCE_STATION),
@@ -92,7 +124,7 @@ Template.Home.onRendered(function(){
     let keyPress = (() => {
         //If the user presses ctrl + d bring them back to the admin page.
         var evtobj = window.event? event : e
-        if (evtobj.keyCode == 68 && evtobj.ctrlKey){ 
+        if (evtobj.keyCode == 68 && evtobj.ctrlKey){
             Router.go('/admin');
 
         //If the user presses space toggle the ticker.

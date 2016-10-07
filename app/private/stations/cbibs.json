@@ -535,5 +535,80 @@
         "createdAt": 1471982630,
         "stationId": "44066",
         "isPrimary": false
+    },
+    {
+        "dataUrl": "/api/data/df-24",
+        "id": "df-24",
+        "imageUrl": "/api/image/df-24",
+        "lat": 31.760,
+        "lon": -74.840,
+        "met": "data.oceansmap.com:KTGI",
+        "metData": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml",
+        "metParameters": [
+            "general_conditions",
+            "visibility_in_air",
+            "flight_category",
+            "dew_point_temperature"
+        ],
+        "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:41002",
+        "ndbcData": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/41002/41002.ncml",
+        "ndbcParameters": [
+            "wind_speed",
+            "wind_from_direction",
+            "sea_water_salinity",
+            "wind_speed_of_gust",
+            "air_temperature",
+            "sea_surface_wave_significant_height",
+            "sea_surface_wave_to_direction",
+            "sea_surface_wave_mean_period",
+            "sea_water_temperature"
+        ],
+        "title": "South Hatteras",
+        "usgs": "data.oceansmap.com:123123123",
+        "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
+        "usgsParameters": [
+            "Gage_height"
+        ],
+        "createdAt": 1471982630,
+        "stationId": "41002",
+        "isPrimary": false
+    },
+    {
+        "dataUrl": "/api/data/df-25",
+        "id": "df-25",
+        "imageUrl": "/api/image/df-25",
+        "lat": 23.866,
+        "lon": -68.481,
+        "met": "data.oceansmap.com:KTGI",
+        "metData": "http://data.oceansmap.com/thredds/dodsC/metar_agg/KTGI/KTGI.ncml",
+        "metParameters": [
+            "general_conditions",
+            "visibility_in_air",
+            "flight_category",
+            "dew_point_temperature"
+        ],
+        "ndbc": "data.oceansmap.com:urn:ioos:station:wmo:41046",
+        "ndbcData": "http://data.oceansmap.com/thredds/dodsC/ndbc_agg/41046/41046.ncml",
+        "ndbcParameters": [
+            "wind_speed",
+            "wind_from_direction",
+            "sea_water_salinity",
+            "wind_speed_of_gust",
+            "air_temperature",
+            "sea_surface_wave_significant_height",
+            "sea_surface_wave_to_direction",
+            "sea_surface_wave_mean_period",
+            "sea_water_temperature"
+        ],
+        "title": "East Bahamas",
+        "usgs": "data.oceansmap.com:123123123",
+        "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
+        "usgsParameters": [
+            "Gage_height"
+        ],
+        "createdAt": 1471982630,
+        "stationId": "41046",
+        "isPrimary": false
     }
+
 ]
