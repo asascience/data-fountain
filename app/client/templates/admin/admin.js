@@ -662,12 +662,12 @@ Template.Admin.helpers({
             //Otherwise find all the others (nin)
             let query;
             if(Meteor.user().profile.stationRegion === "Offshore"){
-                query = {title:{$in:['Virginia Beach', 'Wallops Island']}};
+                query = {title:{$in:[]}};
             }else{
-                query = {title:{$nin:['Virginia Beach', 'Wallops Island']}};
+                query = {title:{$nin:[]}};
             }
 
-            let listOfStations = Stations.find(query).fetch(),
+            let listOfStations = Stations.find().fetch(),
                 stationNames = [];
 
             let bottomPlotParameter = $('#bottomPlotDataParameter').val();
