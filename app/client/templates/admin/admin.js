@@ -223,6 +223,10 @@ function updateInputsWithProfile(userProfile){
     }else{
         $('.multipleStation').trigger('click');
     }
+
+    if(userProfile.cycleStationParams) {
+        $('#singleStationParameters').show();
+    }
 }
 
 
@@ -304,11 +308,12 @@ let getDataParams = (function () {
     }
 });
 
-let getDataParamList = (function() {
-    let dataParams = getDataParams();
+let getDataParamList = (() => {
     let dataParamList = [];
-    dataParams.forEach((item, index) => {
-        dataParamList.push(item.name);
+    $('.stationParameterCheckbox').each(function(){
+        if($(this).prop('checked') === true) {
+            dataParamList.push($(this).prop('id'));
+        }
     });
 
     return dataParamList;
@@ -384,7 +389,9 @@ Template.Admin.events({
             $('#singleStationParameters').show();
             $('.parameterAlertsDiv').hide();
         }else{
-            $('#singleStationParameters').hide();
+            if (!Meteor.user().profile.cycleStationParams) {
+                $('#singleStationParameters').hide();
+            }
             $('.js-select-bottom-parameter').parent().parent().show();
             $('#proximityStations').show();
             $('.parameterAlertsDiv').show();
@@ -636,6 +643,7 @@ Template.Admin.events({
     },
     'change #chkCycleParams'(e,t) {
         if ($(e.target).prop('checked') === true) {
+            $('#singleStationParameters').show();
             Meteor.users.update(Meteor.userId(), {
                 $set: {
                     'profile.cycleStationParams': true,
@@ -643,6 +651,7 @@ Template.Admin.events({
                 }
             });
         } else {
+            $('#singleStationParameters').hide();
             Meteor.users.update(Meteor.userId(), {
                 $set: {
                     'profile.cycleStationParams': false

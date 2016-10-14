@@ -76,6 +76,15 @@
                             <p class="control-explanation">Select a bar plot parameter.</p>
                         </div>
                     </div>
+                    <div class="form-group" id="singleStationParameters">
+                        <label class="col-md-2 control-label">Station Parameters</label>
+                        <div class="col-md-4">
+                            {{#each singleStationParameters}}
+                                <label for="{{this.name}}"><input type="checkbox" class="stationParameterCheckbox" id="{{this.name}}">{{this.uiName}}</label>
+                            {{/each}}
+                            <p class="control-explanation">Select parameters to graph for a single station.</p>
+                        </div>
+                    </div>
                     <div class="form-group parameterAlertsDiv">
                         <label class="col-md-2 control-label" for="paramAlerts">
                             Parameter Alerts
@@ -109,15 +118,6 @@
                                 </div>
                             </div>
 
-                        </div>
-                    </div>
-                    <div class="form-group" id="singleStationParameters">
-                        <label class="col-md-2 control-label">Station Parameters</label>
-                        <div class="col-md-4">
-                            {{#each singleStationParameters}}
-                                <label for="{{this.name}}"><input type="checkbox" class="stationParameterCheckbox" id="{{this.name}}">{{this.uiName}}</label>
-                            {{/each}}
-                            <p class="control-explanation">Select parameters to graph for a single station.</p>
                         </div>
                     </div>
                     <div class="form-group" id="proximityStations">
