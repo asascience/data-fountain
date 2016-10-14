@@ -46,8 +46,8 @@ Template.Home.onCreated(function(){
     function* indexGen() {
         let index = 0;
         while(true) {
-            if (index > DURATION) {
-                index = 0;
+            if (index > DURATION + 1) {
+                index = -1;
             }
             yield index++;
         }
@@ -64,9 +64,10 @@ Template.Home.onCreated(function(){
         Session.set('globalTicker', currIndex);
 
         if (currIndex >= DURATION && userProfile.keepUpdated) {
+            userProfile = Meteor.user().profile;
             let currDataTime = moment(dataTimes[dataTimes.length -1]).unix();
 
-            if (userProfile.dateSliderData.to != currDataTime && userProfile.toTimeIndex != dataTimes.length -1) {
+            if (userProfile.dateSliderData.to !== currDataTime && userProfile.toTimeIndex !== dataTimes.length -1) {
 
                 Meteor.users.update(Meteor.userId(), {
                     $set: {
@@ -79,20 +80,21 @@ Template.Home.onCreated(function(){
 
         }
 
-        if (currIndex >= DURATION && userProfile.cycleStationParams) {
-            let params = userProfile.singleStationParameters;
-            let cParam = userProfile.bottomPlotDataParameter;
+
+        if (currIndex > DURATION && userProfile.cycleStationParams) {
+            let params = Meteor.user().profile.singleStationParameters;
+            let cParam = Meteor.user().profile.bottomPlotDataParameter;
             let pIndex = params.indexOf(cParam);
 
-            if (pIndex === params.length -1) {
+            if (pIndex === params.length - 1) {
                 pIndex = 0;
-            } else {
-                 Meteor.users.update(Meteor.userId(), {
-                    $set: {
-                        'profile.bottomPlotDataParameter': params[pIndex+1],
-                    }
-                });
             }
+
+            Meteor.users.update(Meteor.userId(), {
+                $set: {
+                    'profile.bottomPlotDataParameter': params[pIndex + 1],
+                }
+            });
         }
 
         // if (currIndex === DURATION-1) {

@@ -221,42 +221,42 @@ export default class StationWebService {
                                     }
 
 
-                                    if (ph.values) {
+                                    if (ph.values && ph.values.length > 0) {
                                         data.data.ph = ph;
                                     }
 
-                                    if (seaWaterTemperature.values) {
+                                    if (seaWaterTemperature.values && seaWaterTemperature.values.length > 0) {
                                         data.data.seaWaterTemperature = seaWaterTemperature;
                                     }
 
-                                    if (turbidity.values) {
+                                    if (turbidity.values && turbidity.values.length > 0) {
                                         data.data.turbidity = turbidity;
                                     }
 
-                                    if (dissolvedOxygen.values) {
+                                    if (dissolvedOxygen.values && dissolvedOxygen.values.length > 0) {
                                         data.data.dissolvedOxygen = dissolvedOxygen;
                                     }
 
-                                    if (rainFall.values) {
+                                    if (rainFall.values && rainFall.values.length > 0) {
                                         data.data.rainFall = rainFall;
                                     }
 
-                                    if (seaWaterSalinity.values) {
+                                    if (seaWaterSalinity.values && seaWaterSalinity.values.length > 0) {
                                         data.data.seaWaterSalinity = seaWaterSalinity;
                                     }
 
-                                    if (airPressure.values) {
+                                    if (airPressure.values && airPressure.values.length > 0) {
                                         data.data.airPressure = airPressure;
                                     }
 
                                 }
 
 
-                                if (relativeHumidity.values) {
+                                if (relativeHumidity.values && relativeHumidity.values.length > 0) {
                                     data.data.relativeHumidity = relativeHumidity;
                                 }
 
-                                if (seanettleProb.values) {
+                                if (seanettleProb.values && seanettleProb.values.length > 0) {
                                     data.data.seaNettleProbability = seanettleProb;
                                 }
 
@@ -370,27 +370,27 @@ export default class StationWebService {
                             times
                         };
 
-                        if (oceanTemp.values) {
+                        if (oceanTemp.values && oceanTemp.values.length > 0) {
                             data.data.oceanTemperature = oceanTemp;
                             data.data.oceanTemperature.times = times;
                         }
 
-                        if (chlorophyllCon.values) {
+                        if (chlorophyllCon.values && chlorophyllCon.values.length > 0) {
                             data.data.chlorophyll = chlorophyllCon;
                             data.data.chlorophyll.times = times;
                         }
 
-                        if (oxygenPartsPerMil.values) {
+                        if (oxygenPartsPerMil.values && oxygenPartsPerMil.values.length > 0) {
                             data.data.dissolvedOxygen = oxygenPartsPerMil;
                             data.data.dissolvedOxygen.times = times;
                         }
 
-                        if (turbidity.values) {
+                        if (turbidity.values && turbidity.values.length > 0) {
                             data.data.turbidity = turbidity;
                             data.data.turbidity.times = times;
                         }
 
-                        if (waterSalinity.values) {
+                        if (waterSalinity.values && waterSalinity.values.length > 0) {
                             data.data.salinity = waterSalinity;
                             data.data.salinity.times = times;
                         }
@@ -505,27 +505,27 @@ export default class StationWebService {
                             times
                         };
 
-                        if (windDirection.values) {
+                        if (windDirection.values && windDirection.values.length > 0) {
                             data.data.windDirection = windDirection;
                             data.data.windDirection.times = times;
                         }
 
-                        if (windSpeed.values) {
+                        if (windSpeed.values && windSpeed.values.length > 0) {
                             data.data.windSpeed = windSpeed;
                             data.data.windSpeed.times = times;
                         }
 
-                        if (airTemp.values) {
+                        if (airTemp.values && airTemp.values.length > 0) {
                             data.data.airTemperature = airTemp;
                             data.data.airTemperature.times = times;
                         }
 
-                        if (waveHeight.values) {
+                        if (waveHeight.values && waveHeight.values.length > 0) {
                             data.data.waveHeight = waveHeight;
                             data.data.waveHeight.times = times;
                         }
 
-                        if (waterTemp.values) {
+                        if (waterTemp.values && waterTemp.values.length > 0) {
                             data.data.waterTemperature = waterTemp;
                             data.data.waterTemperature.times = times;
                         }

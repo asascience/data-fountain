@@ -639,7 +639,7 @@ Template.Admin.events({
             Meteor.users.update(Meteor.userId(), {
                 $set: {
                     'profile.cycleStationParams': true,
-                    'profile.singleStationParameters': dataParamList()
+                    'profile.singleStationParameters': getDataParamList()
                 }
             });
         } else {

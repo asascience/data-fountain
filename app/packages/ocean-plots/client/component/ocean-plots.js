@@ -172,127 +172,129 @@ Template.OceanPlots.helpers({
 
                 let flattenArray = [].concat(...dataSet);
                 // get the min and max values from a multidimensional array
-                let maxValue = flattenArray.reduce((max, array) => {
-                    return max >= array ? max : array;
-                }, -Infinity);
+                if (flattenArray.length !== 0) {
+                    let maxValue = flattenArray.reduce((max, array) => {
+                        return max >= array ? max : array;
+                    }, -Infinity);
 
-                let minValue = flattenArray.reduce((min, array) => {
-                    return min <= array ? min : array;
-                });
-
-                // transpose the multidimensional array
-                let plotData = dataSet[0].map((datum, index) => {
-                    return dataSet.map((row) => {
-                        return row[index];
+                    let minValue = flattenArray.reduce((min, array) => {
+                        return min <= array ? min : array;
                     });
-                });
-                let ticker;
-                Tracker.nonreactive(() => {
-                    ticker = Session.get('globalTicker');
-                });
 
-                //Flip the color bars if needed.
-
-                let colorZones = [{
-                    value: userProfile.parameterAlerts.lowAlert,
-                    color: 'red'
-                }, {
-                    value: userProfile.parameterAlerts.midAlert,
-                    color: 'yellow'
-                },
-                {
-                    color: 'green'
-                },
-                {
-                    color:'green'
-                }];
-
-                if(userProfile.parameterAlerts.flippedColors === true){
-                    colorZones[0].color = 'green';
-                    colorZones[1].color = 'yellow';
-                    colorZones[2].color = 'red';
-
-                }
-                //I wasted a stupid amount of time debugging after removing this.
-                //This line allows the chart to reference the plotData while animating.
-                //Don't remove it.
-                Template.instance().plotData = plotData;
-                Meteor.defer(() => {
-                    try {
-                        Highcharts.chart('bottomPlot', {
-                            chart: {
-                                type: 'column',
-                                animation: Highcharts.svg, // don't animate in old IE
-                            },
-                            legend: {
-                                enabled: false
-                            },
-                            exporting: {
-                                enabled: false
-                            },
-                            title: {
-                                text: null
-                            },
-                            credits:{
-                                enabled: false
-                            },
-                            series: [{
-                                name: null,
-                                data: plotData[ticker],
-                                animation: {
-                                    duration: 1000
-                                },
-                                dataLabels: {
-                                    enabled: true,
-                                    color: '#F58220',
-                                    align: 'center',
-                                    format: '{point.y:.1f}', // one decimal
-                                    y: -2, // 10 pixels down from the top
-                                    x: 2,
-                                    style: {
-                                        fontSize: '0.9vw',
-                                        fontFamily: 'Verdana, sans-serif',
-                                        border: 'none',
-                                        textShadow: false,
-                                    }
-                                },
-                            }],
-                            xAxis: {
-                                categories: axisLabels,
-                                labels: {
-                                    style: {
-                                        fontSize: '0.9vw',
-                                        fontFamily: 'Verdana, sans-serif',
-                                        border: 'none',
-                                        textShadow: false,
-                                        fontWeight: 'bold'
-                                    }
-                                },
-                            },
-                            yAxis: {
-                                title: {
-                                    text: `${plotDisplayName} (${units})`,
-                                    style: {
-                                        fontSize: '0.9vw',
-                                        fontFamily: 'Verdana, sans-serif',
-                                        fontWeight: 'bold'
-                                    }
-                                },
-                                min: minValue,
-                                max: maxValue + ((maxValue - minValue) * 0.2)
-                            },
-                            plotOptions: {
-                                column: {
-                                    zones: colorZones
-                                }
-                            }
+                    // transpose the multidimensional array
+                    let plotData = dataSet[0].map((datum, index) => {
+                        return dataSet.map((row) => {
+                            return row[index];
                         });
-                    } catch(exception) {
-                        console.log(exception);
+                    });
+                    let ticker;
+                    Tracker.nonreactive(() => {
+                        ticker = Session.get('globalTicker');
+                    });
+
+                    //Flip the color bars if needed.
+
+                    let colorZones = [{
+                        value: userProfile.parameterAlerts.lowAlert,
+                        color: 'red'
+                    }, {
+                        value: userProfile.parameterAlerts.midAlert,
+                        color: 'yellow'
+                    },
+                    {
+                        color: 'green'
+                    },
+                    {
+                        color:'green'
+                    }];
+
+                    if(userProfile.parameterAlerts.flippedColors === true){
+                        colorZones[0].color = 'green';
+                        colorZones[1].color = 'yellow';
+                        colorZones[2].color = 'red';
+
                     }
-                });
-        } catch(exception) {
-            console.log(exception);
+                    //I wasted a stupid amount of time debugging after removing this.
+                    //This line allows the chart to reference the plotData while animating.
+                    //Don't remove it.
+                    Template.instance().plotData = plotData;
+                    Meteor.defer(() => {
+                        try {
+                            Highcharts.chart('bottomPlot', {
+                                chart: {
+                                    type: 'column',
+                                    animation: Highcharts.svg, // don't animate in old IE
+                                },
+                                legend: {
+                                    enabled: false
+                                },
+                                exporting: {
+                                    enabled: false
+                                },
+                                title: {
+                                    text: null
+                                },
+                                credits:{
+                                    enabled: false
+                                },
+                                series: [{
+                                    name: null,
+                                    data: plotData[ticker],
+                                    animation: {
+                                        duration: 1000
+                                    },
+                                    dataLabels: {
+                                        enabled: true,
+                                        color: '#F58220',
+                                        align: 'center',
+                                        format: '{point.y:.1f}', // one decimal
+                                        y: -2, // 10 pixels down from the top
+                                        x: 2,
+                                        style: {
+                                            fontSize: '0.9vw',
+                                            fontFamily: 'Verdana, sans-serif',
+                                            border: 'none',
+                                            textShadow: false,
+                                        }
+                                    },
+                                }],
+                                xAxis: {
+                                    categories: axisLabels,
+                                    labels: {
+                                        style: {
+                                            fontSize: '0.9vw',
+                                            fontFamily: 'Verdana, sans-serif',
+                                            border: 'none',
+                                            textShadow: false,
+                                            fontWeight: 'bold'
+                                        }
+                                    },
+                                },
+                                yAxis: {
+                                    title: {
+                                        text: `${plotDisplayName} (${units})`,
+                                        style: {
+                                            fontSize: '0.9vw',
+                                            fontFamily: 'Verdana, sans-serif',
+                                            fontWeight: 'bold'
+                                        }
+                                    },
+                                    min: minValue,
+                                    max: maxValue + ((maxValue - minValue) * 0.2)
+                                },
+                                plotOptions: {
+                                    column: {
+                                        zones: colorZones
+                                    }
+                                }
+                            });
+                        } catch(e) {
+                            console.log(e);
+                        }
+                    });
+                }
+        } catch(e) {
+            console.log(e);
         }
     },
     singleBottomPlot(){
@@ -474,16 +476,49 @@ Template.OceanPlots.helpers({
 Template.OceanPlots.onCreated(function() {
 });
 Template.OceanPlots.onRendered(function() {
-    try {
-        let _this = Blaze.Template.instance();
+    let _this = Blaze.Template.instance();
 
-        Meteor.defer(() => {
-            let topPlot = $('#topPlot').highcharts();
-            let bottomPlot = $('#bottomPlot').highcharts();
-            let globalTimer = (new Date(Session.get('globalTimer'))).getTime();
-            let plotLineId = 'plotLineId';
-            Meteor.setTimeout(() => {
+    Meteor.defer(() => {
+
+        let topPlot = $('#topPlot').highcharts();
+        let bottomPlot = $('#bottomPlot').highcharts();
+        let globalTimer = (new Date(Session.get('globalTimer'))).getTime();
+        let plotLineId = 'plotLineId';
+        Meteor.setTimeout(() => {
+            topPlot.xAxis[0].addPlotLine({
+                value: globalTimer,
+                width: 4,
+                color: 'Orange',
+                id: plotLineId
+            });
+
+            Tracker.autorun(() => {
                 try {
+                    let globalTimer = (new Date(Session.get('globalTimer'))).getTime(),
+                        plotB;
+
+                    if (topPlot.xAxis && topPlot.xAxis.length > 0) {
+                        _.each(topPlot.xAxis[0].plotLinesAndBands,(plotLineBand) => {
+                            if (plotLineBand.id === plotLineId) {
+                                plotB = plotLineBand;
+                            }
+                        });
+
+                        Object.assign(plotB.options, {
+                            value : globalTimer,
+                        });
+                        plotB.render();
+                    } else {
+                        throw new Meteor.Error('throw');
+                    }
+
+                    let ticker = Session.get('globalTicker');
+                    if(bottomPlot && bottomPlot.series) {
+                        bottomPlot.series[0].setData( _this.plotData[ticker]);
+                    }
+
+                } catch(e) {
+                    topPlot = $('#topPlot').highcharts();
                     topPlot.xAxis[0].addPlotLine({
                         value: globalTimer,
                         width: 4,
@@ -491,47 +526,11 @@ Template.OceanPlots.onRendered(function() {
                         id: plotLineId
                     });
 
-                    Tracker.autorun(() => {
-                        try {
-                            let globalTimer = (new Date(Session.get('globalTimer'))).getTime();
-                            _.each(topPlot.xAxis[0].plotLinesAndBands,(plotLineBand) => {
-                                if (plotLineBand.id === plotLineId) {
-                                    plotB = plotLineBand;
-                                }
-                            });
-
-                            Object.assign(plotB.options, {
-                                value : globalTimer,
-                            });
-                            plotB.render();
-                        } catch(exception) {
-                            /*Meteor.setTimeout(() => {
-                                document.location.reload(true);
-                            }, 2000);*/
-                        }
-                    });
-
-                    Tracker.autorun(() => {
-                        try {
-                            let ticker = Session.get('globalTicker');
-                            bottomPlot.series[0].setData( _this.plotData[ticker]);
-                        } catch(exception) {
-                           Meteor.setTimeout(() => {
-                               document.location.reload(true);
-                            }, 2000);
-                        }
-                    });
-                } catch(exception) {
-                    Meteor.setTimeout(() => {
-                        document.location.reload(true);
-                    }, 2000);
+                    bottomPlot = $('#bottomPlot').highcharts();
+                    bottomPlot.redraw();
+                    console.log(e);
                 }
-            }, 2000);
-        });
-    } catch(exception) {
-        console.log(exception);
-        Meteor.setTimeout(() => {
-            document.location.reload(true);
+            });
         }, 2000);
-    }
+    });
 });
