@@ -116,11 +116,16 @@ Template.OceanPlots.helpers({
             let userProfile = Meteor.user().profile;
             let proximityStations = userProfile.proximityStations,
                 primaryStation =  userProfile.primaryStation;
-                proximityStationsData = Data.find({'title': {$in: proximityStations}}, {fields: {data: 1, title: 1}}).fetch(),
+                proximityStationsData = Data.find({'title': {$in: proximityStations}}, {
+                    fields: {data: 1, title: 1},
+                    sort: {lat: -1}
+                }).fetch(),
                 bottomPlotDataParameter = userProfile.bottomPlotDataParameter,
                 primaryStationData = Data.findOne({title: primaryStation},
                                                   {fields: {title: 1, data: 1}}),
                 plotDisplayName = camelToRegular(bottomPlotDataParameter);
+
+                console.log(proximityStationsData);
 
                 //Get the first date to display data for.
                 let firstTime = primaryStationData.data[userProfile.topPlotDataParameter].times[userProfile.fromTimeIndex];

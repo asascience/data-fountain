@@ -676,7 +676,9 @@ Template.Admin.helpers({
                 query = {title:{$nin:[]}};
             }
 
-            let listOfStations = Stations.find().fetch(),
+            let listOfStations = Stations.find({}, {
+                sort: {lat: -1}
+            }).fetch(),
                 stationNames = [];
 
             let bottomPlotParameter = $('#bottomPlotDataParameter').val();
@@ -692,7 +694,7 @@ Template.Admin.helpers({
                 let object = {'title': obj.title, 'enabled': enabled};
                 stationNames.push(object);
             });
-            return stationNames.sort();
+            return stationNames;
         } catch(e) {
             console.log(e);
         }

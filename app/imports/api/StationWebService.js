@@ -87,7 +87,10 @@ export default class StationWebService {
             startDate.setHours(startDate.getHours() - DURATION);
             startDate = startDate.toISOString();
 
-            let stations = Stations.find({}, {fields: {dataUrl: 1, id: 1, title: 1, stationId: 1, usgs: 1}}).fetch();
+            let stations = Stations.find({}, {
+                fields: {dataUrl: 1, id: 1, title: 1, stationId: 1, usgs: 1, lat: 1},
+                sort: { lat: -1 }
+            }).fetch();
 
             // create a place to store the results
             let dataSet = [];
@@ -99,6 +102,7 @@ export default class StationWebService {
                 let compiledUrl = `${Meteor.settings.dataFountainUrl}${station.dataUrl}?time=${startDate}/${endDate}`;
                 data.data = {};
                 data.id = station.id;
+                data.lat = station.lat;
                 data.title = station.title;
                 data.stationId = station.stationId;
                 data.usgsSite = station.usgs.split(':')[1];
