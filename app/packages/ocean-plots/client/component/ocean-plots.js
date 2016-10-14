@@ -125,8 +125,6 @@ Template.OceanPlots.helpers({
                                                   {fields: {title: 1, data: 1}}),
                 plotDisplayName = camelToRegular(bottomPlotDataParameter);
 
-                console.log(proximityStationsData);
-
                 //Get the first date to display data for.
                 let firstTime = primaryStationData.data[userProfile.topPlotDataParameter].times[userProfile.fromTimeIndex];
 

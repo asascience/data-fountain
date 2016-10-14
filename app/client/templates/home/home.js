@@ -81,7 +81,7 @@ Template.Home.onCreated(function(){
         }
 
 
-        if (currIndex > DURATION && userProfile.cycleStationParams) {
+        if (currIndex > DURATION && userProfile.cycleStationParams && userProfile.stationViewMode === "multiple") {
             let params = Meteor.user().profile.singleStationParameters;
             let cParam = Meteor.user().profile.bottomPlotDataParameter;
             let pIndex = params.indexOf(cParam);
