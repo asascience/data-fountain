@@ -109,6 +109,7 @@ Template.MetIcons.onCreated(function() {
             }
         });
 
+
         Object.keys(dataCollection.data).forEach((item, index) => {
             let timer = Session.get('globalTimer');
             let valueIndex = dataCollection.data[item].times.indexOf(timer);
