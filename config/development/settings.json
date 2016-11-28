@@ -6,6 +6,6 @@
   "dataFountainUrl": "http://dev.oceansmap.com/data-fountain",
   "defaultDuration": 48,
   "refreshTheData": "every 3 hour",
-  "forecastIoApi": "30ff0831d323444ba01b79a9b94faa0e",
+  "forecastIoApi": "ffa1d491d60ff54f304dee64ea112cb0",
   "forecastIoCoord": [37.82, -75.98]
 }
