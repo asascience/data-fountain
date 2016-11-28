@@ -249,7 +249,7 @@ function updateDateSelectorRange(){
     if(topPlotDataParameter !== null && primaryStation !== null){
         let timeRange = Data.findOne({'title': primaryStation}, {fields: {'data': 1}});
 
-        if(timeRange.data[topPlotDataParameter].times !== null && Array.isArray(timeRange.data[topPlotDataParameter].times)){
+        if(timeRange.data[topPlotDataParameter] && timeRange.data[topPlotDataParameter].times !== null && Array.isArray(timeRange.data[topPlotDataParameter].times)){
             let minDate = moment(timeRange.data[topPlotDataParameter].times[0]).format('X');
             let maxDate = moment(timeRange.data[topPlotDataParameter].times[timeRange.data[topPlotDataParameter].times.length-1]).format('X');
             slider.update({
