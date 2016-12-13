@@ -16,8 +16,6 @@ Template.animap.events({
 /*****************************************************************************/
 Template.animap.helpers({
 	getImageLink(){
-
-
 		var index = Session.get('globalTicker');
 		if ($.inArray(index, indexs) != "-1"){
 			currentIndex = index;
