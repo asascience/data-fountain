@@ -40,7 +40,7 @@ Template.BuoyMap.onRendered(function(){
         //Map Initialization
         let map = L.map('map').setView([primaryStation.lat,primaryStation.lon], 8);
         // map.createPane('labels');
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoicnBzbWFrYSIsImEiOiJjaWo4dDU5ZHAwMDFjdXNtNG5lejd0Z2ZuIn0.zsH1hJed8Fda2Tlku3hRgg', {
             maxZoom: 13,
             attribution: 'Data Fountain',
             id: 'mapbox.streets'
