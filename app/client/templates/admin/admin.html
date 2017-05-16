@@ -124,14 +124,58 @@
                         <label class="col-md-2 control-label">
                             Proximity Stations
                         </label>
-                        <div class="col-md-4">
-                            {{#each stationsList}}
-                            <label for="{{this.title}}">
-                                <input type="checkbox" class="proximityStationCheckbox" id="{{this.title}}">
-                                {{this.title}}</label>
-                            {{/each}}
-                            <p class="control-explanation">Nearby stations to display on the bottom bar plot.</p>
+                        <div class="col-md-10">
+                          <div class="col-md-3"  id="Wind/Waves">
+                            <h2>Wind/Waves</h2>
+                              {{#each stationsList}}
+                                {{#if this.category.windWaves}}
+                                  <label for="{{this.title}}" >
+                                      <input type="checkbox" class="proximityStationCheckbox" id="{{this.title}}">
+                                      {{this.title}}</label>
+                                    <br>
+                                {{/if}}
+                              {{/each}}
+                          </div>
+                          <div class="col-md-3"  id="CBIBS">
+                            <h2>CBIBS</h2>
+                              {{#each stationsList}}
+                                {{#if this.category.cbibs}}
+                                  <label for="{{this.title}}" >
+                                      <input type="checkbox" class="proximityStationCheckbox" id="{{this.title}}">
+                                      {{this.title}}</label>
+                                    <br>
+                                {{/if}}
+                              {{/each}}
+                          </div>
+                          <div class="col-md-3"  id="CRWO">
+                            <h2>CRWO</h2>
+                              {{#each stationsList}}
+                                {{#if this.category.crwo}}
+                                  <label for="{{this.title}}" >
+                                      <input type="checkbox" class="proximityStationCheckbox" id="{{this.title}}">
+                                      {{this.title}}</label>
+                                    <br>
+                                {{/if}}
+                              {{/each}}
+                          </div>
+                          <div class="col-md-3"  id="Other">
+                            <h2>Other</h2>
+                              {{#each stationsList}}
+                                {{#if this.category.other}}
+                                  <label for="{{this.title}}" >
+                                      <input type="checkbox" class="proximityStationCheckbox" id="{{this.title}}">
+                                      {{this.title}}</label>
+                                    <br>
+                                {{/if}}
+                              {{/each}}
+                          </div>
+                          <br>
                         </div>
+                        <div class="col-md-2 control-label">
+                        </div>
+                        <div class="col-md-10">
+                        <p class="control-explanation">Nearby stations to display on the bottom bar plot.</p>
+                      </div>
                     </div>
                     <!-- <div class="form&#45;group"> -->
                         <!--     <label class="col&#45;md&#45;2 control&#45;label"> -->

@@ -27,6 +27,13 @@
             "sea_water_temperature"
         ],
         "title": "Susquehanna",
+        "category": {
+            "cbibs": true,
+            "windWaves": false,
+            "crwo": false,
+            "other": false
+        },
+
         "usgs": "data.oceansmap.com:01580620",
         "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
         "usgs_parameters": [
@@ -61,6 +68,12 @@
             "sea_water_temperature"
         ],
         "title": "Patapsco",
+        "category": {
+            "cbibs": true,
+            "windWaves": false,
+            "crwo": false,
+            "other": false
+        },
         "usgs": "data.oceansmap.com:01580620",
         "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
         "usgs_parameters": [
@@ -95,6 +108,12 @@
             "sea_water_temperature"
         ],
         "title": "Annapolis",
+        "category": {
+            "cbibs": true,
+            "windWaves": false,
+            "crwo": false,
+            "other": false
+        },
         "usgs": "data.oceansmap.com:01580620",
         "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
         "usgs_parameters": [
@@ -129,6 +148,12 @@
             "sea_water_temperature"
         ],
         "title": "Upper Potomac",
+        "category": {
+            "cbibs": true,
+            "windWaves": false,
+            "crwo": false,
+            "other": false
+        },
         "usgs": "data.oceansmap.com:01580620",
         "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
         "usgs_parameters": [
@@ -163,6 +188,12 @@
             "sea_water_temperature"
         ],
         "title": "Gooses Reef",
+        "category": {
+            "cbibs": true,
+            "windWaves": false,
+            "crwo": false,
+            "other": false
+        },
         "usgs": "data.oceansmap.com:01580620",
         "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
         "usgs_parameters": [
@@ -198,6 +229,12 @@
             "sea_water_temperature"
         ],
         "title": "Potomac",
+        "category": {
+            "cbibs": true,
+            "windWaves": false,
+            "crwo": false,
+            "other": false
+        },
         "usgs": "data.oceansmap.com:01580620",
         "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
         "usgs_parameters": [
@@ -232,6 +269,12 @@
             "sea_water_temperature"
         ],
         "title": "Stingray Point",
+        "category": {
+            "cbibs": true,
+            "windWaves": false,
+            "crwo": false,
+            "other": false
+        },
         "usgs": "data.oceansmap.com:01580620",
         "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
         "usgs_parameters": [
@@ -266,6 +309,12 @@
             "sea_water_temperature"
         ],
         "title": "Jamestown",
+        "category": {
+            "cbibs": true,
+            "windWaves": false,
+            "crwo": false,
+            "other": false
+        },
         "usgs": "data.oceansmap.com:01580620",
         "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
         "usgs_parameters": [
@@ -300,6 +349,12 @@
             "sea_water_temperature"
         ],
         "title": "First Landing",
+        "category": {
+            "cbibs": true,
+            "windWaves": false,
+            "crwo": false,
+            "other": false
+        },
         "usgs": "data.oceansmap.com:01580620",
         "usgs_data": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/01580620/01580620.ncml",
         "usgs_parameters": [
@@ -334,7 +389,13 @@
             "sea_water_temperature"
         ],
         "title": "Wallops Island",
-        "usgs": "data.oceansmap.com:123123123",
+        "category": {
+            "cbibs": false,
+            "windWaves": true,
+            "crwo": false,
+            "other": false
+        },
+        "usgs": "data.oceansmap.com:01580620",
         "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
         "usgsParameters": [
             "Gage_height"
@@ -371,7 +432,13 @@
             "sea_water_temperature"
         ],
         "title": "Virginia Beach",
-        "usgs": "data.oceansmap.com:123123123",
+        "category": {
+            "cbibs": false,
+            "windWaves": true,
+            "crwo": false,
+            "other": false
+        },
+        "usgs": "data.oceansmap.com:01580620",
         "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
         "usgsParameters": [
             "Gage_height"
@@ -421,6 +488,12 @@
             "WQ_01_Wtemp"
         ],
         "title": "CBMM",
+        "category": {
+            "cbibs": false,
+            "windWaves": false,
+            "crwo": false,
+            "other": true
+        },
         "usgs": "data.oceansmap.com:01580620",
         "stationId": "99999",
         "isPrimary": false
@@ -453,7 +526,13 @@
             "sea_water_temperature"
         ],
         "title": "Nantucket Sound",
-        "usgs": "data.oceansmap.com:123123123",
+        "category": {
+            "cbibs": false,
+            "windWaves": true,
+            "crwo": false,
+            "other": false
+        },
+        "usgs": "data.oceansmap.com:01580620",
         "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
         "usgsParameters": [
             "Gage_height"
@@ -490,7 +569,13 @@
             "sea_water_temperature"
         ],
         "title": "Long Island",
-        "usgs": "data.oceansmap.com:123123123",
+        "category": {
+            "cbibs": false,
+            "windWaves": true,
+            "crwo": false,
+            "other": false
+        },
+        "usgs": "data.oceansmap.com:01580620",
         "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
         "usgsParameters": [
             "Gage_height"
@@ -527,7 +612,13 @@
             "sea_water_temperature"
         ],
         "title": "Texas Tower #4",
-        "usgs": "data.oceansmap.com:123123123",
+        "category": {
+            "cbibs": false,
+            "windWaves": true,
+            "crwo": false,
+            "other": false
+        },
+        "usgs": "data.oceansmap.com:01580620",
         "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
         "usgsParameters": [
             "Gage_height"
@@ -564,7 +655,13 @@
             "sea_water_temperature"
         ],
         "title": "South Hatteras",
-        "usgs": "data.oceansmap.com:123123123",
+        "category": {
+            "cbibs": false,
+            "windWaves": true,
+            "crwo": false,
+            "other": false
+        },
+        "usgs": "data.oceansmap.com:01580620",
         "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
         "usgsParameters": [
             "Gage_height"
@@ -601,7 +698,13 @@
             "sea_water_temperature"
         ],
         "title": "East Bahamas",
-        "usgs": "data.oceansmap.com:123123123",
+        "category": {
+            "cbibs": false,
+            "windWaves": true,
+            "crwo": false,
+            "other": false
+        },
+        "usgs": "data.oceansmap.com:01580620",
         "usgsData": "http://data.oceansmap.com/thredds/dodsC/usgs_ag/123213/123123.ncml",
         "usgsParameters": [
             "Gage_height"

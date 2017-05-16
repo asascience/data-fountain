@@ -691,7 +691,7 @@ Template.Admin.helpers({
                         enabled = false;
                     }
                 }
-                let object = {'title': obj.title, 'enabled': enabled};
+                let object = {'title': obj.title, 'category':obj.category, 'enabled': enabled};
                 stationNames.push(object);
             });
             return stationNames;
